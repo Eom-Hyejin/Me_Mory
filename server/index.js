@@ -1,9 +1,13 @@
+app.use(express.json());
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const authRouter = require('./router/authRouter');
+const kakaoAuthRouter = require('./router/kakaoAuthRouter');
+
 app.use('/auth', authRouter);
+app.use('/auth', kakaoAuthRouter);
 
 // 서버 실행
 app.listen(PORT, '0.0.0.0', () => {

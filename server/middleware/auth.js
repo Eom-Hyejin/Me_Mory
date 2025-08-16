@@ -1,14 +1,15 @@
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../util/jwt');
 
-exports.verifyToken = (req, res, next) => {
+module.exports = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: 'No token provided' });
+
+  const token = authHeader.split(' ')[1];
   try {
-    const token = req.headers.authorization;
-    if (!token) return res.status(403).json({ message: '토큰 없음' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(403).json({ message: '유효하지 않은 토큰' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
