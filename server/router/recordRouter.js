@@ -6,14 +6,13 @@ const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk');
 require('dotenv').config();
 
-// S3 설정
 const s3 = new AWS.S3({
   region: process.env.AWS_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
-// 감정 기록 작성
+// ✅ 감정 기록 작성
 router.post('/', verifyToken, async (req, res) => {
   const {
     title, emotion_type, expression_type, content, img,
@@ -38,6 +37,14 @@ router.post('/', verifyToken, async (req, res) => {
     const dateStr = createdDate.toISOString().slice(0, 10);
     const yearMonth = createdDate.toISOString().slice(0, 7);
 
+    // 📌 감정 중복 확인
+    const [[existingCalendar]] = await conn.query(
+      `SELECT emotion_type FROM EmotionCalendar WHERE userId = ? AND date = ?`,
+      [userId, dateStr]
+    );
+    const isDuplicateEmotion = existingCalendar && existingCalendar.emotion_type === emotion_type;
+
+    // EmotionCalendar UPSERT
     await conn.query(`
       INSERT INTO EmotionCalendar (userId, date, emotion_type, expression_type)
       VALUES (?, ?, ?, ?)
@@ -46,13 +53,16 @@ router.post('/', verifyToken, async (req, res) => {
         expression_type = VALUES(expression_type)
     `, [userId, dateStr, emotion_type, expression_type]);
 
-    // Emotion_Stats 쿼리의 컬럼 백틱 처리
-    await conn.query(`
-      INSERT INTO Emotion_Stats (userId, \`year_month\`, count_${emotion_type})
-      VALUES (?, ?, 1)
-      ON DUPLICATE KEY UPDATE count_${emotion_type} = count_${emotion_type} + 1
-    `, [userId, yearMonth]);
+    // Emotion_Stats: 감정 중복 아닐 때만 증가
+    if (!isDuplicateEmotion) {
+      await conn.query(`
+        INSERT INTO Emotion_Stats (userId, \`year_month\`, count_${emotion_type})
+        VALUES (?, ?, 1)
+        ON DUPLICATE KEY UPDATE count_${emotion_type} = count_${emotion_type} + 1
+      `, [userId, yearMonth]);
+    }
 
+    // Today_Emotion UPSERT
     await conn.query(`
       INSERT INTO Today_Emotion (userId, latitude, longitude, emotion_type, expression_type, updated_at)
       VALUES (?, ?, ?, ?, ?, NOW())
@@ -74,7 +84,7 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-// 감정 캘린더 (월별 조회)
+// ✅ 감정 캘린더 (월별 조회)
 router.get('/calendar', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -101,7 +111,7 @@ router.get('/calendar', verifyToken, async (req, res) => {
   }
 });
 
-// Presigned URL 발급
+// ✅ S3 Presigned URL 발급
 router.get('/upload-url', verifyToken, async (req, res) => {
   try {
     const { filename } = req.query;
@@ -131,7 +141,7 @@ router.get('/upload-url', verifyToken, async (req, res) => {
   }
 });
 
-// 감정 상세 조회
+// ✅ 감정 상세 조회
 router.get('/:id', verifyToken, async (req, res) => {
   const recordId = parseInt(req.params.id);
   const userId = req.user.userId;
@@ -147,7 +157,7 @@ router.get('/:id', verifyToken, async (req, res) => {
   res.status(200).json(rows[0]);
 });
 
-// 감정 수정
+// ✅ 감정 수정
 router.put('/:id', verifyToken, async (req, res) => {
   const recordId = parseInt(req.params.id);
   const userId = req.user.userId;
@@ -173,10 +183,9 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 
   values.push(recordId, userId);
-
   await db.query(`UPDATE Records SET ${updates.join(', ')} WHERE id = ? AND userId = ?`, values);
 
-  // EmotionCalendar 반영
+  // 감정 수정 시 EmotionCalendar 동기화
   if (req.body.emotion_type || req.body.expression_type) {
     const [[record]] = await db.query('SELECT created_at FROM Records WHERE id = ? AND userId = ?', [recordId, userId]);
     const dateStr = record.created_at.toISOString().slice(0, 10);
@@ -198,7 +207,7 @@ router.put('/:id', verifyToken, async (req, res) => {
   res.status(200).json({ message: '감정 기록 수정 완료' });
 });
 
-// 감정 삭제
+// ✅ 감정 삭제
 router.delete('/:id', verifyToken, async (req, res) => {
   const recordId = parseInt(req.params.id);
   const userId = req.user.userId;
@@ -210,11 +219,11 @@ router.delete('/:id', verifyToken, async (req, res) => {
   return res.status(204).send();
 });
 
-// 감정 회고 리스트 조회
+// ✅ 감정 회고 리스트 조회
 router.get('/recall', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    const today = new Date().toISOString().slice(0, 10);
 
     const [rows] = await db.query(`
       SELECT id AS recordId, title, emotion_type, expression_type, reveal_at, created_at
