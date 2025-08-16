@@ -4,7 +4,7 @@ const db = require('../data/db');
 const bcrypt = require('bcrypt');
 const { generateToken, verifyToken } = require('../util/jwt');
 
-// 🔐 회원가입 (웹 회원가입)
+// 회원가입 (웹 회원가입)
 router.post('/', async (req, res) => {
   try {
     const { email, password, name, type = 'web', img = null } = req.body;
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 🔐 로그인 (웹 로그인)
+// 로그인 (웹 로그인)
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -77,7 +77,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 🙋🏻‍♀️ 내 정보 조회 (토큰 기반)
+// 내 정보 조회 (토큰 기반)
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -93,7 +93,7 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
-// 🙋🏻‍♀️ 마이페이지에서 특정 유저 정보 조회
+// 마이페이지에서 특정 유저 정보 조회
 router.get('/:userId', verifyToken, async (req, res) => {
   try {
     const myUserId = req.user.userId;
@@ -122,7 +122,7 @@ router.get('/:userId', verifyToken, async (req, res) => {
   }
 });
 
-// 📧 이메일 중복 확인
+// 이메일 중복 확인
 router.post('/email', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: '이메일은 필수입니다' });
@@ -135,7 +135,7 @@ router.post('/email', async (req, res) => {
   res.status(200).json({ message: '사용 가능한 이메일입니다' });
 });
 
-// 🧑🏻 닉네임 중복 확인
+// 닉네임 중복 확인
 router.post('/nickname', async (req, res) => {
   const { nickname } = req.body;
   if (!nickname) return res.status(400).json({ message: '닉네임은 필수입니다' });
@@ -148,7 +148,7 @@ router.post('/nickname', async (req, res) => {
   res.status(200).json({ message: '사용 가능한 닉네임입니다' });
 });
 
-// 🧾 소셜 회원가입 or 로그인 처리
+// 소셜 회원가입 or 로그인 처리
 router.post('/social', async (req, res) => {
   try {
     const { id, name, type } = req.body;
@@ -195,6 +195,74 @@ router.post('/social', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: '회원가입 실패', detail: err.message });
+  }
+});
+
+
+// 비밀번호 검증
+router.post('/password', verifyToken, async (req, res) => {
+  const { password } = req.body;
+  const userId = req.user.userId;
+
+  if (!password) return res.status(400).json({ message: '비밀번호가 필요합니다' });
+
+  try {
+    const [rows] = await db.query('SELECT password FROM Users WHERE id = ?', [userId]);
+    if (rows.length === 0) return res.status(403).json({ message: '권한이 없습니다' });
+
+    const match = await bcrypt.compare(password, rows[0].password);
+    if (!match) return res.status(400).json({ message: '비밀번호가 일치하지 않습니다' });
+
+    res.status(200).json({ userId });
+  } catch (err) {
+    res.status(500).json({ message: '서버 오류', detail: err.message });
+  }
+});
+
+
+// 회원 정보 수정
+router.put('/', verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { nickname, password } = req.body;
+
+  try {
+    let updates = [];
+    let values = [];
+
+    if (nickname) {
+      const [nickRows] = await db.query('SELECT id FROM Users WHERE name = ? AND id != ?', [nickname, userId]);
+      if (nickRows.length > 0) {
+        return res.status(409).json({ message: '이미 존재하는 닉네임입니다' });
+      }
+      updates.push('name = ?');
+      values.push(nickname);
+    }
+
+    if (password) {
+      const hashedPw = await bcrypt.hash(password, 10);
+      updates.push('password = ?');
+      values.push(hashedPw);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ message: '수정할 항목이 없습니다' });
+    }
+
+    values.push(userId);
+    await db.query(`UPDATE Users SET ${updates.join(', ')} WHERE id = ?`, values);
+
+    // 정보 조회 & 토큰 재발급
+    const [[user]] = await db.query('SELECT * FROM Users WHERE id = ?', [userId]);
+    const token = generateToken({ userId, name: user.name, type: user.type });
+
+    res.status(200).json({
+      token,
+      userdata: { email: user.email, nickname: user.name, img: user.img },
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: '회원정보 수정 실패', detail: err.message });
   }
 });
 

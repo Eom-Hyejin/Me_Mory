@@ -7,4 +7,17 @@ const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' }); // 7일 유효
 };
 
-module.exports = { generateToken };
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token) return res.status(403).json({ message: '권한이 없습니다 (토큰 없음)' });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: '권한이 없습니다 (토큰 검증 실패)', detail: err.message });
+  }
+};
+
+module.exports = { generateToken, verifyToken };
