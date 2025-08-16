@@ -224,13 +224,15 @@ router.get('/recall', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // 오늘 날짜 (YYYY-MM-DD 형식)
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0]; // '2025-08-16'
-
-    if (!todayStr || isNaN(new Date(todayStr))) {
-      return res.status(500).json({ message: '서버 날짜 생성 오류' });
+    // 한국 시간 기준으로 현재 날짜 계산 (UTC+9)
+    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    if (isNaN(now.getTime())) {
+      return res.status(500).json({ message: '현재 시간을 계산할 수 없습니다' });
     }
+    const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    // 디버깅 로그 (선택적으로 비활성화 가능)
+    console.log('[RECALL]', { userId, todayStr });
 
     const [rows] = await db.query(`
       SELECT id AS recordId, title, emotion_type, expression_type, reveal_at, created_at
@@ -241,7 +243,7 @@ router.get('/recall', verifyToken, async (req, res) => {
 
     res.status(200).json(rows);
   } catch (err) {
-    console.error(err);
+    console.error('[RECALL ERROR]', err);
     res.status(500).json({ message: '감정 회고 조회 실패', detail: err.message });
   }
 });
