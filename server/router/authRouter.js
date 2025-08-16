@@ -266,4 +266,47 @@ router.put('/', verifyToken, async (req, res) => {
   }
 });
 
+
+// 프로필 이미지 수정
+router.put('/img', verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { img } = req.body;
+
+  if (!img) {
+    return res.status(400).json({ message: '이미지 URL이 필요합니다' });
+  }
+
+  try {
+    await db.query('UPDATE Users SET img = ? WHERE id = ?', [img, userId]);
+
+    const [[user]] = await db.query('SELECT * FROM Users WHERE id = ?', [userId]);
+    const token = generateToken({ userId: user.id, name: user.name, type: user.type });
+
+    res.status(200).json({
+      token,
+      userdata: {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        img: user.img
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: '회원정보 수정 실패', detail: err.message });
+  }
+});
+
+
+// 회원 탈퇴
+router.delete('/', verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    await db.query('DELETE FROM Users WHERE id = ?', [userId]);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ message: '회원탈퇴 실패', detail: err.message });
+  }
+});
+
 module.exports = router;
