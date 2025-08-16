@@ -223,14 +223,21 @@ router.delete('/:id', verifyToken, async (req, res) => {
 router.get('/recall', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const today = new Date().toISOString().slice(0, 10);
+
+    // 오늘 날짜 (YYYY-MM-DD 형식)
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0]; // '2025-08-16'
+
+    if (!todayStr || isNaN(new Date(todayStr))) {
+      return res.status(500).json({ message: '서버 날짜 생성 오류' });
+    }
 
     const [rows] = await db.query(`
       SELECT id AS recordId, title, emotion_type, expression_type, reveal_at, created_at
       FROM Records
       WHERE userId = ? AND reveal_at <= ?
       ORDER BY reveal_at DESC
-    `, [userId, today]);
+    `, [userId, todayStr]);
 
     res.status(200).json(rows);
   } catch (err) {
