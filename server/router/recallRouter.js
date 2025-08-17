@@ -12,8 +12,6 @@ router.get('/', verifyToken, async (req, res) => {
     const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
     const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
 
-    console.log('[RECALL ROUTER]', { userId, todayStr });
-
     const [rows] = await db.query(`
       SELECT id AS recordId, title, emotion_type, expression_type, reveal_at, created_at
       FROM Records
@@ -23,7 +21,6 @@ router.get('/', verifyToken, async (req, res) => {
 
     res.status(200).json(rows);
   } catch (err) {
-    console.error('[RECALL ERROR]', err);
     res.status(500).json({ message: '감정 회고 조회 실패', detail: err.message });
   }
 });
