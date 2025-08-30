@@ -13,6 +13,7 @@ const recordDraftRouter = require('./router/recordDraftRouter');
 const emotionRouter = require('./router/emotionRouter');
 const recallRouter = require('./router/recallRouter');
 const mapRouter = require('./router/mapRouter');
+const bluetoothRouter = require('./router/bluetoothRouter');
 
 app.use('/auth', kakaoAuthRouter);
 app.use('/auth', naverAuthRouter);
@@ -22,6 +23,7 @@ app.use('/record-drafts', recordDraftRouter);
 app.use('/emotion', emotionRouter);
 app.use('/recall', recallRouter);
 app.use('/map', mapRouter);
+app.use('/bluetooth', bluetoothRouter);
 
 // 서버 실행
 app.listen(PORT, '0.0.0.0', () => {
