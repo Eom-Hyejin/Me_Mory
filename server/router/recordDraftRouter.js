@@ -2,90 +2,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
-
+const { recomputeDailySummary } = require('../util/dailySummary'); 
 const EMOTIONS = ['joy','sadness','anger','worry','proud','upset'];
-
-/* ================== 통계 증감 유틸 ================== */
-const incStatSql = (col) => `
-  INSERT INTO Emotion_Stats (userId, \`year_month\`, \`${col}\`)
-  VALUES (?, ?, 1)
-  ON DUPLICATE KEY UPDATE \`${col}\` = \`${col}\` + 1
-`;
-const decStatSql = (col) => `
-  UPDATE Emotion_Stats
-  SET \`${col}\` = GREATEST(\`${col}\` - 1, 0)
-  WHERE userId = ? AND \`year_month\` = ?
-`;
-
-/* ================== 하루 대표 감정(모드) 재계산 ================== */
-/**
- * 날짜별 대표 감정(모드) 계산 후 EmotionCalendar/Emotion_Stats 동기화
- * - 모드 산정: emotion_type별 count DESC, 동률이면 최신 created_at 가진 감정 선택
- * - 해당 날짜에 기록이 하나도 없으면 EmotionCalendar 삭제 및 기존 대표 감정 -1
- * @param {PoolConnection} conn  트랜잭션 커넥션
- * @param {number} userId
- * @param {string} dateStr  'YYYY-MM-DD'
- */
-async function recomputeDailySummary(conn, userId, dateStr) {
-  const yearMonth = dateStr.slice(0, 7);
-
-  // 기존 대표 감정
-  const [[existing]] = await conn.query(
-    `SELECT emotion_type FROM EmotionCalendar WHERE userId=? AND date=?`,
-    [userId, dateStr]
-  );
-
-  // 그날 기록에서 모드 계산
-  const [counts] = await conn.query(
-    `SELECT emotion_type, COUNT(*) AS cnt, MAX(created_at) AS last_at
-       FROM Records
-      WHERE userId=? AND DATE(created_at)=?
-      GROUP BY emotion_type
-      ORDER BY cnt DESC, last_at DESC
-      LIMIT 1`,
-    [userId, dateStr]
-  );
-
-  if (counts.length === 0) {
-    // 기록 없음 → Calendar 삭제 + 기존 대표 감정 월통계 -1
-    if (existing) {
-      await conn.query(decStatSql(`count_${existing.emotion_type}`), [userId, yearMonth]);
-      await conn.query(`DELETE FROM EmotionCalendar WHERE userId=? AND date=?`, [userId, dateStr]);
-    }
-    return;
-  }
-
-  const newEmotion = counts[0].emotion_type;
-
-  // 대표 감정의 최신 expression_type 반영
-  const [[latest]] = await conn.query(
-    `SELECT expression_type
-       FROM Records
-      WHERE userId=? AND DATE(created_at)=? AND emotion_type=?
-      ORDER BY created_at DESC, id DESC
-      LIMIT 1`,
-    [userId, dateStr, newEmotion]
-  );
-  const newExpr = latest ? latest.expression_type : null;
-
-  await conn.query(
-    `INSERT INTO EmotionCalendar (userId, date, emotion_type, expression_type)
-     VALUES (?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE
-       emotion_type=VALUES(emotion_type),
-       expression_type=VALUES(expression_type)`,
-    [userId, dateStr, newEmotion, newExpr]
-  );
-
-  // 월 통계: 대표 감정이 바뀐 경우에만 이동
-  const beforeEmotion = existing ? existing.emotion_type : null;
-  if (!beforeEmotion) {
-    await conn.query(incStatSql(`count_${newEmotion}`), [userId, yearMonth]);
-  } else if (beforeEmotion !== newEmotion) {
-    await conn.query(decStatSql(`count_${beforeEmotion}`), [userId, yearMonth]);
-    await conn.query(incStatSql(`count_${newEmotion}`), [userId, yearMonth]);
-  }
-}
 
 /* =================================================================== */
 /* ================== 1) 목록 조회 (필터/페이지네이션) ================== */
@@ -242,7 +160,6 @@ router.put('/:id', verifyToken, async (req, res) => {
   const ALLOWED = ['title','emotion_type','expression_type','content','img',
                    'reveal_at','period','latitude','longitude','place','visibility'];
 
-  // 입력 필터링 + 간단 검증
   const updates = [];
   const values  = [];
   for (const f of ALLOWED) {
@@ -276,14 +193,13 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
     const dateStr = new Date(origin.created_at).toISOString().slice(0, 10);
 
-    // 실제 업데이트
     values.push(recordId, userId);
     await conn.query(
       `UPDATE Records SET ${updates.join(', ')} WHERE id=? AND userId=?`,
       values
     );
 
-    // ✅ 그날 대표 감정(모드) 재계산 → EmotionCalendar/Emotion_Stats 동기화
+    // ✅ 모드 재계산 → 캘린더 & 월 통계 자동 동기화
     await recomputeDailySummary(conn, userId, dateStr);
 
     await conn.commit();
@@ -319,13 +235,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
     const dateStr = new Date(origin.created_at).toISOString().slice(0, 10);
 
-    // 이미지 정리(로컬 DB) — S3 삭제는 별도 배치 권장
     await conn.query(`DELETE FROM RecordImages WHERE recordId=?`, [recordId]);
-
-    // 레코드 삭제
     await conn.query(`DELETE FROM Records WHERE id=? AND userId=?`, [recordId, userId]);
 
-    // ✅ 그날 대표 감정(모드) 재계산 → EmotionCalendar/Emotion_Stats 동기화
+    // ✅ 모드 재계산 → 캘린더 & 월 통계 자동 동기화
     await recomputeDailySummary(conn, userId, dateStr);
 
     await conn.commit();
