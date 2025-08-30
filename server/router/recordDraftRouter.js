@@ -2,251 +2,417 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
-const { recomputeDailySummary } = require('../util/dailySummary'); 
-const EMOTIONS = ['joy','sadness','anger','worry','proud','upset'];
+const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
+const { recomputeDailySummary } = require('../util/dailySummary');
+require('dotenv').config();
 
-/* =================================================================== */
-/* ================== 1) 목록 조회 (필터/페이지네이션) ================== */
-/* =================================================================== */
-// GET /records?from=&to=&emotion=&visibility=&q=&page=1&pageSize=10
-router.get('/', verifyToken, async (req, res) => {
-  const userId = req.user.userId;
-  const { page = 1, pageSize = 10, from, to, emotion, visibility, q } = req.query;
-
-  const where = ['userId = ?'];
-  const vals = [userId];
-
-  if (from) { where.push('DATE(created_at) >= ?'); vals.push(from); }
-  if (to)   { where.push('DATE(created_at) <= ?'); vals.push(to); }
-  if (emotion && EMOTIONS.includes(emotion)) { where.push('emotion_type = ?'); vals.push(emotion); }
-  if (visibility) { where.push('visibility = ?'); vals.push(visibility); }
-  if (q) { where.push('(title LIKE ? OR content LIKE ?)'); vals.push(`%${q}%`, `%${q}%`); }
-
-  const limit = Math.min(parseInt(pageSize, 10) || 10, 50);
-  const offset = ((parseInt(page, 10) || 1) - 1) * limit;
-
-  try {
-    const [[{ cnt }]] = await db.query(
-      `SELECT COUNT(*) AS cnt FROM Records WHERE ${where.join(' AND ')}`, vals
-    );
-    const [rows] = await db.query(
-      `SELECT id, title, emotion_type, expression_type, content, img,
-              reveal_at, period, latitude, longitude, place, visibility, created_at
-         FROM Records
-        WHERE ${where.join(' AND ')}
-        ORDER BY created_at DESC
-        LIMIT ? OFFSET ?`,
-      [...vals, limit, offset]
-    );
-
-    res.json({ page: Number(page), pageSize: limit, total: cnt, items: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: '기록 목록 조회 실패', detail: err.message });
-  }
+const s3 = new AWS.S3({
+  region: process.env.AWS_REGION,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
-/* ================================================ */
-/* ================== 2) 달력 (월별) =============== */
-/* ================================================ */
-// GET /records/calendar?year=2025&month=09
-router.get('/calendar', verifyToken, async (req, res) => {
+const EMOTIONS = ['joy', 'sadness', 'anger', 'worry', 'proud', 'upset'];
+const ALLOWED_IMG = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+};
+
+function ensureMax4(arr) {
+  return Array.isArray(arr) ? arr.slice(0, 4) : [];
+}
+
+function validLatLng(lat, lng) {
+  if (lat === undefined && lng === undefined) return true;
+  const L = Number(lat), G = Number(lng);
+  return Number.isFinite(L) && Number.isFinite(G) && L >= -90 && L <= 90 && G >= -180 && G <= 180;
+}
+
+function nonEmptyString(s) {
+  return typeof s === 'string' && s.trim().length > 0;
+}
+
+/* ================== S3 Presigned URL ================== */
+// GET /record-drafts/upload-url?filename=a.jpg
+router.get('/upload-url', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const { year, month } = req.query;
-    if (!year || !month) {
-      return res.status(400).json({ message: 'year, month 쿼리 파라미터가 필요합니다' });
+    const { filename } = req.query;
+    if (!nonEmptyString(filename) || !filename.includes('.')) {
+      return res.status(400).json({ message: '유효한 filename 쿼리 파라미터가 필요합니다' });
     }
+    const ext = filename.split('.').pop().toLowerCase();
+    const ctype = ALLOWED_IMG[ext];
+    if (!ctype) return res.status(400).json({ message: '허용되지 않는 이미지 형식' });
 
-    const m = String(month).padStart(2, '0');
-    const start = `${year}-${m}-01`;
-    const end   = `${year}-${m}-31`;
-
-    const [rows] = await db.query(
-      `SELECT date, emotion_type, expression_type
-         FROM EmotionCalendar
-        WHERE userId = ? AND date BETWEEN ? AND ?
-        ORDER BY date ASC`,
-      [userId, start, end]
-    );
-
-    res.json(rows);
+    const key = `records/${req.user.userId}/${uuidv4()}.${ext}`;
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: key,
+      Expires: 60,
+      ContentType: ctype,
+      ACL: 'public-read',
+    };
+    const uploadUrl = s3.getSignedUrl('putObject', params);
+    const imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    res.json({ uploadUrl, imageUrl });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: '감정 캘린더 조회 실패', detail: err.message });
+    res.status(500).json({ message: 'Presigned URL 생성 실패', detail: err.message });
   }
 });
 
-/* ================================================== */
-/* ================== 3) 상세 조회 =================== */
-/* ================================================== */
-// GET /records/:id
-router.get('/:id', verifyToken, async (req, res) => {
-  const recordId = parseInt(req.params.id, 10);
+/* ================== 1) 드래프트 생성 ================== */
+router.post('/drafts', verifyToken, async (req, res) => {
   const userId = req.user.userId;
+  const { emotion_type, expression_type, content, place, visibility, images, latitude, longitude } = req.body;
 
-  try {
-    const [rows] = await db.query(
-      'SELECT * FROM Records WHERE id = ? AND userId = ?',
-      [recordId, userId]
-    );
-    if (!rows.length) return res.status(404).json({ message: '감정 기록을 찾을 수 없습니다' });
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: '상세 조회 실패', detail: err.message });
+  // 1. emotion_type 유효성 검증
+  if (!EMOTIONS.includes(emotion_type)) {
+    return res.status(400).json({ message: '지원하지 않는 감정 유형입니다.' });
   }
-});
 
-/* ===================================================== */
-/* ========== 4) 기록의 전체 이미지 (썸네일 그리드) ===== */
-/* ===================================================== */
-// GET /records/:id/images
-router.get('/:id/images', verifyToken, async (req, res) => {
-  const recordId = parseInt(req.params.id, 10);
-  const userId = req.user.userId;
-  try {
-    const [[own]] = await db.query(`SELECT userId FROM Records WHERE id=?`, [recordId]);
-    if (!own) return res.status(404).json({ message: '기록 없음' });
-    if (own.userId !== userId) return res.status(403).json({ message: '권한 없음' });
-
-    const [imgs] = await db.query(
-      `SELECT url, sort_order FROM RecordImages WHERE recordId=? ORDER BY sort_order ASC, id ASC`,
-      [recordId]
-    );
-    res.json(imgs.map(x => x.url));
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: '이미지 조회 실패', detail: err.message });
+  // 2. expression_type 유효성 검증
+  if (!['positive', 'neutral', 'negative'].includes(expression_type)) {
+    return res.status(400).json({ message: '지원하지 않는 표현 유형입니다.' });
   }
-});
 
-/* ===================================================== */
-/* ========== 5) 대표 이미지 교체 (선택 기능) ========== */
-/* ===================================================== */
-// PUT /records/:id/representative  body: { url: "https://..." }
-router.put('/:id/representative', verifyToken, async (req, res) => {
-  const recordId = parseInt(req.params.id, 10);
-  const userId = req.user.userId;
-  const { url } = req.body;
-  if (!url) return res.status(400).json({ message: 'url 필요' });
-
-  try {
-    const [[own]] = await db.query(`SELECT userId FROM Records WHERE id=?`, [recordId]);
-    if (!own) return res.status(404).json({ message: '기록 없음' });
-    if (own.userId !== userId) return res.status(403).json({ message: '권한 없음' });
-
-    const [[valid]] = await db.query(
-      `SELECT id FROM RecordImages WHERE recordId=? AND url=?`, [recordId, url]
-    );
-    if (!valid) return res.status(400).json({ message: '해당 기록의 이미지가 아님' });
-
-    await db.query(`UPDATE Records SET img=? WHERE id=?`, [url, recordId]);
-    res.json({ message: '대표 이미지 업데이트 완료' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: '대표 이미지 업데이트 실패', detail: err.message });
+  // 3. visibility 유효성 검증
+  if (!['public', 'private', 'restricted'].includes(visibility)) {
+    return res.status(400).json({ message: '지원하지 않는 가시성 유형입니다.' });
   }
-});
 
-/* ===================================================== */
-/* ========== 6) 수정: 모드 재계산(달력/통계) ========== */
-/* ===================================================== */
-// PUT /records/:id
-router.put('/:id', verifyToken, async (req, res) => {
-  const recordId = parseInt(req.params.id, 10);
-  const userId = req.user.userId;
+  // 4. place 길이 제한 (255자 이하)
+  if (place && place.length > 255) {
+    return res.status(400).json({ message: '장소 이름은 255자 이하로 입력해야 합니다.' });
+  }
 
-  const ALLOWED = ['title','emotion_type','expression_type','content','img',
-                   'reveal_at','period','latitude','longitude','place','visibility'];
+  // 5. content 길이 제한 (1000자 이하)
+  if (content && content.length > 1000) {
+    return res.status(400).json({ message: '내용은 1000자 이하로 입력해야 합니다.' });
+  }
 
-  const updates = [];
-  const values  = [];
-  for (const f of ALLOWED) {
-    if (req.body[f] !== undefined) {
-      if (f === 'emotion_type' && !EMOTIONS.includes(req.body[f])) {
-        return res.status(400).json({ message: '지원하지 않는 emotion_type' });
+  // 6. 이미지 검증 (형식과 크기 제한)
+  const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (images && images.length > 0) {
+    for (const image of images) {
+      if (!allowedImageTypes.includes(image.mimeType)) {
+        return res.status(400).json({ message: '허용되지 않는 이미지 형식입니다.' });
       }
-      if (f === 'title' && String(req.body[f]).length > 100) {
-        return res.status(400).json({ message: 'title 길이 초과(<=100)' });
+      if (image.size > 5 * 1024 * 1024) {  // 5MB 제한
+        return res.status(400).json({ message: '이미지 크기는 5MB 이하로 제한됩니다.' });
       }
-      if (f === 'place' && String(req.body[f]).length > 255) {
-        return res.status(400).json({ message: 'place 길이 초과(<=255)' });
-      }
-      updates.push(`${f} = ?`);
-      values.push(req.body[f]);
     }
   }
-  if (!updates.length) return res.status(400).json({ message: '수정할 필드가 없습니다' });
+
+  // 7. 좌표 유효성 검사
+  if (!validLatLng(latitude, longitude)) {
+    return res.status(400).json({ message: '유효한 좌표가 아닙니다.' });
+  }
+
+  // DB에 저장
+  try {
+    const [r] = await db.query(
+      'INSERT INTO RecordDrafts (userId, emotion_type, expression_type, content, place, visibility, latitude, longitude, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+      [userId, emotion_type, expression_type, content, place, visibility, latitude, longitude]
+    );
+
+    const draftId = r.insertId;
+
+    // 이미지 업로드 및 연결
+    if (images && images.length > 0) {
+      for (let i = 0; i < images.length; i++) {
+        await db.query(
+          'INSERT INTO RecordImages (draftId, url, sort_order) VALUES (?, ?, ?)',
+          [draftId, images[i].url, i]
+        );
+      }
+    }
+
+    return res.status(201).json({ message: '감정 드래프트 저장 완료', draftId });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: '감정 드래프트 저장 실패', detail: err.message });
+  }
+});
+
+/* ================== 2) 드래프트 업데이트 ================== */
+router.patch('/drafts/:id', verifyToken, async (req, res) => {
+  const draftId = parseInt(req.params.id, 10);
+  const userId = req.user.userId;
+
+  const {
+    title, emotion_type, expression_type, content,
+    latitude, longitude, place, visibility, period, reveal_at, step, images,
+  } = req.body;
+
+  // 1. emotion_type 유효성 검증
+  if (emotion_type && !EMOTIONS.includes(emotion_type)) {
+    return res.status(400).json({ message: '지원하지 않는 감정 유형입니다.' });
+  }
+
+  // 2. 좌표 유효성 검증
+  if ((latitude !== undefined || longitude !== undefined) && !validLatLng(latitude, longitude)) {
+    return res.status(400).json({ message: '잘못된 좌표' });
+  }
+
+  // 3. place 길이 제한
+  if (place && String(place).length > 255) {
+    return res.status(400).json({ message: '장소 이름은 255자 이하로 입력해야 합니다.' });
+  }
+
+  // 4. title 길이 제한
+  if (title && String(title).length > 100) {
+    return res.status(400).json({ message: '제목 길이 초과(<=100)' });
+  }
+
+  // 5. 이미지 갯수 제한
+  if (images && (!Array.isArray(images) || images.length > 4)) {
+    return res.status(400).json({ message: '이미지는 최대 4장까지만 업로드 가능합니다.' });
+  }
 
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
 
-    const [[origin]] = await conn.query(
-      `SELECT created_at FROM Records WHERE id=? AND userId=? FOR UPDATE`,
-      [recordId, userId]
+    // 6. 드래프트 상태 체크
+    const [[d]] = await conn.query(
+      `SELECT id, status FROM RecordDrafts WHERE id=? AND userId=?`, [draftId, userId]
     );
-    if (!origin) {
+    if (!d) {
       await conn.rollback();
-      return res.status(404).json({ message: '기록이 존재하지 않습니다' });
+      return res.status(404).json({ message: 'Draft 없음' });
     }
-    const dateStr = new Date(origin.created_at).toISOString().slice(0, 10);
+    if (d.status === 'confirmed') {
+      await conn.rollback();
+      return res.status(409).json({ message: '이미 확정된 드래프트입니다' });
+    }
 
-    values.push(recordId, userId);
-    await conn.query(
-      `UPDATE Records SET ${updates.join(', ')} WHERE id=? AND userId=?`,
-      values
-    );
+    const updates = [];
+    const vals = [];
+    const allowed = {
+      title, emotion_type, expression_type, content,
+      latitude, longitude, place, visibility, period, reveal_at, step,
+    };
+    Object.keys(allowed).forEach((k) => {
+      if (allowed[k] !== undefined) {
+        updates.push(`${k}=?`);
+        vals.push(allowed[k]);
+      }
+    });
 
-    // ✅ 모드 재계산 → 캘린더 & 월 통계 자동 동기화
-    await recomputeDailySummary(conn, userId, dateStr);
+    if (updates.length) {
+      vals.push(draftId, userId);
+      await conn.query(
+        `UPDATE RecordDrafts SET ${updates.join(', ')}, updated_at=NOW() WHERE id=? AND userId=?`,
+        vals
+      );
+    }
+
+    // 7. 이미지 갱신 (기존 이미지 삭제 후 새 이미지 추가)
+    if (images) {
+      await conn.query(`DELETE FROM RecordImages WHERE draftId=?`, [draftId]);
+      const list = ensureMax4(images);
+      for (let i = 0; i < list.length; i++) {
+        await conn.query(
+          `INSERT INTO RecordImages (draftId, url, sort_order) VALUES (?, ?, ?)`,
+          [draftId, list[i], i]
+        );
+      }
+    }
 
     await conn.commit();
-    res.json({ message: '감정 기록 수정 완료' });
+    res.json({ message: 'Draft 업데이트 완료' });
   } catch (err) {
     await conn.rollback();
     console.error(err);
-    res.status(500).json({ message: '감정 기록 수정 실패', detail: err.message });
+    res.status(500).json({ message: 'Draft 업데이트 실패', detail: err.message });
   } finally {
     conn.release();
   }
 });
 
-/* ===================================================== */
-/* ========== 7) 삭제: 모드 재계산(달력/통계) ========== */
-/* ===================================================== */
-// DELETE /records/:id
-router.delete('/:id', verifyToken, async (req, res) => {
-  const recordId = parseInt(req.params.id, 10);
+/* ================== 3) 드래프트 조회 ================== */
+router.get('/drafts/:id', verifyToken, async (req, res) => {
+  const draftId = parseInt(req.params.id, 10);
+  const userId = req.user.userId;
+  try {
+    const [[draft]] = await db.query(
+      `SELECT * FROM RecordDrafts WHERE id=? AND userId=?`, [draftId, userId]
+    );
+    if (!draft) return res.status(404).json({ message: 'Draft 없음' });
+
+    const [imgs] = await db.query(
+      `SELECT url, sort_order FROM RecordImages WHERE draftId=? ORDER BY sort_order ASC, id ASC`,
+      [draftId]
+    );
+    res.json({ ...draft, images: imgs.map((x) => x.url) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Draft 조회 실패', detail: err.message });
+  }
+});
+
+/* ================== 4) 드래프트 확정 ================== */
+// - Records INSERT(대표 이미지=첫 장)
+// - RecordImages 이동
+// - Today_Emotion UPSERT
+// - Daily Summary 재계산 (EmotionCalendar & Emotion_Stats)
+// - Draft 정리
+router.post('/drafts/:id/confirm', verifyToken, async (req, res) => {
+  const draftId = parseInt(req.params.id, 10);
   const userId = req.user.userId;
 
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
 
-    const [[origin]] = await conn.query(
-      `SELECT created_at FROM Records WHERE id=? AND userId=? FOR UPDATE`,
-      [recordId, userId]
+    const [[draft]] = await conn.query(
+      `SELECT * FROM RecordDrafts WHERE id=? AND userId=? FOR UPDATE`, [draftId, userId]
     );
-    if (!origin) {
+    if (!draft) {
       await conn.rollback();
-      return res.status(404).json({ message: '기록이 존재하지 않습니다' });
+      return res.status(404).json({ message: 'Draft 없음' });
     }
-    const dateStr = new Date(origin.created_at).toISOString().slice(0, 10);
+    if (draft.status === 'confirmed') {
+      await conn.rollback();
+      return res.status(409).json({ message: '이미 확정된 드래프트입니다' });
+    }
+    if (!draft.emotion_type) return res.status(400).json({ message: 'emotion_type 필요' });
+    if (!draft.visibility)   return res.status(400).json({ message: 'visibility 필요' });
 
-    await conn.query(`DELETE FROM RecordImages WHERE recordId=?`, [recordId]);
-    await conn.query(`DELETE FROM Records WHERE id=? AND userId=?`, [recordId, userId]);
+    // 이미지(대표 포함)
+    const [imgs] = await conn.query(
+      `SELECT url, sort_order FROM RecordImages WHERE draftId=? ORDER BY sort_order ASC, id ASC`,
+      [draftId]
+    );
+    const top4 = ensureMax4(imgs);
+    const repImage = top4.length ? top4[0].url : null;
 
-    // ✅ 모드 재계산 → 캘린더 & 월 통계 자동 동기화
+    // reveal_at 계산
+    let revealAt = draft.reveal_at;
+    if (!revealAt) {
+      if (draft.period === '6' || draft.period === '12') {
+        const months = parseInt(draft.period, 10);
+        const [[calc]] = await conn.query(
+          `SELECT DATE_ADD(?, INTERVAL ? MONTH) as ra`,
+          [draft.created_at, months]
+        );
+        revealAt = calc.ra;
+      } else {
+        revealAt = draft.created_at;
+      }
+    }
+
+    // Records INSERT
+    const [rec] = await conn.query(
+      `INSERT INTO Records
+       (userId, title, emotion_type, expression_type, content, img, created_at, reveal_at, period,
+        latitude, longitude, place, visibility)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        draft.title || null,
+        draft.emotion_type,
+        draft.expression_type || null,
+        draft.content || null,
+        repImage,
+        draft.created_at,
+        revealAt,
+        draft.period || null,
+        draft.latitude || null,
+        draft.longitude || null,
+        draft.place || null,
+        draft.visibility,
+      ]
+    );
+    const recordId = rec.insertId;
+
+    // 이미지 이동
+    for (const it of top4) {
+      await conn.query(
+        `INSERT INTO RecordImages (recordId, url, sort_order) VALUES (?, ?, ?)`,
+        [recordId, it.url, it.sort_order]
+      );
+    }
+    await conn.query(`DELETE FROM RecordImages WHERE draftId=?`, [draftId]);
+
+    // 날짜 문자열
+    const [[dt]] = await conn.query(
+      `SELECT DATE(created_at) as d FROM Records WHERE id=?`,
+      [recordId]
+    );
+    const dateStr = dt.d; // YYYY-MM-DD
+
+    // ✅ 그날 대표 감정(모드) 재계산 → EmotionCalendar/Emotion_Stats 일관 반영
     await recomputeDailySummary(conn, userId, dateStr);
 
+    // Today_Emotion UPSERT (최근 위치/감정 상태)
+    await conn.query(
+      `INSERT INTO Today_Emotion (userId, latitude, longitude, emotion_type, expression_type, updated_at)
+       VALUES (?, ?, ?, ?, ?, NOW())
+       ON DUPLICATE KEY UPDATE
+         latitude=VALUES(latitude), longitude=VALUES(longitude),
+         emotion_type=VALUES(emotion_type), expression_type=VALUES(expression_type),
+         updated_at=NOW()`,
+      [
+        userId,
+        draft.latitude || null,
+        draft.longitude || null,
+        draft.emotion_type,
+        draft.expression_type || null,
+      ]
+    );
+
+    // Draft 정리
+    await conn.query(`UPDATE RecordDrafts SET status='confirmed' WHERE id=?`, [draftId]);
+    await conn.query(`DELETE FROM RecordDrafts WHERE id=?`, [draftId]);
+
     await conn.commit();
-    return res.status(204).send();
+    res.json({ message: '기록 확정 완료', recordId });
   } catch (err) {
     await conn.rollback();
     console.error(err);
-    res.status(500).json({ message: '감정 기록 삭제 실패', detail: err.message });
+    res.status(500).json({ message: '기록 확정 실패', detail: err.message });
+  } finally {
+    conn.release();
+  }
+});
+
+/* ================== 5) 드래프트 삭제(취소) ================== */
+router.delete('/drafts/:id', verifyToken, async (req, res) => {
+  const draftId = parseInt(req.params.id, 10);
+  const userId = req.user.userId;
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [[d]] = await conn.query(
+      `SELECT id, status FROM RecordDrafts WHERE id=? AND userId=?`,
+      [draftId, userId]
+    );
+    if (!d) {
+      await conn.rollback();
+      return res.status(404).json({ message: 'Draft 없음' });
+    }
+    if (d.status === 'confirmed') {
+      await conn.rollback();
+      return res.status(409).json({ message: '이미 확정된 드래프트는 삭제할 수 없습니다' });
+    }
+
+    await conn.query(`DELETE FROM RecordImages WHERE draftId=?`, [draftId]);
+    await conn.query(`DELETE FROM RecordDrafts WHERE id=?`, [draftId]);
+
+    await conn.commit();
+    res.status(204).send();
+  } catch (e) {
+    await conn.rollback();
+    console.error(e);
+    res.status(500).json({ message: 'Draft 삭제 실패', detail: e.message });
   } finally {
     conn.release();
   }
