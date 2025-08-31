@@ -93,4 +93,59 @@ router.delete('/comments/:commentId', verifyToken, async (req, res) => {
   }
 });
 
+// (신고 생성) POST /records/comments/:commentId/report
+router.post('/comments/:commentId/report', verifyToken, async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.commentId, 10);
+    const me = req.user.userId;
+    if (Number.isNaN(commentId)) return res.status(400).json({ message: '잘못된 댓글' });
+
+    // 댓글 존재/삭제 여부 확인
+    const [[c]] = await db.query(
+      `SELECT c.id, c.author_id, c.is_deleted
+         FROM RecordComments c
+        WHERE c.id=?`, [commentId]
+    );
+    if (!c || c.is_deleted) return res.status(404).json({ message: '댓글이 없습니다' });
+
+    // 본인 댓글 신고 금지
+    if (c.author_id === me) return res.status(400).json({ message: '본인 댓글은 신고할 수 없습니다' });
+
+    // 중복 신고 방지: INSERT IGNORE
+    const [r] = await db.query(
+      `INSERT IGNORE INTO CommentReports (comment_id, reporter_id) VALUES (?, ?)`,
+      [commentId, me]
+    );
+
+    const [[cnt]] = await db.query(
+      `SELECT COUNT(*) AS count FROM CommentReports WHERE comment_id=?`,
+      [commentId]
+    );
+
+    return res.status(r.affectedRows ? 201 : 200).json({
+      reported: true,
+      alreadyReported: r.affectedRows === 0,
+      count: cnt.count
+    });
+  } catch (e) {
+    return res.status(500).json({ message: '신고 실패', detail: e.message });
+  }
+});
+
+// (신고 수 조회) GET /records/comments/:commentId/report-count
+router.get('/comments/:commentId/report-count', verifyToken, async (req, res) => {
+  try {
+    const commentId = parseInt(req.params.commentId, 10);
+    if (Number.isNaN(commentId)) return res.status(400).json({ message: '잘못된 댓글' });
+
+    const [[cnt]] = await db.query(
+      `SELECT COUNT(*) AS count FROM CommentReports WHERE comment_id=?`,
+      [commentId]
+    );
+    return res.json({ count: cnt.count });
+  } catch (e) {
+    return res.status(500).json({ message: '신고 수 조회 실패', detail: e.message });
+  }
+});
+
 module.exports = router;
