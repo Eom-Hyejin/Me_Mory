@@ -2,90 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
+const { recomputeDailySummary } = require('../util/dailySummary');
 
 const EMOTIONS = ['joy','sadness','anger','worry','proud','upset'];
-
-/* ================== 통계 증감 유틸 ================== */
-const incStatSql = (col) => `
-  INSERT INTO Emotion_Stats (userId, \`year_month\`, \`${col}\`)
-  VALUES (?, ?, 1)
-  ON DUPLICATE KEY UPDATE \`${col}\` = \`${col}\` + 1
-`;
-const decStatSql = (col) => `
-  UPDATE Emotion_Stats
-  SET \`${col}\` = GREATEST(\`${col}\` - 1, 0)
-  WHERE userId = ? AND \`year_month\` = ?
-`;
-
-/* ================== 하루 대표 감정(모드) 재계산 ================== */
-/**
- * 날짜별 대표 감정(모드) 계산 후 EmotionCalendar/Emotion_Stats 동기화
- * - 모드 산정: emotion_type별 count DESC, 동률이면 최신 created_at 가진 감정 선택
- * - 해당 날짜에 기록이 하나도 없으면 EmotionCalendar 삭제 및 기존 대표 감정 -1
- * @param {PoolConnection} conn  트랜잭션 커넥션
- * @param {number} userId
- * @param {string} dateStr  'YYYY-MM-DD'
- */
-async function recomputeDailySummary(conn, userId, dateStr) {
-  const yearMonth = dateStr.slice(0, 7);
-
-  // 기존 대표 감정
-  const [[existing]] = await conn.query(
-    `SELECT emotion_type FROM EmotionCalendar WHERE userId=? AND date=?`,
-    [userId, dateStr]
-  );
-
-  // 그날 기록에서 모드 계산
-  const [counts] = await conn.query(
-    `SELECT emotion_type, COUNT(*) AS cnt, MAX(created_at) AS last_at
-       FROM Records
-      WHERE userId=? AND DATE(created_at)=?
-      GROUP BY emotion_type
-      ORDER BY cnt DESC, last_at DESC
-      LIMIT 1`,
-    [userId, dateStr]
-  );
-
-  if (counts.length === 0) {
-    // 기록 없음 → Calendar 삭제 + 기존 대표 감정 월통계 -1
-    if (existing) {
-      await conn.query(decStatSql(`count_${existing.emotion_type}`), [userId, yearMonth]);
-      await conn.query(`DELETE FROM EmotionCalendar WHERE userId=? AND date=?`, [userId, dateStr]);
-    }
-    return;
-  }
-
-  const newEmotion = counts[0].emotion_type;
-
-  // 대표 감정의 최신 expression_type 반영
-  const [[latest]] = await conn.query(
-    `SELECT expression_type
-       FROM Records
-      WHERE userId=? AND DATE(created_at)=? AND emotion_type=?
-      ORDER BY created_at DESC, id DESC
-      LIMIT 1`,
-    [userId, dateStr, newEmotion]
-  );
-  const newExpr = latest ? latest.expression_type : null;
-
-  await conn.query(
-    `INSERT INTO EmotionCalendar (userId, date, emotion_type, expression_type)
-     VALUES (?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE
-       emotion_type=VALUES(emotion_type),
-       expression_type=VALUES(expression_type)`,
-    [userId, dateStr, newEmotion, newExpr]
-  );
-
-  // 월 통계: 대표 감정이 바뀐 경우에만 이동
-  const beforeEmotion = existing ? existing.emotion_type : null;
-  if (!beforeEmotion) {
-    await conn.query(incStatSql(`count_${newEmotion}`), [userId, yearMonth]);
-  } else if (beforeEmotion !== newEmotion) {
-    await conn.query(decStatSql(`count_${beforeEmotion}`), [userId, yearMonth]);
-    await conn.query(incStatSql(`count_${newEmotion}`), [userId, yearMonth]);
-  }
-}
 
 /* =================================================================== */
 /* ================== 1) 목록 조회 (필터/페이지네이션) ================== */
@@ -141,15 +60,15 @@ router.get('/calendar', verifyToken, async (req, res) => {
     }
 
     const m = String(month).padStart(2, '0');
-    const start = `${year}-${m}-01`;
-    const end   = `${year}-${m}-31`;
-
+    // MySQL에서 안전하게 월 범위를 계산
     const [rows] = await db.query(
       `SELECT date, emotion_type, expression_type
          FROM EmotionCalendar
-        WHERE userId = ? AND date BETWEEN ? AND ?
+        WHERE userId = ?
+          AND date >= STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d')
+          AND date <= LAST_DAY(STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d'))
         ORDER BY date ASC`,
-      [userId, start, end]
+      [userId, year, m, year, m]
     );
 
     res.json(rows);
@@ -165,17 +84,51 @@ router.get('/calendar', verifyToken, async (req, res) => {
 // GET /records/:id
 router.get('/:id', verifyToken, async (req, res) => {
   const recordId = parseInt(req.params.id, 10);
-  const userId = req.user.userId;
+  const requesterId = req.user.userId;
 
   try {
     const [rows] = await db.query(
-      'SELECT * FROM Records WHERE id = ? AND userId = ?',
-      [recordId, userId]
+      `SELECT r.id, r.userId, r.title, r.emotion_type, r.expression_type,
+              r.content, r.img, r.reveal_at, r.period,
+              r.latitude, r.longitude, r.place, r.visibility, r.created_at,
+              u.name AS userName, u.img AS userImg
+         FROM Records r
+         JOIN Users u ON u.id = r.userId
+        WHERE r.id = ?`,
+      [recordId]
     );
     if (!rows.length) return res.status(404).json({ message: '감정 기록을 찾을 수 없습니다' });
-    res.json(rows[0]);
+
+    const rec = rows[0];
+    const isOwner = rec.userId === requesterId;
+    const canView = isOwner || rec.visibility === 'public';
+    if (!canView) {
+      // 존재 여부를 숨겨 정보 노출 방지
+      return res.status(404).json({ message: '감정 기록을 찾을 수 없습니다' });
+    }
+
+    // 필요하면 민감 필드 마스킹 가능(현재는 content 포함 반환)
+    return res.json({
+      recordId: rec.id,
+      userId: rec.userId,
+      userName: rec.userName,
+      userImg: rec.userImg,
+      title: rec.title,
+      emotion_type: rec.emotion_type,
+      expression_type: rec.expression_type,
+      content: rec.content,
+      img: rec.img,
+      reveal_at: rec.reveal_at,
+      period: rec.period,
+      latitude: rec.latitude,
+      longitude: rec.longitude,
+      place: rec.place,
+      visibility: rec.visibility,
+      created_at: rec.created_at,
+      isOwner,
+    });
   } catch (err) {
-    console.error(err);
+    console.error('[GET /records/:id]', err);
     res.status(500).json({ message: '상세 조회 실패', detail: err.message });
   }
 });
@@ -186,11 +139,18 @@ router.get('/:id', verifyToken, async (req, res) => {
 // GET /records/:id/images
 router.get('/:id/images', verifyToken, async (req, res) => {
   const recordId = parseInt(req.params.id, 10);
-  const userId = req.user.userId;
+  const requesterId = req.user.userId;
   try {
-    const [[own]] = await db.query(`SELECT userId FROM Records WHERE id=?`, [recordId]);
-    if (!own) return res.status(404).json({ message: '기록 없음' });
-    if (own.userId !== userId) return res.status(403).json({ message: '권한 없음' });
+    const [[rec]] = await db.query(
+      `SELECT userId, visibility FROM Records WHERE id=?`,
+      [recordId]
+    );
+    if (!rec) return res.status(404).json({ message: '기록 없음' });
+
+    const isOwner = rec.userId === requesterId;
+    if (!isOwner && rec.visibility !== 'public') {
+      return res.status(404).json({ message: '기록 없음' }); // 정보 노출 방지
+    }
 
     const [imgs] = await db.query(
       `SELECT url, sort_order FROM RecordImages WHERE recordId=? ORDER BY sort_order ASC, id ASC`,
@@ -198,8 +158,65 @@ router.get('/:id/images', verifyToken, async (req, res) => {
     );
     res.json(imgs.map(x => x.url));
   } catch (err) {
-    console.error(err);
+    console.error('[GET /records/:id/images]', err);
     res.status(500).json({ message: '이미지 조회 실패', detail: err.message });
+  }
+});
+
+
+// GET /records/:id/full  — 상세 + 이미지 묶음
+router.get('/:id/full', verifyToken, async (req, res) => {
+  const recordId = parseInt(req.params.id, 10);
+  const requesterId = req.user.userId;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT r.id, r.userId, r.title, r.emotion_type, r.expression_type,
+              r.content, r.img, r.reveal_at, r.period,
+              r.latitude, r.longitude, r.place, r.visibility, r.created_at,
+              u.name AS userName, u.img AS userImg
+         FROM Records r
+         JOIN Users u ON u.id = r.userId
+        WHERE r.id = ?`,
+      [recordId]
+    );
+    if (!rows.length) return res.status(404).json({ message: '감정 기록을 찾을 수 없습니다' });
+
+    const rec = rows[0];
+    const isOwner = rec.userId === requesterId;
+    const canView = isOwner || rec.visibility === 'public';
+    if (!canView) return res.status(404).json({ message: '감정 기록을 찾을 수 없습니다' });
+
+    const [imgs] = await db.query(
+      `SELECT url, sort_order FROM RecordImages WHERE recordId=? ORDER BY sort_order ASC, id ASC`,
+      [recordId]
+    );
+
+    return res.json({
+      record: {
+        recordId: rec.id,
+        userId: rec.userId,
+        userName: rec.userName,
+        userImg: rec.userImg,
+        title: rec.title,
+        emotion_type: rec.emotion_type,
+        expression_type: rec.expression_type,
+        content: rec.content,
+        representative_img: rec.img,
+        reveal_at: rec.reveal_at,
+        period: rec.period,
+        latitude: rec.latitude,
+        longitude: rec.longitude,
+        place: rec.place,
+        visibility: rec.visibility,
+        created_at: rec.created_at,
+        isOwner,
+      },
+      images: imgs.map(x => x.url),
+    });
+  } catch (err) {
+    console.error('[GET /records/:id/full]', err);
+    res.status(500).json({ message: '상세+이미지 조회 실패', detail: err.message });
   }
 });
 

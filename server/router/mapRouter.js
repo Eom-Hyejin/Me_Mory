@@ -1,129 +1,162 @@
+// server/router/mapRouter.js
 const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
 
-/** 지도 마커용 공통 필드: 팝업 표현 위해 title/place 포함 */
+/** 공통 필드 (팝업/리스트에 title/place가 필요) */
 const MAP_FIELDS = `
-  id AS recordId,
-  latitude, longitude,
-  emotion_type, expression_type,
-  title, place,
-  created_at
+  r.id AS recordId,
+  r.userId,
+  r.latitude, r.longitude,
+  r.emotion_type, r.expression_type,
+  r.title, r.place, r.visibility,
+  r.created_at
 `;
 
-/**
- * 내부 유틸: 타깃 유저/가시성 조건 구성
- * - 내가 보면: visibility 필터 없음 (내 모든 기록)
- * - 남의 것 보면: visibility='public' 만
- */
-function buildOwnerVisibilityClause(requesterId, targetUserId) {
-  const isSelf = Number(targetUserId) === Number(requesterId);
-  const clause = ['userId = ?' , 'latitude IS NOT NULL', 'longitude IS NOT NULL'];
-  const vals = [targetUserId];
-
-  if (!isSelf) {
-    clause.push(`visibility = 'public'`);
-  }
-  return { clause, vals };
+/** 유틸: 형식/좌표 검증 */
+const isValidDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s || ''));
+const isFiniteNum = (x) => Number.isFinite(Number(x));
+function assertLatLng(lat, lng) {
+  const L = Number(lat), G = Number(lng);
+  return Number.isFinite(L) && Number.isFinite(G) && L >= -90 && L <= 90 && G >= -180 && G <= 180;
 }
 
-/** GET /map
- * Optional:
- *  - from, to : YYYY-MM-DD (DATE(created_at) 기준 필터)
- *  - targetUserId : 조회 대상 유저 (미지정 시 본인)
- */
-router.get('/', verifyToken, async (req, res) => {
+/** ================================
+ *  (1) 오늘: 내 기록 전부 (공개/비공개 포함)
+ *  GET /map/me/today
+ *  ================================ */
+router.get('/me/today', verifyToken, async (req, res) => {
   try {
-    const requesterId = req.user.userId;
-    const targetUserId = req.query.targetUserId ? Number(req.query.targetUserId) : requesterId;
-    if (Number.isNaN(targetUserId)) {
-      return res.status(400).json({ message: '유효한 targetUserId가 아닙니다' });
-    }
-
-    const { from, to } = req.query;
-    const { clause, vals } = buildOwnerVisibilityClause(requesterId, targetUserId);
-
-    if (from) { clause.push('DATE(created_at) >= ?'); vals.push(from); }
-    if (to)   { clause.push('DATE(created_at) <= ?'); vals.push(to); }
+    const userId = req.user.userId;
 
     const [rows] = await db.query(`
       SELECT ${MAP_FIELDS}
-      FROM Records
-      WHERE ${clause.join(' AND ')}
-      ORDER BY created_at DESC
-    `, vals);
+      FROM Records r
+      WHERE r.userId = ?
+        AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL
+        AND DATE(r.created_at) = CURDATE()
+      ORDER BY r.created_at DESC
+    `, [userId]);
 
     res.status(200).json(rows);
   } catch (err) {
-    console.error('[GET /map]', err);
-    res.status(500).json({ message: '지도 데이터 조회 실패', detail: err.message });
-  }
-});
-
-/** GET /map/today
- * 오늘자 좌표 기록
- *  - 내 기록: 공개/비공개 모두
- *  - 타인 기록: 공개(public)만
- */
-router.get('/today', verifyToken, async (req, res) => {
-  try {
-    const requesterId = req.user.userId;
-    const targetUserId = req.query.targetUserId ? Number(req.query.targetUserId) : requesterId;
-    if (Number.isNaN(targetUserId)) {
-      return res.status(400).json({ message: '유효한 targetUserId가 아닙니다' });
-    }
-
-    const { clause, vals } = buildOwnerVisibilityClause(requesterId, targetUserId);
-    clause.push(`DATE(created_at) = CURDATE()`);
-
-    const [rows] = await db.query(`
-      SELECT ${MAP_FIELDS}
-      FROM Records
-      WHERE ${clause.join(' AND ')}
-      ORDER BY created_at DESC
-    `, vals);
-
-    res.status(200).json(rows);
-  } catch (err) {
-    console.error('[GET /map/today]', err);
+    console.error('[GET /map/me/today]', err);
     res.status(500).json({ message: '오늘 지도 데이터 조회 실패', detail: err.message });
   }
 });
 
-/** GET /map/week?start=YYYY-MM-DD
- * 'start' 포함 7일 구간(start ~ start+6) 반환
- *  - 내 기록: 공개/비공개 모두
- *  - 타인 기록: 공개(public)만
- */
-router.get('/week', verifyToken, async (req, res) => {
+/** =========================================
+ *  (2) 주간: 내 기록 전부 (공개/비공개 포함)
+ *  GET /map/me/week?start=YYYY-MM-DD
+ *  ========================================= */
+router.get('/me/week', verifyToken, async (req, res) => {
   try {
-    const requesterId = req.user.userId;
-    const targetUserId = req.query.targetUserId ? Number(req.query.targetUserId) : requesterId;
-    if (Number.isNaN(targetUserId)) {
-      return res.status(400).json({ message: '유효한 targetUserId가 아닙니다' });
-    }
-
+    const userId = req.user.userId;
     const { start } = req.query;
-    if (!start) {
-      return res.status(400).json({ message: 'start 쿼리(YYYY-MM-DD)가 필요합니다' });
+    if (!isValidDate(start)) {
+      return res.status(400).json({ message: 'start는 YYYY-MM-DD 형식이어야 합니다' });
     }
-
-    const { clause, vals } = buildOwnerVisibilityClause(requesterId, targetUserId);
-    clause.push(`DATE(created_at) BETWEEN ? AND DATE_ADD(?, INTERVAL 6 DAY)`);
-    vals.push(start, start);
 
     const [rows] = await db.query(`
       SELECT ${MAP_FIELDS}
-      FROM Records
-      WHERE ${clause.join(' AND ')}
-      ORDER BY created_at DESC
-    `, vals);
+      FROM Records r
+      WHERE r.userId = ?
+        AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL
+        AND DATE(r.created_at) BETWEEN ? AND DATE_ADD(?, INTERVAL 6 DAY)
+      ORDER BY r.created_at DESC
+    `, [userId, start, start]);
 
     res.status(200).json(rows);
   } catch (err) {
-    console.error('[GET /map/week]', err);
+    console.error('[GET /map/me/week]', err);
     res.status(500).json({ message: '주간 지도 데이터 조회 실패', detail: err.message });
+  }
+});
+
+/** ==========================================================
+ *  (3) 클릭 지점 기준:
+ *   - my: 클릭 지점 "정확 동일 좌표"의 내 기록(공개/비공개 모두)
+ *   - others: 클릭 지점 반경 500m 이내의 타인 공개 기록만
+ *  GET /map/place-click?lat=&lng=&from=&to=&self_decimals=
+ *    - lat,lng: 필수
+ *    - from,to: YYYY-MM-DD (선택)
+ *    - self_decimals: 내 정확 좌표 매칭 반올림 자릿수(기본 6; 6≈0.11m)
+ * ========================================================== */
+router.get('/place-click', verifyToken, async (req, res) => {
+  try {
+    const myId = req.user.userId;
+    const { lat, lng, from, to } = req.query;
+
+    if (!assertLatLng(lat, lng)) {
+      return res.status(400).json({ message: '유효한 lat,lng가 필요합니다' });
+    }
+    if (from && !isValidDate(from)) return res.status(400).json({ message: 'from은 YYYY-MM-DD 형식이어야 합니다' });
+    if (to   && !isValidDate(to))   return res.status(400).json({ message: 'to는 YYYY-MM-DD 형식이어야 합니다' });
+
+    // 내 기록: 정확 좌표 매칭(부동소수 오차 완화 위해 반올림 비교)
+    const selfDecimals = req.query.self_decimals === undefined
+      ? 6
+      : Math.max(0, Math.min(10, parseInt(req.query.self_decimals, 10) || 6));
+
+    // 타인 공개 기록: 반경 500m
+    const othersRadiusKm = 0.5;
+
+    // 날짜 범위 WHERE (선택)
+    const dateWhere = [];
+    const dateVals = [];
+    if (from) { dateWhere.push('DATE(r.created_at) >= ?'); dateVals.push(from); }
+    if (to)   { dateWhere.push('DATE(r.created_at) <= ?'); dateVals.push(to); }
+    const dateClause = dateWhere.length ? ` AND ${dateWhere.join(' AND ')}` : '';
+
+    // ===== 내 기록: 정확히 같은 좌표(반올림 비교)만 =====
+    const [myRows] = await db.query(`
+      SELECT
+        r.id AS recordId, r.userId,
+        r.latitude, r.longitude,
+        r.emotion_type, r.expression_type,
+        r.title, r.place, r.visibility,
+        r.created_at
+      FROM Records r
+      WHERE r.userId = ?
+        AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL
+        AND ROUND(r.latitude, ?)  = ROUND(?, ?)
+        AND ROUND(r.longitude, ?) = ROUND(?, ?)
+        ${dateClause}
+      ORDER BY r.created_at DESC
+    `, [myId,
+        selfDecimals, Number(lat), selfDecimals,
+        selfDecimals, Number(lng), selfDecimals,
+        ...dateVals]);
+
+    // ===== 타인 공개 기록: 반경 500m =====
+    const [othersRows] = await db.query(`
+      SELECT
+        ${MAP_FIELDS},
+        u.name AS userName, u.img AS userImg,
+        (6371 * ACOS(
+          COS(RADIANS(?)) * COS(RADIANS(r.latitude)) *
+          COS(RADIANS(r.longitude) - RADIANS(?)) +
+          SIN(RADIANS(?)) * SIN(RADIANS(r.latitude))
+        )) AS distance_km
+      FROM Records r
+      JOIN Users u ON u.id = r.userId
+      WHERE r.userId <> ?
+        AND r.visibility = 'public'
+        AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL
+        ${dateClause}
+      HAVING distance_km <= ?
+      ORDER BY r.created_at DESC
+    `, [Number(lat), Number(lng), Number(lat), myId, ...dateVals, othersRadiusKm]);
+
+    return res.status(200).json({
+      center: { lat: Number(lat), lng: Number(lng) },
+      my: myRows,         // 정확 좌표 일치 + 내 기록(공개/비공개)
+      others: othersRows, // 반경 500m + 타인 공개
+    });
+  } catch (err) {
+    console.error('[GET /map/place-click]', err);
+    res.status(500).json({ message: '클릭 위치 감정 기록 조회 실패', detail: err.message });
   }
 });
 
