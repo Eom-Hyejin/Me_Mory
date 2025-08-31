@@ -26,6 +26,7 @@ app.use('/recall', recallRouter);
 app.use('/map', mapRouter);
 app.use('/bluetooth', bluetoothRouter);
 app.use('/notices', noticeRouter);
+app.use('/records', require('./router/recordCommentRouter'));
 
 require('./util/recallNotifier');
 
