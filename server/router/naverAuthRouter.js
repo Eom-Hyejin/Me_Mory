@@ -5,6 +5,8 @@ const router = express.Router();
 const db = require('../data/db');
 const { generateToken } = require('../util/jwt');
 const { uploadImageFromUrl } = require('../util/uploadImageFromUrl');
+const { randomToken, storeRefreshToken, TTL_DAYS } = require('../util/refresh');
+
 require('dotenv').config();
 
 const NAVER_AUTH_URL = 'https://nid.naver.com/oauth2.0';
@@ -134,6 +136,9 @@ router.get('/naver/callback', async (req, res) => {
     }
 
     // 5) JWT 발급
+    const refreshToken = randomToken(64);
+    await storeRefreshToken({ userId, tokenPlain: refreshToken, ip: req.ip, userAgent: req.headers['user-agent'] });
+
     const token = generateToken({
       userId,
       name: finalNickname,
@@ -143,6 +148,7 @@ router.get('/naver/callback', async (req, res) => {
     return res.json({
       message: '네이버 로그인 성공',
       token,
+      refreshToken,
       userData: {
         userId,
         name: finalNickname,

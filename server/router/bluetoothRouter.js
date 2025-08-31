@@ -1,87 +1,167 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
-const bt = require('../services/bluetooth');
+const {
+  proximityService,
+  tokenService,
+  settingsService,
+} = require('../services/bluetooth'); // services 인덱스 사용
 
-// [웹/앱 공용] 현재 내 BLE 기능 동의/활성화 상태 조회
-router.get('/consent', verifyToken, async (req, res) => {
+/* ========== A) BLE 사용 동의 on/off & 조회 ========== */
+// GET /ble/settings
+router.get('/settings', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const state = await bt.settingsService.getConsent(userId);
-    res.json(state); // { enabled: boolean, last_enabled_at: datetime|null }
+    const data = await settingsService.getConsent(req.user.userId);
+    return res.status(200).json(data);
   } catch (e) {
-    console.error('[GET /bluetooth/consent]', e);
-    res.status(500).json({ message: 'BLE 동의 상태 조회 실패', detail: e.message });
+    return res.status(500).json({ message: '설정 조회 실패', detail: e.message });
   }
 });
 
-// [웹/앱 공용] BLE 기능 동의/활성화 on/off
-router.post('/consent', verifyToken, async (req, res) => {
+// POST /ble/settings { enabled: boolean }
+router.post('/settings', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const { enabled } = req.body; // boolean
-    await bt.settingsService.setConsent(userId, !!enabled);
-    res.status(204).send();
+    const enabled = !!req.body?.enabled;
+    await settingsService.setConsent(req.user.userId, enabled);
+    return res.status(200).json({ enabled });
   } catch (e) {
-    console.error('[POST /bluetooth/consent]', e);
-    res.status(500).json({ message: 'BLE 동의 설정 실패', detail: e.message });
+    return res.status(500).json({ message: '설정 저장 실패', detail: e.message });
   }
 });
 
-// [웹/앱 공용] 익명 디바이스 토큰 로테이트(앱이 광고에 사용)
-router.post('/device-token/rotate', verifyToken, async (req, res) => {
+/* ========== B) 기기 토큰 회전(클라에 평문 전달) ========== */
+// POST /ble/token/rotate -> { token }
+router.post('/token/rotate', verifyToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const token = await bt.tokenService.rotateDeviceToken(userId);
-    res.json({ token }); // 32자 hex (서버에선 hash로 저장)
+    const token = await tokenService.rotateDeviceToken(req.user.userId);
+    return res.status(201).json({ token });
   } catch (e) {
-    console.error('[POST /bluetooth/device-token/rotate]', e);
-    res.status(500).json({ message: 'BLE 디바이스 토큰 갱신 실패', detail: e.message });
+    return res.status(500).json({ message: '토큰 발급 실패', detail: e.message });
   }
 });
 
-// [앱 전용] 스캔 관측 업로드: [{hash, rssi, seenAt}, ...]
+/* ========== C) 스캔 리포트 적재 ========== */
+// POST /ble/scan-report { observations: [{hash, rssi, seenAt?}] }
 router.post('/scan-report', verifyToken, async (req, res) => {
+  const items = Array.isArray(req.body?.observations) ? req.body.observations : [];
+  if (!items.length) return res.status(400).json({ message: 'observations 배열이 필요합니다' });
+
   try {
-    const reporterId = req.user.userId;
-    const { observations = [] } = req.body;
-    await bt.proximityService.ingestScanResults(reporterId, observations);
-    res.status(204).send();
+    await proximityService.ingestScanResults(req.user.userId, items);
+    return res.status(201).json({ saved: items.length });
   } catch (e) {
-    console.error('[POST /bluetooth/scan-report]', e);
-    res.status(500).json({ message: 'BLE 스캔 결과 수신 실패', detail: e.message });
+    return res.status(500).json({ message: '스캔 저장 실패', detail: e.message });
   }
 });
 
-// [앱/웹] BLE 관측 기반 근접 사용자(최근 N분)
+/* ========== D) 근처 사람 조회 ========== */
+// GET /ble/nearby?lat=..&lng=..&radiusKm=0.5&windowMin=5&limit=7&mask=true
 router.get('/nearby', verifyToken, async (req, res) => {
+  const q = req.query;
+  const origin = { lat: Number(q.lat), lng: Number(q.lng) };
+  const radiusKm = q.radiusKm ? Number(q.radiusKm) : 0.5;
+  const windowMin = q.windowMin ? Number(q.windowMin) : 5;
+  const limit = q.limit ? Number(q.limit) : 7;
+  const mask = q.mask !== 'false';
+
   try {
-    const userId = req.user.userId;
-
-    // ⛳️ 위치 필수
-    const lat = Number(req.query.lat);
-    const lng = Number(req.query.lng);
-    if (
-      Number.isNaN(lat) || Number.isNaN(lng) ||
-      lat < -90 || lat > 90 || lng < -180 || lng > 180
-    ) {
-      return res.status(400).json({ message: '유효한 lat, lng 쿼리가 필요합니다.' });
-    }
-
-    // 정책 고정값
-    const windowMin = 5;       // 최근 5분
-    const limit     = 7;       // 최대 7명
-    const radiusKm  = 0.5;     // 반경 500m
-    const mask      = String(req.query.mask || '1') === '1';
-
-    const list = await bt.proximityService.getNearbyByBle(
-      userId,
-      { windowMin, limit, mask, origin: { lat, lng }, radiusKm }
-    );
-    res.json(list);
+    const users = await proximityService.getNearbyByBle(req.user.userId, {
+      windowMin, limit, mask, origin, radiusKm,
+    });
+    return res.status(200).json({ users });
   } catch (e) {
-    console.error('[GET /bluetooth/nearby]', e);
-    res.status(500).json({ message: 'BLE 근접 조회 실패', detail: e.message });
+    return res.status(400).json({ message: e.message || '근처 사용자 조회 실패' });
+  }
+});
+
+/* ========== E) 사용자 클릭 → 오늘 감정캡슐(공개만) + 이미지 + 댓글 ========== */
+// GET /ble/user/:userId/capsule
+router.get('/user/:userId/capsule', verifyToken, async (req, res) => {
+  const targetId = parseInt(req.params.userId, 10);
+  if (Number.isNaN(targetId)) return res.status(400).json({ message: '잘못된 사용자' });
+
+  try {
+    const [[rec]] = await db.query(
+      `SELECT r.id, r.userId, r.title, r.emotion_type, r.expression_type, r.content,
+              r.img, r.created_at, r.reveal_at, r.visibility, u.name, u.img AS userImg
+         FROM Records r
+         JOIN Users u ON u.id = r.userId
+        WHERE r.userId = ?
+          AND r.visibility = 'public'
+          AND DATE(r.created_at) = DATE(UTC_TIMESTAMP())
+          AND r.reveal_at <= UTC_TIMESTAMP()
+        ORDER BY r.created_at DESC
+        LIMIT 1`,
+      [targetId]
+    );
+    if (!rec) return res.status(404).json({ message: '오늘 공개된 감정캡슐이 없습니다' });
+
+    const [imgs] = await db.query(
+      `SELECT id, url, sort_order FROM RecordImages WHERE recordId=? ORDER BY sort_order ASC, id ASC`,
+      [rec.id]
+    );
+    const [comments] = await db.query(
+      `SELECT rc.id, rc.userId, u.name, u.img, rc.content, rc.created_at
+         FROM RecordComments rc
+         JOIN Users u ON u.id = rc.userId
+        WHERE rc.recordId=?
+        ORDER BY rc.created_at ASC, rc.id ASC`,
+      [rec.id]
+    );
+
+    return res.status(200).json({
+      record: {
+        id: rec.id,
+        userId: rec.userId,
+        userName: rec.name,
+        userImg: rec.userImg,
+        title: rec.title,
+        emotionType: rec.emotion_type,
+        expressionType: rec.expression_type,
+        content: rec.content,
+        img: rec.img,
+        createdAt: rec.created_at,
+        revealAt: rec.reveal_at,
+      },
+      images: imgs,
+      comments,
+    });
+  } catch (e) {
+    return res.status(500).json({ message: '감정캡슐 조회 실패', detail: e.message });
+  }
+});
+
+/* ========== F) 댓글 작성(공개 레코드만 허용) ========== */
+// POST /ble/records/:recordId/comments { content }
+router.post('/records/:recordId/comments', verifyToken, async (req, res) => {
+  const recordId = parseInt(req.params.recordId, 10);
+  const content = String(req.body?.content || '').trim();
+  if (Number.isNaN(recordId)) return res.status(400).json({ message: '잘못된 레코드' });
+  if (!content) return res.status(400).json({ message: '내용이 비었습니다' });
+
+  try {
+    const [[ok]] = await db.query(
+      `SELECT id FROM Records
+        WHERE id=? AND visibility='public' AND reveal_at <= UTC_TIMESTAMP()`,
+      [recordId]
+    );
+    if (!ok) return res.status(403).json({ message: '비공개거나 아직 공개되지 않았습니다' });
+
+    const [r] = await db.query(
+      `INSERT INTO RecordComments (recordId, userId, content) VALUES (?, ?, ?)`,
+      [recordId, req.user.userId, content]
+    );
+    const [[comment]] = await db.query(
+      `SELECT rc.id, rc.userId, u.name, u.img, rc.content, rc.created_at
+         FROM RecordComments rc
+         JOIN Users u ON u.id = rc.userId
+        WHERE rc.id=?`,
+      [r.insertId]
+    );
+    return res.status(201).json({ comment });
+  } catch (e) {
+    return res.status(500).json({ message: '댓글 작성 실패', detail: e.message });
   }
 });
 

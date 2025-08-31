@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const bcrypt = require('bcrypt');
+const { s3 } = require('../util/s3')
 const { generateToken, verifyToken } = require('../util/jwt'); // alias로 Access 발급
-const { randomToken, storeRefreshToken, findActiveRefreshToken, revokeRefreshToken } = require('../util/refresh');
+const { randomToken, storeRefreshToken, findActiveRefreshToken, revokeRefreshToken, revokeAllTokensForUser } = require('../util/refresh');
 
 const CURRENT_TOS_VERSION = process.env.TOS_VERSION || '1.0.0';
 const CURRENT_PRIVACY_VERSION = process.env.PRIVACY_VERSION || '1.0.0';
@@ -232,6 +233,7 @@ router.post('/social', async (req, res) => {
     const type = (req.body?.type || '').trim(); // 'kakao' | 'naver'
     const img = req.body?.img ?? null;
     const consents = req.body?.consents;
+    if (!['kakao','naver'].includes(type)) return fail(res, 400, '지원하지 않는 소셜 타입입니다');
     if (!id || !name || !type) return fail(res, 400, '필수 정보가 누락되었습니다');
 
     const email = `${type}_${id}@${type}.com`;
@@ -308,6 +310,8 @@ router.put('/password', verifyToken, async (req, res) => {
     const hashed = await bcrypt.hash(newPassword, 12);
     await db.query('UPDATE Users SET password = ? WHERE id = ?', [hashed, userId]);
 
+    await revokeAllTokensForUser(userId);
+
     return res.status(200).json({ message: '비밀번호가 변경되었습니다' });
   } catch (err) {
     console.error('[PASSWORD CHANGE ERROR]', err);
@@ -343,14 +347,89 @@ router.put('/', verifyToken, async (req, res) => {
   }
 });
 
-/* ====== (H) 프로필 이미지 수정 ====== */
+/* ====== (H) 프로필 이미지 수정 (presigned URL 대응) ====== */
 router.put('/img', verifyToken, async (req, res) => {
   const userId = req.user.userId;
-  const img = req.body?.img || '';
-  if (!img) return fail(res, 400, '이미지 URL이 필요합니다');
+  const rawUrl = String(req.body?.img || '').trim();
+  if (!rawUrl) return fail(res, 400, '이미지 URL이 필요합니다');
+
+  // ENV
+  const BUCKET = process.env.AWS_S3_BUCKET_NAME; // 기존 util/s3에서 쓰던 변수명 그대로
+  const REGION = process.env.AWS_REGION || process.env.S3_REGION;
+  const MAX_BYTES = parseInt(process.env.PROFILE_IMAGE_MAX_BYTES || '5242880', 10); // 5MB
+  const ALLOWED_PREFIX = String(process.env.PROFILE_IMAGE_ALLOWED_PREFIX || 'profile/'); // 허용 prefix
+  const CDN_BASE = (process.env.CDN_BASE || '').replace(/\/+$/, ''); // 선택: CDN 도메인
+  const ALLOWED_CT = ['image/jpeg', 'image/png', 'image/webp'];
 
   try {
-    await db.query('UPDATE Users SET img = ? WHERE id = ?', [img, userId]);
+    // 1) URL 파싱/HTTPS 체크
+    let u;
+    try { u = new URL(rawUrl); } catch { return fail(res, 400, '유효한 URL이 아닙니다'); }
+    if (u.protocol !== 'https:') return fail(res, 400, 'HTTPS URL만 허용됩니다');
+
+    // 2) 호스트 허용(옵션)
+    const URL_WHITELIST = (process.env.PROFILE_IMAGE_HOST_WHITELIST || '')
+      .split(',').map(s => s.trim()).filter(Boolean);
+    if (URL_WHITELIST.length && !URL_WHITELIST.includes(u.hostname)) {
+      return fail(res, 400, '허용되지 않은 도메인입니다');
+    }
+
+    // 3) S3 형식별로 bucket/key 추출 (virtual-hosted, path-style, CDN)
+    let host = u.hostname;
+    let keyFromUrl = decodeURIComponent(u.pathname.replace(/^\/+/, ''));
+    let bucketFromUrl = null;
+
+    const vhPattern = new RegExp(`^(.+)\\.s3\\.${REGION}\\.amazonaws\\.com$`, 'i');
+    const pathStyle = new RegExp(`^s3\\.${REGION}\\.amazonaws\\.com$`, 'i');
+
+    if (vhPattern.test(host)) {
+      // <bucket>.s3.<region>.amazonaws.com/<key>
+      bucketFromUrl = host.replace(vhPattern, '$1');
+    } else if (pathStyle.test(host)) {
+      // s3.<region>.amazonaws.com/<bucket>/<key>
+      const segs = keyFromUrl.split('/');
+      if (segs.length < 2) return fail(res, 400, 'S3 경로가 올바르지 않습니다');
+      bucketFromUrl = segs.shift();
+      keyFromUrl = segs.join('/');
+    } else {
+      // CDN 등: 호스트는 whitelist로 통과시키고, key는 path 그대로 사용
+      bucketFromUrl = BUCKET; // CDN은 원본 S3로 매핑
+    }
+
+    const objectKey = keyFromUrl;
+
+    // 4) prefix 제한 + 확장자 1차 필터
+    if (!objectKey.startsWith(ALLOWED_PREFIX)) {
+      return fail(res, 400, `허용되지 않은 경로입니다(필수 prefix: ${ALLOWED_PREFIX})`);
+    }
+    if (!/\.(jpg|jpeg|png|webp)$/i.test(objectKey)) {
+      return fail(res, 400, '허용되지 않은 이미지 확장자입니다');
+    }
+
+    // 5) S3 HeadObject로 MIME/크기 검증 (presigned 만료와 무관)
+    let head;
+    try {
+      head = await s3.headObject({ Bucket: bucketFromUrl || BUCKET, Key: objectKey }).promise();
+    } catch (e) {
+      console.error('[S3 HeadObject ERROR]', e.code, e.message);
+      return fail(res, 400, '이미지 메타데이터 확인 실패');
+    }
+    const contentType = (head.ContentType || '').toLowerCase();
+    const contentLength = Number(head.ContentLength || 0);
+    if (!ALLOWED_CT.includes(contentType)) {
+      return fail(res, 400, `허용되지 않은 콘텐츠 타입입니다 (${contentType})`);
+    }
+    if (!contentLength || contentLength > MAX_BYTES) {
+      return fail(res, 400, `이미지 최대 크기 초과 (${MAX_BYTES} bytes)`);
+    }
+
+    // 6) 저장값 정규화: presigned URL 저장 금지 → 정규 URL(or CDN) 저장
+    const normalizedUrl = CDN_BASE
+      ? `${CDN_BASE}/${objectKey}`
+      : `https://${bucketFromUrl || BUCKET}.s3.${REGION}.amazonaws.com/${encodeURIComponent(objectKey)}`;
+
+    await db.query('UPDATE Users SET img = ? WHERE id = ?', [normalizedUrl, userId]);
+
     const [[user]] = await db.query('SELECT * FROM Users WHERE id = ?', [userId]);
     const token = generateToken({ userId: user.id, name: user.name, type: user.type });
 
@@ -359,6 +438,7 @@ router.put('/img', verifyToken, async (req, res) => {
       userdata: { userId: user.id, email: user.email, username: user.username, name: user.name, img: user.img },
     });
   } catch (err) {
+    console.error('[PROFILE IMG UPDATE ERROR]', err);
     return fail(res, 500, '회원정보 수정 실패', err.message);
   }
 });

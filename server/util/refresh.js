@@ -45,6 +45,15 @@ async function revokeRefreshToken({ tokenPlain, replacedByPlain = null }) {
   );
 }
 
+async function revokeAllTokensForUser(userId) {
+  await db.query(
+    `UPDATE RefreshTokens
+        SET revoked_at = UTC_TIMESTAMP()
+      WHERE user_id = ? AND revoked_at IS NULL`,
+    [userId]
+  );
+}
+
 module.exports = {
   randomToken,
   storeRefreshToken,
@@ -52,4 +61,5 @@ module.exports = {
   revokeRefreshToken,
   sha256,
   TTL_DAYS,
+  revokeAllTokensForUser,
 };
