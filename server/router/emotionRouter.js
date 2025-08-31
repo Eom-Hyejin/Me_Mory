@@ -160,6 +160,67 @@ router.get('/report', verifyToken, async (req, res) => {
   }
 });
 
+// ✅ 마이페이지 카드 전용: 내 월별 감정 통계(퍼센트)
+// GET /emotion/stats/summary?year=2025&month=08
+router.get('/stats/summary', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const year   = String(req.query.year || '').trim();
+    const month  = String(req.query.month || '').padStart(2, '0');
+
+    if (!year || !month) {
+      return res.status(400).json({ message: 'year, month 쿼리 파라미터가 필요합니다' });
+    }
+
+    // 해당 월 1일 ~ 말일 (MySQL에서 안전하게 계산)
+    const startExpr = `STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d')`;
+    const endExpr   = `LAST_DAY(${startExpr})`;
+
+    // 감정별 개수 (내 기록만, 공개/비공개 모두 포함)
+    const [rows] = await db.query(
+      `
+      SELECT emotion_type, COUNT(*) AS cnt
+        FROM Records
+       WHERE userId = ?
+         AND DATE(created_at) >= ${startExpr}
+         AND DATE(created_at) <= ${endExpr}
+       GROUP BY emotion_type
+      `,
+      [userId, year, month, year, month]
+    );
+
+    const EMOTIONS = ['joy','sadness','anger','worry','proud','upset'];
+    const breakdown = {};
+    let total = 0;
+
+    // 0으로 초기화
+    for (const e of EMOTIONS) breakdown[e] = { count: 0, percent: 0 };
+
+    // 카운트 채우기 + 총합
+    for (const r of rows) {
+      breakdown[r.emotion_type].count = Number(r.cnt) || 0;
+      total += Number(r.cnt) || 0;
+    }
+
+    // 퍼센트 계산(소수점 한 자리 반올림)
+    if (total > 0) {
+      for (const e of EMOTIONS) {
+        const pct = (breakdown[e].count / total) * 100;
+        breakdown[e].percent = Math.round(pct * 10) / 10;
+      }
+    }
+
+    return res.json({
+      year_month: `${year}-${month}`,
+      total,           // 그 달의 전체 기록 수
+      breakdown,       // { joy: {count, percent}, ... }
+    });
+  } catch (err) {
+    console.error('[GET /emotion/stats/summary]', err);
+    return res.status(500).json({ message: '월별 통계 조회 실패', detail: err.message });
+  }
+});
+
 // 감정 핫스팟(내 기록 좌표 집계)
 router.get('/hotspots', verifyToken, async (req, res) => {
   try {

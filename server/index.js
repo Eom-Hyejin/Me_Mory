@@ -14,6 +14,7 @@ const emotionRouter = require('./router/emotionRouter');
 const recallRouter = require('./router/recallRouter');
 const mapRouter = require('./router/mapRouter');
 const bluetoothRouter = require('./router/bluetoothRouter');
+const noticeRouter = require('./router/noticeRouter');
 
 app.use('/auth', kakaoAuthRouter);
 app.use('/auth', naverAuthRouter);
@@ -24,8 +25,9 @@ app.use('/emotion', emotionRouter);
 app.use('/recall', recallRouter);
 app.use('/map', mapRouter);
 app.use('/bluetooth', bluetoothRouter);
+app.use('/notices', noticeRouter);
 
-require('./jobs/recallNotifier');
+require('./util/recallNotifier');
 
 // 서버 실행
 app.listen(PORT, '0.0.0.0', () => {
