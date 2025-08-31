@@ -25,6 +25,8 @@ app.use('/recall', recallRouter);
 app.use('/map', mapRouter);
 app.use('/bluetooth', bluetoothRouter);
 
+require('./jobs/recallNotifier');
+
 // 서버 실행
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
