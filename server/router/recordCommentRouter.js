@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
-const { verifyToken } = require('../middleware/auth');
+const verifyToken  = require('../middleware/auth');
 
 // 레코드 읽기 권한 체크: 공개면 모두, 비공개면 작성자만
 async function ensureReadable(recordId, requesterId) {

@@ -1,5 +1,8 @@
 const { verifyToken } = require('../util/jwt');
 
+module.exports = verifyToken;
+module.exports.verifyToken = verifyToken;
+
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ message: 'No token provided' });

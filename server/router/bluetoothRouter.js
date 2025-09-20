@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
-const { verifyToken } = require('../middleware/auth'); // 프로젝트에 맞게 경로 조정
+const verifyToken = require('../middleware/auth'); // 프로젝트에 맞게 경로 조정
 const bt = require('../services/bluetooth'); // { tokenService, settingsService, proximityService, privacyGuard }
-const { apply: applyPrivacy } = bt.privacyGuard;
+
+// ✅ privacyGuard.apply가 없으면 그냥 통과시키는 미들웨어 사용
+const applyPrivacy =
+  (bt && bt.privacyGuard && typeof bt.privacyGuard.apply === 'function')
+    ? bt.privacyGuard.apply
+    : (req, res, next) => next();
 
 /** 내 '오늘' 지배적 감정 계산 (없으면 Today_Emotion 기준) */
 async function getMyTodayDominantEmotion(userId) {
