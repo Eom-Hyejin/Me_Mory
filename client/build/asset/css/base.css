@@ -1,0 +1,120 @@
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Thin.woff') format('woff');
+    font-weight: 100;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-ExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Light.woff') format('woff');
+    font-weight: 300;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Medium.woff') format('woff');
+    font-weight: 500;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+@font-face {
+    font-family: 'Pretendard';
+    src: url('../font/Pretendard-Black.woff') format('woff');
+    font-weight: 900;
+    font-display: swap;
+	unicode-range: U+AC00-D7A3, U+0041-005A, U+0061-007A, U+0030-0039;
+}
+
+@font-face {
+    font-family: 'SacheonUniverse';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2506-1@1.0/SacheonUju-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+/* 기본 */
+* {letter-spacing:-0.5px; padding:0; margin:0; border:0; outline:0; box-sizing:border-box; vertical-align:top; font-size:14px; font-weight:400; line-height:1.5; font-family:'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', 'Nanum Gothic', sans-serif; -webkit-tap-highlight-color: rgba(0,0,0,0); appearance:none; -webkit-appearance:none; scroll-behavior:smooth;}
+.su {font-family:'SacheonUniverse' !important;}
+
+
+/* 고정 */
+html.fixed , body.fixed {overflow:hidden; touch-action:none; -webkit-touch-action:none;}
+
+/* 모바일 가로모드 폰트확대 방지 */
+body {-webkit-text-size-adjust:none;}
+
+/* 헤더 폰트 사이즈 초기화 */
+h1 , h2 , h3 , h4 , h5 , h6 {font-size:100%; font-weight:normal; color:var(--color-black);}
+
+/* 텍스트 */
+a:link {color:inherit; text-decoration:none;}
+a:active {color:inherit; text-decoration:none;}
+a:visited {color:inherit; text-decoration:none;}
+a:hover {color:inherit; text-decoration:none;}
+a , button {display:inline-block; vertical-align:top; box-sizing:border-box; cursor:pointer; background:none;}
+
+/* 이미지 */
+img , fieldset {border:none;}
+img , object {vertical-align:top;}
+
+/* 리스트 */
+ul , ol , li {list-style:none;}
+em ,address {font-style:normal;}
+
+/* 테이블 */
+table {width:100%; border-spacing:0;}
+th , td {vertical-align:middle; text-align:center;}
+legend , caption {display:none;}
+
+/* 폼 */
+select {border-radius:0; background:#fff;}
+textarea {resize:none;}
+input , textarea {-webkit-border-radius:0;} /*입력폼 사파리에서의 초기화*/
+input:-internal-autofill-selected {background:transparent !important;} /*입력폼 사파리에서의 초기화*/
+
+/* 프린트 */
+@media print {
+* {-webkit-print-color-adjust:exact;} /* 프린트 컬러 안나올 때 */
+}
+
+@page {
+	size: a4;  
+	margin: 0;  /* 프린트 내에 도메인 노출될 때 */
+}

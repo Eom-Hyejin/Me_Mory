@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li class="active"><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section class="py-lg-0">
+		<div class="full-box">
+			<div class="full-inner full-height">
+				<div class="space-box">
+					<div class="space-inner mb50">
+						<div class="title-box">
+							<h2 class="f24 f-lg-14">근처에 있는 오늘의 감정들을 확인하고<br/>감정을 눌러서 댓글을 달아보세요</h2>
+						</div>
+						<div class="arround-box">
+							<ul>
+								<li style="left:20%; top:20%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_01.png">
+											<p>홍길일</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_happy_01.png"></div>
+									</a>
+								</li>
+								<li style="left:55%; top:2%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_02.png">
+											<p>홍길이</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_angry_02.png"></div>
+									</a>
+								</li>
+								<li style="left:75%; top:40%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_03.png">
+											<p>홍길삼</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_sad_01.png"></div>
+									</a>
+								</li>
+								<li style="left:45%; top:80%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_01.png">
+											<p>홍길사</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_upset_03.png"></div>
+									</a>
+								</li>
+								<li style="left:15%; top:55%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_02.png">
+											<p>홍길오</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_envious_03.png"></div>
+									</a>
+								</li>
+								<li style="left:75%; top:75%;">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_03.png">
+											<p>홍길육</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
+									</a>
+								</li>
+								<li class="me">
+									<a href="" class="emotion-result-box arround">
+										<div class="image">
+											<img src="./asset/images/img_arround_thumb_03.png">
+											<p>나</p>
+										</div>
+										<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_around.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_around_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

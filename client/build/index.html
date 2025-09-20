@@ -1,0 +1,1130 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section class="py0">
+		<div class="main-top-box">
+			<div class="container">
+				<p>메모리님 안녕하세요!</p>
+				<h2>오늘 기분은 어떤가요?</h2>
+				<ul>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_happy_01.png">
+						</div>
+						<p>행복해요</p>
+					</li>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_sad_01.png">
+						</div>
+						<p>슬퍼요</p>
+					</li>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_angry_01.png">
+						</div>
+						<p>화나요</p>
+					</li>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_uneasy_01.png">
+						</div>
+						<p>불안해요</p>
+					</li>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_envious_01.png">
+						</div>
+						<p>부러워요</p>
+					</li>
+					<li>
+						<div class="emotion-thumb-box">
+							<img src="./asset/images/icon_upset_01.png">
+						</div>
+						<p>속상해요</p>
+					</li>
+				</ul>
+				<div class="button-box">
+					<a href="" class="btn btn-active">감정기록 작성하기</a>
+				</div>
+			</div>
+		</div>
+		<div class="main-box">
+			<div class="main-recent-box">
+				<div class="container">
+					<h2>최근 며칠 동안 <br class="is-m"/>내가 기록한 감정들이에요</h2>
+				</div>
+				<div class="swiper">
+					<div class="swiper-container">
+						<ul class="swiper-wrapper">
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_02.png">
+										</div>
+										<p>행복해요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_envious_03.png">
+										</div>
+										<p>부러워요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_02.png">
+										</div>
+										<p>슬퍼요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_angry_05.png">
+										</div>
+										<p>화나요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_02.png">
+										</div>
+										<p>행복해요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_03.png">
+										</div>
+										<p>슬퍼요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_uneasy_04.png">
+										</div>
+										<p>불안해요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="inner">
+									<div class="list-head">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_upset_01.png">
+										</div>
+										<p>속상해요</p>
+									</div>
+									<div class="list-body">
+										<time>22일 (월)</time>
+										<p>
+											산책갔다가 커피를 마셨다 상쾌하다 <br/>
+											영화도 보고 밥을 먹었다 <br/>
+											산책갔다가 커피를 마셨다 상쾌하다
+										</p>
+										<div>
+											<span class="eye lock">비공개</span>
+											<span class="addr">서울시 강남구 서초동</span>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="swiper-pagination"></div>
+				</div>
+				<div class="container">
+					<div class="button-box">
+						<a href="" class="btn btn-white-outline">감정기록 보러가기</a>
+					</div>
+				</div>
+			</div>
+			<div class="main-graph-box">
+				<div class="container">
+					<h2>요즘 나는 이런 감정들을 <br class="is-m"/>주로 느끼고 있어요</h2>
+					<!--
+					<div class="category-box active">
+						<ul class="flex-tc">
+							<li class="active"><a href="">월간</a></li>
+							<li><a href="">연간</a></li>
+						</ul>
+					</div>
+					-->
+					<div class="inner">
+						<h3>월별 기분 분포</h3>
+						<div class="graph-circle">
+							<style>
+							.graph {
+									background: conic-gradient(
+									#EFAF01 0% 40%, 
+									#7D3EBE 40% 60%,
+									#444444 60% 75%,
+									#3CB773 75% 85%,
+									#E83D3E 85% 95%,
+									#1E9FDB 95% 100%
+								  );
+							}
+							</style>
+							<div class="graph"></div>
+						</div>
+						<div class="graph-state">
+							<ul>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_happy_01.png">
+									</div>
+									<p>행복해요 40%</p>
+								</li>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_sad_01.png">
+									</div>
+									<p>슬퍼요 10%</p>
+								</li>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_angry_01.png">
+									</div>
+									<p>화나요 10%</p>
+								</li>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_uneasy_01.png">
+									</div>
+									<p>불안해요 5%</p>
+								</li>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_envious_01.png">
+									</div>
+									<p>부러워요 20%</p>
+								</li>
+								<li>
+									<div class="emotion-thumb-box sm">
+										<img src="./asset/images/icon_upset_01.png">
+									</div>
+									<p>속상해요 15%</p>
+								</li>
+							</ul>
+						</div>
+						<div class="graph-table">
+							<h3>시간별 기분</h3>
+							<p>주로 <b>새벽</b>에 <b>속상한</b> 감정을 느꼈어요</p>
+							<table>
+								<thead>
+									<tr>
+										<th></th>
+										<th>월</th>
+										<th>화</th>
+										<th>수</th>
+										<th>목</th>
+										<th>금</th>
+										<th>토</th>
+										<th>일</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th>AM12</th>
+										<td class="orange"></td>
+										<td></td>
+										<td class="green"></td>
+										<td></td>
+										<td></td>
+										<td class="green"></td>
+										<td class="green"></td>
+									</tr>
+									<tr>
+										<th></th>
+										<td class="blue"></td>
+										<td class="purple"></td>
+										<td class="purple"></td>
+										<td class="orange"></td>
+										<td class="red"></td>
+										<td class="orange"></td>
+									</tr>
+									<tr>
+										<th>PM12</th>
+										<td></td>
+										<td class="black"></td>
+										<td class="purple"></td>
+										<td class="red"></td>
+										<td class="orange"></td>
+										<td class="orange"></td>
+										<td class="orange"></td>
+									</tr>
+									<tr>
+										<th></th>
+										<td></td>
+										<td class="orange"></td>
+										<td class="black"></td>
+										<td class="green"></td>
+										<td class="black"></td>
+										<td class="green"></td>
+										<td class="purple"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="main-arround-box">
+				<div class="container">
+					<h2>주변 사람들은 요즘 <br class="is-m"/>이런 기분을 많이 느끼고 있어요</h2>
+					<p>주변에 사는 사람들의 감정을 확인하고<br/>감정을 눌러 댓글을 달아보세요</p>
+					<div class="arround-box">
+						<ul>
+							<li style="left:20%; top:20%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_01.png">
+										<p>홍길일</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_happy_01.png"></div>
+								</a>
+							</li>
+							<li style="left:55%; top:2%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_02.png">
+										<p>홍길이</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_angry_02.png"></div>
+								</a>
+							</li>
+							<li style="left:75%; top:40%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_03.png">
+										<p>홍길삼</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_sad_01.png"></div>
+								</a>
+							</li>
+							<li style="left:45%; top:80%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_01.png">
+										<p>홍길사</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_upset_03.png"></div>
+								</a>
+							</li>
+							<li style="left:15%; top:55%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_02.png">
+										<p>홍길오</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_envious_03.png"></div>
+								</a>
+							</li>
+							<li style="left:75%; top:75%;">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_03.png">
+										<p>홍길육</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
+								</a>
+							</li>
+							<li class="me">
+								<a href="" class="emotion-result-box arround">
+									<div class="image">
+										<img src="./asset/images/img_arround_thumb_03.png">
+										<p>나</p>
+									</div>
+									<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
+								</a>
+							</li>
+						</ul>
+						<div class="text">
+							<ul>
+								<li><img src="./asset/images/img_main_arround_text_01.png"></li>
+								<li><img src="./asset/images/img_main_arround_text_02.png"></li>
+							</ul>
+						</div>
+					</div>
+					<div class="button-box">
+						<a href="" class="btn btn-white-outline">감정잇기 바로가기</a>
+					</div>
+				</div>
+			</div>
+			<div class="main-date-box">
+				<div class="container">
+					<h2>그 중 내 가까운 사람들은<br class="is-m"/>이렇게 표헌하고 있어요</h2>
+					<div class="main-category-box">
+						<div class="swiper-button-prev"></div>
+						<div class="swiper">
+							<div class="swiper-container">
+								<ul class="swiper-wrapper">
+									<li class="swiper-slide"><a href="" class="active">오늘</a></li>
+									<li class="swiper-slide"><a href="">1일 전</a></li>
+									<li class="swiper-slide"><a href="">2일 전</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="swiper-button-next"></div>
+					</div>
+				</div>
+				<div class="date-swiper">
+					<div class="swiper-container">
+						<ul class="swiper-wrapper">
+							<li class="swiper-slide">
+								<div class="date-arround">
+									<div class="arround-top">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_angry_01.png">
+										</div>
+									</div>
+									<div class="arround-bottom">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_uneasy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_envious_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_upset_01.png">
+										</div>
+									</div>
+								</div>
+								<div class="date-state">
+									<ul>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_happy_01.png">
+											</div>
+											<p><b>행복해요</b> 40%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_sad_01.png">
+											</div>
+											<p><b>슬퍼요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_angry_01.png">
+											</div>
+											<p><b>화나요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_uneasy_01.png">
+											</div>
+											<p><b>불안해요</b> 5%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_envious_01.png">
+											</div>
+											<p><b>부러워요</b> 20%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_upset_01.png">
+											</div>
+											<p><b>속상해요</b> 15%</p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="date-arround">
+									<div class="arround-top">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_angry_01.png">
+										</div>
+									</div>
+									<div class="arround-bottom">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_uneasy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_envious_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_upset_01.png">
+										</div>
+									</div>
+								</div>
+								<div class="date-state">
+									<ul>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_happy_01.png">
+											</div>
+											<p><b>행복해요</b> 40%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_sad_01.png">
+											</div>
+											<p><b>슬퍼요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_angry_01.png">
+											</div>
+											<p><b>화나요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_uneasy_01.png">
+											</div>
+											<p><b>불안해요</b> 5%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_envious_01.png">
+											</div>
+											<p><b>부러워요</b> 20%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_upset_01.png">
+											</div>
+											<p><b>속상해요</b> 15%</p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="date-arround">
+									<div class="arround-top">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_angry_01.png">
+										</div>
+									</div>
+									<div class="arround-bottom">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_uneasy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_envious_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_upset_01.png">
+										</div>
+									</div>
+								</div>
+								<div class="date-state">
+									<ul>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_happy_01.png">
+											</div>
+											<p><b>행복해요</b> 40%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_sad_01.png">
+											</div>
+											<p><b>슬퍼요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_angry_01.png">
+											</div>
+											<p><b>화나요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_uneasy_01.png">
+											</div>
+											<p><b>불안해요</b> 5%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_envious_01.png">
+											</div>
+											<p><b>부러워요</b> 20%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_upset_01.png">
+											</div>
+											<p><b>속상해요</b> 15%</p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="swiper-slide">
+								<div class="date-arround">
+									<div class="arround-top">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_happy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_sad_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_angry_01.png">
+										</div>
+									</div>
+									<div class="arround-bottom">
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_uneasy_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_envious_01.png">
+										</div>
+										<div class="emotion-thumb-box">
+											<img src="./asset/images/icon_upset_01.png">
+										</div>
+									</div>
+								</div>
+								<div class="date-state">
+									<ul>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_happy_01.png">
+											</div>
+											<p><b>행복해요</b> 40%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_sad_01.png">
+											</div>
+											<p><b>슬퍼요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_angry_01.png">
+											</div>
+											<p><b>화나요</b> 10%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_uneasy_01.png">
+											</div>
+											<p><b>불안해요</b> 5%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_envious_01.png">
+											</div>
+											<p><b>부러워요</b> 20%</p>
+										</li>
+										<li>
+											<div class="emotion-thumb-box sm">
+												<img src="./asset/images/icon_upset_01.png">
+											</div>
+											<p><b>속상해요</b> 15%</p>
+										</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="main-map-box">
+				<div class="main-map-inner">
+					<div class="title-box">
+						<h2 class="f28 f-lg-20">시공간 속에 남겨둔 <br class="is-m"/>나의 감정들을 만나보세요</h2>
+						<p class="tc">내가 기록한 감정과 <br class="is-m"/>같은 장소의 다른 사람들 감정을 함께 확인해보세요</p>
+					</div>
+					<div class="map-box">
+						<div class="map-left">
+							<div class="left-head">
+								<ul>
+									<li class="active"><a href="">오늘</a></li>
+									<li><a href="">이번주</a></li>
+								</ul>
+							</div>
+							<div class="left-body">
+								<ul>
+									<li>
+										<p>서울 강남구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_happy_02.png">
+										</div>
+									</li>
+									<li>
+										<p>서울 광진구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_sad_01.png">
+										</div>
+									</li>
+									<li>
+										<p>인천 중구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_angry_05.png">
+										</div>
+									</li>
+									<li>
+										<p>인천 동구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_uneasy_07.png">
+										</div>
+									</li>
+									<li>
+										<p>성남시 수정구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_envious_02.png">
+										</div>
+									</li>
+									<li>
+										<p>용인시 처인구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_upset_04.png">
+										</div>
+									</li>
+									<li>
+										<p>남양주시</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_happy_02.png">
+										</div>
+									</li>
+									<li>
+										<p>김포시</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_sad_03.png">
+										</div>
+									</li>
+									<li>
+										<p>서울 광진구</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_happy_02.png">
+										</div>
+									</li>
+									<li>
+										<p>강릉시</p>
+										<div class="emotion-thumb-box xs">
+											<img src="./asset/images/icon_envious_05.png">
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="map-center">
+							<div class="center-bg">
+								<img src="./asset/images/img_map.png">
+							</div>
+							<div class="center-list">
+								<ul>
+									<li style="left:35%; top:25%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_happy_02.png">
+											</div>
+										</a>
+									</li>
+									<li style="left:39%; top:23%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_upset_03.png">
+											</div>
+										</a>
+									</li>
+									<li style="left:29%; top:22%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_sad_03.png">
+											</div>
+										</a>
+									</li>
+									<li style="left:33%; top:22%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_angry_03.png">
+											</div>
+										</a>
+									</li>
+									<li style="left:32%; top:24%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_uneasy_05.png">
+											</div>
+										</a>
+									</li>
+									<li style="left:30%; top:28%;">
+										<a href="javascript:;">
+											<div class="emotion-thumb-box xs">
+												<img src="./asset/images/icon_envious_07.png">
+											</div>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="map-right">
+							<div class="box">
+								<div class="right-head">
+									<h2>이 장소의 감정</h2>
+									<a href="javascript:;" class="close">닫기</a>
+								</div>
+								<div class="right-body">
+									<div class="right-inner">
+										<h3>이 장소의 내 감정</h3>
+										<div class="calendar-box auto">
+											<div class="cal-right">
+												<div class="cal-right-body">
+													<ul>
+														<li>
+															<a href="" class="inner">
+																<div class="list-head">
+																	<div class="list-head-left">
+																		<div class="emotion-thumb-box sm">
+																			<img src="./asset/images/icon_happy_02.png">
+																		</div>
+																		<time>22일(월)</time>
+																	</div>
+																	<div class="list-head-right">
+																		<strong>행복해요</strong>
+																		<div>
+																			<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+																		</div>
+																	</div>
+																</div>
+																<div class="list-body">
+																	<p>산책갔다가 커피를 마셨다 상쾌하다</p>
+																	<div>
+																		<p>서울시 강남구 서초동</p>
+																		<span>공개</span>
+																	</div>
+																</div>
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="right-inner">
+										<h3>이 장소의 다른 사람들의 감정 <a href="">가까운순</a></h3>
+										<div class="calendar-box">
+											<div class="cal-right">
+												<div class="cal-right-body">
+													<ul>
+														<li>
+															<a href="" class="inner">
+																<div class="list-head">
+																	<div class="list-head-left">
+																		<div class="emotion-thumb-box sm">
+																			<img src="./asset/images/icon_happy_02.png">
+																		</div>
+																		<time>22일(월)</time>
+																	</div>
+																	<div class="list-head-right">
+																		<strong>행복해요</strong>
+																		<div>
+																			<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+																		</div>
+																	</div>
+																</div>
+																<div class="list-body">
+																	<p>산책갔다가 커피를 마셨다 상쾌하다</p>
+																	<div>
+																		<p>서울시 강남구 서초동</p>
+																		<span>공개</span>
+																	</div>
+																</div>
+															</a>
+														</li>
+														<li>
+															<a href="" class="inner">
+																<div class="list-head">
+																	<div class="list-head-left">
+																		<div class="emotion-thumb-box sm">
+																			<img src="./asset/images/icon_sad_02.png">
+																		</div>
+																		<time>22일(월)</time>
+																	</div>
+																	<div class="list-head-right">
+																		<strong>행복해요</strong>
+																		<div>
+																			<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+																		</div>
+																	</div>
+																</div>
+																<div class="list-body">
+																	<p>산책갔다가 커피를 마셨다 상쾌하다</p>
+																	<div>
+																		<p>서울시 강남구 서초동</p>
+																		<span class="lock">비공개</span>
+																	</div>
+																</div>
+															</a>
+														</li>
+														<li>
+															<a href="" class="inner">
+																<div class="list-head">
+																	<div class="list-head-left">
+																		<div class="emotion-thumb-box sm">
+																			<img src="./asset/images/icon_angry_02.png">
+																		</div>
+																		<time>22일(월)</time>
+																	</div>
+																	<div class="list-head-right">
+																		<strong>행복해요</strong>
+																		<div>
+																			<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+																		</div>
+																	</div>
+																</div>
+																<div class="list-body">
+																	<p>산책갔다가 커피를 마셨다 상쾌하다</p>
+																	<div>
+																		<p>서울시 강남구 서초동</p>
+																		<span class="lock">비공개</span>
+																	</div>
+																</div>
+															</a>
+														</li>
+														<li>
+															<a href="" class="inner">
+																<div class="list-head">
+																	<div class="list-head-left">
+																		<div class="emotion-thumb-box sm">
+																			<img src="./asset/images/icon_angry_02.png">
+																		</div>
+																		<time>22일(월)</time>
+																	</div>
+																	<div class="list-head-right">
+																		<strong>행복해요</strong>
+																		<div>
+																			<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+																		</div>
+																	</div>
+																</div>
+																<div class="list-body">
+																	<p>산책갔다가 커피를 마셨다 상쾌하다</p>
+																	<div>
+																		<p>서울시 강남구 서초동</p>
+																		<span class="lock">비공개</span>
+																	</div>
+																</div>
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<footer>
+		<div class="container">
+			<div class="footer-link">
+				<ul>
+					<li><a href="">이용약관</a></li>
+					<li><a href="">개인정보취급방침</a></li>
+				</ul>
+			</div>
+			<div class="footer-info">
+				<img src="./asset/images/logo.png">
+				<ul>
+					<li>
+						<p>주소 : 메모리도 메모리시 메모리동</p>    
+						<p>문의 : Me:mory@gmail.com</p>
+					</li>
+					<li>
+						<p>Copyrightⓒ2025 Me:mory All Rights Reserved.</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</footer>
+	<script src="./asset/js/swiper.js?a=2"></script>
+</body>
+</html>

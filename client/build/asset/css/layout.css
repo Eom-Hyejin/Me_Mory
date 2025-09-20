@@ -1,0 +1,63 @@
+/* header */
+header {position:fixed; left:0; top:0; width:100%; z-index:9999; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);}
+header .container {display:flex; flex-wrap:wrap; align-items:center;}
+header .header-logo {flex:1; min-width:0;}
+header .header-logo h1 a img {width:178px;}
+header .header-cate ul {display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-cate ul li a {height:80px; padding:0 32px; font-size:18px; color:var(--color-white); font-family:'SacheonUniverse'; display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-cate ul li:not(.active) a {color:rgba(255,255,255,0.5);}
+header .header-cate ul li a:hover {color:var(--color-white) !important;}
+header .header-right {flex:1; min-width:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end;}
+header .header-right .right-menu {display:none;}
+header .header-right .right-button ul {display:flex; flex-wrap:wrap; align-items:center;}
+header .header-right .right-button ul li a {width:87px; height:36px; font-size:15px; font-weight:500; color:var(--color-white); border-radius:50px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-right .right-button ul li.border a {border:1px solid var(--color-white);}
+@media (max-width:1200px){
+header .header-cate ul li a {padding:0 16px;}
+}
+@media (max-width:991px){
+header .container {height:56px;}
+header .header-logo h1 a img {width:125px;}
+header .header-cate {display:none;}
+header .header-right .right-menu {position:relative; display:block; white-space:nowrap;}
+header .header-right .right-menu .menu {display:block; font-size:0; width:32px; height:32px; background:url('../images/icon_menu_open.svg') no-repeat center / cover;}
+header .header-right .right-menu .inner {pointer-events:none; opacity:0; position:absolute; right:0; top:85%; width:auto; padding-top:12px; transition:all ease 0.5s;}
+header .header-right .right-menu .inner ul li {margin:0 0 8px;}
+header .header-right .right-menu .inner ul li:last-of-type {margin:0;}
+header .header-right .right-menu .inner ul li a {width:112px; height:36px; font-size:14px; font-family:'SacheonUniverse'; box-shadow:0 4px 10px rgba(0,0,0,0.3); border-radius:6px; background:var(--color-active3); color:var(--color-white); display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-right .right-menu.active .menu {background-image:url('../images/icon_menu_close.svg');}
+header .header-right .right-menu.active .inner {pointer-events:inherit; opacity:1; top:100%;}
+header .header-right .right-button {display:none;}
+}
+
+/* footer */
+footer {background:#0B1733; padding:56px 0;}
+footer .footer-link ul {display:flex; flex-wrap:wrap; align-items:center;}
+footer .footer-link ul li {display:flex; flex-wrap:wrap; align-items:center;}
+footer .footer-link ul li:after {display:inline-block; content:""; width:1px; height:12px; margin:0 16px; background:#505060;}
+footer .footer-link ul li:last-of-type:after {display:none;}
+footer .footer-link ul li a {font-size:15px; color:#aaa;}
+footer .footer-info {margin:32px 0 0; display:flex; flex-wrap:wrap; align-items:center;}
+footer .footer-info img {width:178px;}
+footer .footer-info ul {flex:1; min-width:0; padding:0 0 0 32px;}
+footer .footer-info ul li {margin:0 0 6px; display:flex; flex-wrap:wrap; align-items:center;}
+footer .footer-info ul li:last-of-type {margin:0;}
+footer .footer-info ul li p {font-size:14px; color:#aaa; margin:0 10px 0 0;}
+footer .footer-info ul li p:last-of-type {margin:0;}
+@media (max-width:991px){
+footer {padding:24px 0;}
+footer .footer-link ul li:after {height:10px; margin:0 12px;}
+footer .footer-link ul li a {font-size:12px;}
+footer .footer-info {margin:16px 0 0;}
+footer .footer-info img {width:125px;}
+footer .footer-info ul {flex:none; width:100%; padding:12px 0 0;}
+footer .footer-info ul li {margin:0 0 3px;}
+footer .footer-info ul li p {font-size:12px; width:100%; margin:0 0 3px;}
+footer .footer-info ul li p:last-of-type {margin:0;}
+}
+
+/* section */
+section {margin:80px 0 0; padding:48px 0; position:relative; z-index:10;}
+@media (max-width:991px){
+section {margin:56px 0 0; padding:24px 0 48px;}
+}

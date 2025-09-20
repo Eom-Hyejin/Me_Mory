@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=2"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="full-box">
+			<div class="full-inner full-height">
+				<div class="container container-sm">
+					<div class="logo-box">
+						<h2><img src="./asset/images/logo.png" class="sm"/></h2>
+						<p class="su is-pc">나의 감정 우주로 떠나는 타임캡슐 여행</p>
+					</div>
+					<div class="member-box mt48 mt-lg-40">
+						<div class="input-title-box is-m">
+							<strong>아이디를 입력해주세요</strong>
+						</div>
+						<div class="input-box input-icon input-id mt-lg-12">
+							<input type="text" placeholder="아이디를 입력해 주세요"/>
+						</div>
+						<div class="input-title-box is-m mt20">
+							<strong>비밀번호를 입력해주세요</strong>
+						</div>
+						<div class="input-box input-icon input-pw mt16 mt-lg-12">
+							<input type="password" placeholder="비밀번호를 입력해 주세요"/>
+						</div>
+						<div class="check-box mt24 mt-lg-16">
+							<input type="checkbox" name="check" id="check"/>
+							<label for="check">자동 로그인</label>
+						</div>
+						<div class="button-box mt32">
+							<a href="" class="btn btn-active">로그인</a>
+						</div>
+						<div class="member-link mt24 mt-lg-20">
+							<ul>
+								<li><a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-find" onclick="modalOpen(event, this);">아이디/비밀번호 찾기</a></li>
+								<li><a href="" class="ft-active">회원가입</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="modal-box" id="modal-find" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert="">
+		<div class="box">
+			<div class="modal-head">
+				<h2>아이디/비밀번호 찾기</h2>
+				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
+			</div>
+			<div class="modal-body">
+				<div class="inner-box">
+					<div class="member-box">
+						<div class="title-box md">
+							<h3>아이디 찾기</h3>
+							<p>가입시 작성하신 이름과 이메일 주소를 입력하시면 <br>이메일로 아이디를 알려드립니다.</p>
+						</div>
+						<div class="write-box">
+							<ul>
+								<li class="full">
+									<strong class="req">이름</strong>
+									<div>
+										<div class="input-box input-lg">
+											<input type="text" placeholder="실명을 입력해 주세요">
+										</div>
+									</div>
+								</li>
+								<li class="full">
+									<strong class="req">이메일</strong>
+									<div>
+										<div class="input-box input-lg">
+											<input type="text" placeholder="이메일 주소를 입력해 주세요">
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="button-box mt40 mt-lg-32">
+							<a href="" class="btn btn-active">아이디 찾기</a>
+						</div>
+					</div>
+				</div>
+				<div class="inner-box mt24 mt-lg-16">
+					<div class="member-box">
+						<div class="title-box md">
+							<h3>비밀번호 찾기</h3>
+							<p>가입시 작성하신 아이디와 이름, 이메일 주소를 입력하시면 <br>이메일로 임시비밀번호를 알려드립니다.</p>
+						</div>
+						<div class="write-box">
+							<ul>
+								<li class="full">
+									<strong class="req">아이디</strong>
+									<div>
+										<div class="input-box input-lg">
+											<input type="text" placeholder="아이디를 입력해 주세요">
+										</div>
+									</div>
+								</li>
+								<li class="full">
+									<strong class="req">이름</strong>
+									<div>
+										<div class="input-box input-lg">
+											<input type="text" placeholder="실명을 입력해 주세요">
+										</div>
+									</div>
+								</li>
+								<li class="full">
+									<strong class="req">이메일</strong>
+									<div>
+										<div class="input-box input-lg">
+											<input type="text" placeholder="이메일 주소를 입력해 주세요">
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="button-box mt40 mt-lg-32">
+							<a href="" class="btn btn-active">비밀번호 찾기</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_member.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_member_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

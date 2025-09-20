@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li class="active"><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section class="py-lg-0">
+		<div class="full-box">
+			<div class="full-inner full-height">
+				<div class="circle-box cate-01">
+					<div class="circle-inner">
+						<div class="circle-head">
+							<div class="step-box step-04">
+								<div class="bar"></div>
+							</div>
+						</div>
+						<div class="circle-body">
+							<div class="circle-title">
+								<div class="inner">
+									<div class="is-m">
+										<div class="emotion-result-box">
+											<div class="result"><img src="./asset/images/icon_happy_02.png"/></div>
+										</div>
+									</div>
+									<h2 class="md">오늘의 감정은 <br class="is-m"/>어디로 기록할까요?</h2>
+								</div>
+							</div>
+							<div class="write-box">
+								<ul>
+									<li class="full">
+										<strong class="active">기록할 장소를 입력해주세요</strong>
+										<div>
+											<div class="input-box active">
+												<input type="text" placeholder=""/>
+												<button type="button" class="search" aria-haspopup="dialog" aria-controls="modal-map" onclick="modalOpen(event, this);">검색</button>
+											</div>
+										</div>
+									</li>
+									<li class="full">
+										<strong class="active">공개 여부를 알려주세요</strong>
+										<div>
+											<div class="radio-check-box">
+												<ul>
+													<li>
+														<input type="radio" name="radio01" id="radio01_01"/>
+														<label for="radio01_01" class="eye">공개</label>
+													</li>
+													<li>
+														<input type="radio" name="radio01" id="radio01_02"/>
+														<label for="radio01_02" class="eye-off">비공개</label>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</li>
+									<li class="full">
+										<strong class="active">되돌아볼 시점을 선택해주세요</strong>
+										<div>
+											<div class="radio-check-box">
+												<ul>
+													<li>
+														<input type="radio" name="radio02" id="radio02_01"/>
+														<label for="radio02_01">다시 보지 않음</label>
+													</li>
+													<li>
+														<input type="radio" name="radio02" id="radio02_02"/>
+														<label for="radio02_02">6개월 뒤</label>
+													</li>
+													<li>
+														<input type="radio" name="radio02" id="radio03_02"/>
+														<label for="radio03_02">1년 뒤</label>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="circle-foot">
+							<div class="button-box">
+								<a href="" class="btn btn-active-outline w100 flex-0 mr12 mr-lg-8">이전 단계</a>
+								<a href="" class="btn btn-active flex-1">다음</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="circle-border-box">
+		<div class="inner">
+			<div>
+				<div class="emotion-result-box mb0">
+					<div class="result"><img src="./asset/images/icon_happy_02.png"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-box" id="modal-map" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true">
+		<div class="box">
+			<div class="modal-head">
+				<h2>오늘의 감정은 어디로 기록할까요?</h2>
+				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
+			</div>
+			<div class="modal-body">
+				<div class="map-modal-box">
+					<div class="map-search">
+						<form>
+							<input type="text" placeholder="주소를 입력해주세요">
+							<button type="button" class="delete">삭제</button>
+						</form>
+					</div>
+					<div class="map-iframe">
+						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25326.57044652474!2d126.99650799648472!3d37.48854301430885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca16abf1bd3b3%3A0xa4dcd8abd096a6e6!2z7ISc7Jq47Yq567OE7IucIOyEnOy0iOq1rCDshJzstIjrj5k!5e0!3m2!1sko!2skr!4v1757306356663!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+						<div class="pin" style="left:50%; top:50%;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-foot">
+				<div class="button-box">
+					<a href="" class="btn btn-active btn-lg">완료</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_cate_01.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_cate_01_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

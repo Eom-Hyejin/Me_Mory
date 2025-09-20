@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li class="active"><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="container container-xxl">
+			<div class="title-box flex flex-vc">
+				<a href="" class="back">이전</a>
+				<img src="./asset/images/img_arround_thumb_02.png">
+				<h2 class="f32 f-lg-18">메모리의 오늘 감정 캡슐</h2>
+			</div>
+			<div class="comment-box">
+				<ul>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="list-head">
+							<div class="list-head-left">
+								<div class="emotion-thumb-box sm">
+									<img src="./asset/images/icon_happy_02.png">
+								</div>
+								<time>22일(월)</time>
+							</div>
+							<div class="list-head-right">
+								<div class="right-text">
+									<strong>행복해요</strong>
+									<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
+									<p class="location">서울시 강남구 서초동</p>
+								</div>
+								<div class="right-more">
+									<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+								</div>
+							</div>
+							<div class="list-head-mobile">
+								<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
+								<p class="location">서울시 강남구 서초동</p>
+							</div>
+						</a>
+						<div class="list-body">
+							<ul>
+								<li>
+									<div class="reply-head">
+										<div class="inner">
+											<img src="./asset/images/img_arround_thumb_01.png">
+											<div>
+												<strong>룰루</strong>
+												<time>2024.02.23 20:40</time>
+												<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+											</div>
+										</div>
+										<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-sign" onclick="modalOpen(event, this);" class="sign">신고</a>
+									</div>
+									<div class="reply-body">
+										<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+									</div>
+								</li>
+								<li class="me">
+									<div class="reply-head">
+										<div class="inner">
+											<img src="./asset/images/img_arround_thumb_02.png">
+											<div>
+												<strong>룰루</strong>
+												<span>나의 댓글</span>
+												<time>2024.02.23 20:40</time>
+												<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+											</div>
+										</div>
+										<div class="dropdown-box">
+											<button type="button" class="dropdown-btn" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown1">더보기</button>
+											<div class="dropdown-inner" id="dropdown1" role="menu" hidden="hidden">
+												<ul>
+													<li><a href="" class="delete">삭제하기</a></li>
+													<li><a href="" class="update">수정하기</a></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="reply-body">
+										<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+									</div>
+								</li>
+								<li>
+									<div class="reply-head">
+										<div class="inner">
+											<img src="./asset/images/img_arround_thumb_03.png">
+											<div>
+												<strong>룰루</strong>
+												<time>2024.02.23 20:40</time>
+												<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+											</div>
+										</div>
+										<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-sign" onclick="modalOpen(event, this);" class="sign">신고</a>
+									</div>
+									<div class="reply-body">
+										<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+									</div>
+								</li>
+								<li>
+									<div class="reply-head">
+										<div class="inner">
+											<img src="./asset/images/img_arround_thumb_01.png">
+											<div>
+												<strong>룰루</strong>
+												<time>2024.02.23 20:40</time>
+												<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+											</div>
+										</div>
+										<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-sign" onclick="modalOpen(event, this);" class="sign">신고</a>
+									</div>
+									<div class="reply-body">
+										<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+									</div>
+								</li>
+								<li>
+									<div class="reply-head">
+										<div class="inner">
+											<img src="./asset/images/img_arround_thumb_02.png">
+											<div>
+												<strong>룰루</strong>
+												<time>2024.02.23 20:40</time>
+												<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+											</div>
+										</div>
+										<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-sign" onclick="modalOpen(event, this);" class="sign">신고</a>
+									</div>
+									<div class="reply-body">
+										<p>좋은 하루였네요 오늘도 고생 많았어요!</p>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="paging-box">
+				<ul>
+					<li class="pg first"><a href="">처음</a></li>
+					<li class="pg prev"><a href="">이전</a></li>
+					<li class="active"><a href="">1</a></li>
+					<li><a href="">2</a></li>
+					<li><a href="">3</a></li>
+					<li><a href="">4</a></li>
+					<li><a href="">5</a></li>
+					<li class="mo-hidden"><a href="">6</a></li>
+					<li class="mo-hidden"><a href="">7</a></li>
+					<li class="mo-hidden"><a href="">8</a></li>
+					<li class="mo-hidden"><a href="">9</a></li>
+					<li class="mo-hidden"><a href="">10</a></li>
+					<li class="pg next"><a href="">다음</a></li>
+					<li class="pg last"><a href="">맨끝</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<div class="chat-box">
+		<div class="container container-xxl">
+			<div class="inner">
+				<textarea placeholder="댓글을 남겨주세요"></textarea>
+				<button type="button" class="submit">등록</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
+		<div class="box">
+			<div class="modal-head">
+				<h2>2025년 9월 22일(월) 감정기록</h2>
+				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
+			</div>
+			<div class="modal-body">
+				<div class="emotion-view-box">
+					<div class="view-head">
+						<div class="view-head-left">
+							<div class="emotion-thumb-box md">
+								<img src="./asset/images/icon_happy_02.png">
+							</div>
+							<strong>행복해요</strong>
+						</div>
+						<div class="view-head-right">
+							<button type="button" class="delete">삭제</button>
+							<button type="button" class="update">수정</button>
+						</div>
+					</div>
+					<div class="view-body">
+						<p>
+							산책갔다가 커피 마시고 왔음 상쾌하다
+							산책갔다가 커피 마시고 왔음 상쾌하다
+						</p>
+						<ul class="image">
+							<li style="background-image:url('./asset/images/img_thumb_01.png');"></li>
+							<li style="background-image:url('./asset/images/img_thumb_02.png');"></li>
+							<li style="background-image:url('./asset/images/img_thumb_03.png');"></li>
+						</ul>
+					</div>
+					<div class="view-foot">
+						<p>서울시 강남구 서초동</p>
+						<span class="lock">비공개</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-foot">
+				<div class="button-box">
+					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-active btn-lg">확인</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-box modal-sm" id="modal-sign" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
+		<div class="box">
+			<div class="modal-head">
+				<h2>신고하기</h2>
+				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
+			</div>
+			<div class="modal-body">
+				<p>해당 댓글을 신고하시겠습니까?</p>
+			</div>
+			<div class="modal-foot">
+				<div class="button-box">
+					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-white btn-lg mr12 mr-lg-8 flex-lg-1">취소</a>
+					<a href="" onclick="" class="btn btn-active btn-lg flex-lg-1">신고</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_around.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_around_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

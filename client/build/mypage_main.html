@@ -1,0 +1,242 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="container container-xl">
+			<div class="title-box">
+				<h2>마이페이지</h2>
+			</div>
+			<div class="mypage-top-box">
+				<div class="top-left">
+					<div class="left-text">
+						<h2><b>메모리</b>님, <br/>오늘은 어떤 하루인가요?</h2>
+						<div class="button-box">
+							<a href="" class="btn btn-active btn-lg">감정 기록하러 가기</a>
+						</div>
+					</div>
+					<div class="left-thumb">
+						<div class="emotion-result-box arround lg">
+							<div class="image">
+								<img src="./asset/images/img_arround_thumb_02.png">
+								<label for="file">
+									<input type="file" name="file" id="file"/>
+								</label>
+							</div>
+							<div class="result"><img src="./asset/images/icon_angry_02.png"></div>
+						</div>
+					</div>
+				</div>
+				<div class="top-right">
+					<div class="right-head">
+						<a href="">
+							<h2>감정회고 알림</h2>
+						</a>
+						<a href="">
+							<h2>공지사항</h2>
+						</a>
+					</div>
+					<div class="right-body">
+						<ul>
+							<li>
+								<a href="" class="inner">
+									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="mypage-bottom-box">
+				<div class="bottom-left">
+					<div class="left-inner">
+						<div class="emotion-year-box">
+							<h2>2025년 8월의 내 감정은?</h2>
+							<div class="image">
+								<ul>
+									<li><img src="./asset/images/icon_happy_01.png"></li>
+									<li><img src="./asset/images/icon_happy_01.png"></li>
+									<li><img src="./asset/images/icon_happy_01.png"></li>
+									<li><img src="./asset/images/icon_happy_01.png"></li>
+									<li><img src="./asset/images/icon_uneasy_01.png"></li>
+									<li><img src="./asset/images/icon_uneasy_01.png"></li>
+									<li><img src="./asset/images/icon_sad_01.png"></li>
+									<li><img src="./asset/images/icon_angry_01.png"></li>
+									<li><img src="./asset/images/icon_envious_01.png"></li>
+									<li><img src="./asset/images/icon_upset_01.png"></li>
+								</ul>
+							</div>
+							<div class="text">
+								<ul>
+									<li>행복해요 40%</li>
+									<li>불안해요 20%</li>
+									<li>슬퍼요 10%</li>
+									<li>화나요 5%</li>
+									<li>부러워요 5%</li>
+									<li>속상해요 5%</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="left-link">
+						<a href="">
+							<h2>내 정보 수정하기</h2>
+						</a>
+					</div>
+					<div class="left-link">
+						<a href="">
+							<h2>앱 설정</h2>
+						</a>
+					</div>
+					<div class="left-link">
+						<a href="">
+							<h2>고객센터</h2>
+						</a>
+					</div>
+				</div>
+				<div class="bottom-right">
+					<div class="notice-list-box">
+						<h2>공지사항</h2>
+						<ul>
+							<li>
+								<a href="" class="inner">
+									<p>📣 공지 / 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>🔧 업데이트 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>✍️ 댓글 작성 이벤트 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>📣 공지 / 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>📣 공지 / 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+							<li>
+								<a href="" class="inner">
+									<p>📣 공지 / 안내</p>
+									<time>2025-08-01</time>
+								</a>
+							</li>
+						</ul>
+						<p>최근 30일간 알림을 표시해요</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_cate_mypage.png" class="is-pc">
+		<img src="./asset/images/bg_body_cate_mypage_m.png" class="is-m">
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=1"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li class="active"><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="container container-xl">
+			<div class="title-box">
+				<h2>감정 회고</h2>
+			</div>
+			<div class="sca-box">
+				<ul>	
+					<li class="active"><a href="">6개월 전 <b>감정캡슐</b>(2)</a></li>
+					<li><a href="">1년 전 <b>감정캡슐</b>(2)</a></li>
+					<li><a href="">미회고 <b>감정캡슐</b>(2)</a></li>
+				</ul>
+			</div>
+			<!--
+			<div class="category-box">
+				<ul>
+					<li><a href="">전체</a></li>
+					<li class="active"><a href="">서울시 광진구</a></li>
+					<li><a href="">서울시 강남구</a></li>
+					<li><a href="">경기도 성남시</a></li>
+					<li><a href="">인천 중구</a></li>
+				</ul>
+			</div>
+			-->
+			<div class="memory-list-box">
+				<ul>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.03(월)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_envious_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_happy_07.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_upset_04.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_uneasy_05.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_envious_03.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.03(월)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_envious_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_happy_07.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_upset_04.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_uneasy_05.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_envious_03.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.03(월)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_upset_04.png"></div>
+								<div class="image-thumb-box sample" style="background-image:url('./asset/images/img_thumb_sample.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_angry_01.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_happy_07.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_upset_04.png"></div>
+								<div class="image-thumb-box sample" style="background-image:url('./asset/images/img_thumb_sample.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_uneasy_05.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
+							<time>2025.02.05(수)</time>
+							<div class="memory-box">
+								<div class="memory"><img src="./asset/images/icon_envious_03.png"></div>
+								<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="paging-box">
+				<ul>
+					<li class="pg first"><a href="">처음</a></li>
+					<li class="pg prev"><a href="">이전</a></li>
+					<li class="active"><a href="">1</a></li>
+					<li><a href="">2</a></li>
+					<li><a href="">3</a></li>
+					<li><a href="">4</a></li>
+					<li><a href="">5</a></li>
+					<li class="mo-hidden"><a href="">6</a></li>
+					<li class="mo-hidden"><a href="">7</a></li>
+					<li class="mo-hidden"><a href="">8</a></li>
+					<li class="mo-hidden"><a href="">9</a></li>
+					<li class="mo-hidden"><a href="">10</a></li>
+					<li class="pg next"><a href="">다음</a></li>
+					<li class="pg last"><a href="">맨끝</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
+		<div class="box">
+			<div class="modal-head">
+				<h2>2025년 9월 22일(월) 감정기록</h2>
+				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
+			</div>
+			<div class="modal-body">
+				<div class="emotion-view-box">
+					<div class="view-head">
+						<div class="view-head-left">
+							<div class="emotion-thumb-box md">
+								<img src="./asset/images/icon_happy_02.png">
+							</div>
+							<strong>행복해요</strong>
+						</div>
+						<div class="view-head-right">
+							<button type="button" class="delete">삭제</button>
+							<button type="button" class="update">수정</button>
+						</div>
+					</div>
+					<div class="view-body">
+						<p>
+							산책갔다가 커피 마시고 왔음 상쾌하다
+							산책갔다가 커피 마시고 왔음 상쾌하다
+						</p>
+						<ul class="image">
+							<li style="background-image:url('./asset/images/img_thumb_01.png');"></li>
+							<li style="background-image:url('./asset/images/img_thumb_02.png');"></li>
+							<li style="background-image:url('./asset/images/img_thumb_03.png');"></li>
+						</ul>
+					</div>
+					<div class="view-foot">
+						<p>서울시 강남구 서초동</p>
+						<span class="lock">비공개</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-foot">
+				<div class="button-box">
+					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-active btn-lg">확인</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_memory.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_memory_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+	<title>Memory</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="generator" content="">
+	<meta name="robots" content="">
+	<meta property="og:type" content="">
+	<meta property="og:title" content="">
+	<meta property="og:url" content="">
+	<meta property="og:description" content="">
+	<!--모바일크롬 툴바 컬러-->
+	<meta name="theme-color" content="#162060" />
+	<!-- 공유 이미지 -->
+	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
+	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+	<!-- 파비콘 이미지 -->
+	<link href="" rel="icon" type="image/jpg">
+	<link href="" rel="shortcut icon" type="image/jpg">
+	<link href="" rel="apple-touch-icon" type="image/jpg">				
+	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
+	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+	<script src="./asset/js/jquery-3.3.1.js"></script>
+	<script src="./asset/js/swiper.min.js"></script>	
+	<script src="./asset/js/common.js?a=2"></script>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="header-logo">
+				<h1><a href=""><img src="./asset/images/logo.png"></a></h1>
+			</div>
+			<div class="header-cate">
+				<ul>
+					<li><a href="">감정기록</a></li>
+					<li><a href="">감정캘린더</a></li>
+					<li><a href="">내 주변 감정</a></li>
+					<li><a href="">감정지도</a></li>
+					<li><a href="">감정회고</a></li>
+				</ul>
+			</div>
+			<div class="header-right">
+				<div class="right-button">
+					<ul>
+						<li class="border"><a href="">로그인</a></li>
+						<li><a href="">회원가입</a></li>
+					</ul>
+				</div>
+				<div class="right-menu">
+					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+					<div class="inner">
+						<ul>
+							<li><a href="">감정기록</a></li>
+							<li><a href="">감정캘린더</a></li>
+							<li><a href="">내 주변 감정</a></li>
+							<li><a href="">감정지도</a></li>
+							<li><a href="">감정회고</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div class="container container-xl">
+			<div class="title-box">
+				<h2>회원가입</h2>
+			</div>
+			<div class="inner-box">
+				<div class="title-box md">
+					<h3>기본 회원 정보</h3>
+				</div>
+				<div class="write-box">
+					<ul>
+						<li>
+							<strong class="req">아이디</strong>
+							<div>
+								<div class="flex flex-vc">
+									<div class="input-box input-lg flex-1">
+										<input type="text" placeholder="아이디를 입력해주세요"/>
+									</div>
+									<div class="button-box ml8">
+										<a href="" class="btn btn-gray-outline btn-lg">아이디 중복체크</a>
+									</div>
+								</div>
+								<div class="message-box">
+									<p>사용할 수 있는 아이디입니다.</p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<strong class="req">비밀번호</strong>
+							<div>
+								<div class="input-box input-lg">
+									<input type="password" placeholder="8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해주세요"/>
+									<button type="button" class="password">비밀번호 보임 및 숨김 처리</button>
+								</div>
+								<div class="message-box">
+									<p class="ft-red">비밀번호 형식을 확인해주세요.</p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<strong class="req">비밀번호 확인</strong>
+							<div>
+								<div class="input-box input-lg">
+									<input type="password" placeholder="비밀번호를 재입력해 주세요"/>
+									<button type="button" class="password">비밀번호 보임 및 숨김 처리</button>
+								</div>
+								<div class="message-box">
+									<p class="ft-red">비밀번호가 일치하지 않습니다.</p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<strong class="req">이름</strong>
+							<div>
+								<div class="input-box input-lg">
+									<input type="text" placeholder="실명을 입력해 주세요"/>
+								</div>
+							</div>
+						</li>
+						<li>
+							<strong class="req">휴대폰</strong>
+							<div>
+								<div class="input-box input-lg">
+									<input type="text" placeholder="‘-’ 제외하고 숫자만 입력해 주세요"/>
+								</div>
+							</div>
+						</li>
+						<li>
+							<strong class="req">이메일</strong>
+							<div>
+								<div class="input-box input-lg">
+									<input type="text" placeholder="이메일 주소를 입력해 주세요"/>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="inner-box mt24 mt-lg-16">
+				<div class="check-total-box">
+					<div class="total-head">
+						<input type="checkbox" name="check" id="check"/>
+						<label for="check">전체동의 <small>(모든 사항을 확인하고 전체 동의합니다.)</small></label>
+					</div>
+					<div class="total-body">
+						<ul>
+							<li>
+								<div class="list-head">
+									<input type="checkbox" name="check" id="check"/>
+									<label for="check"><b>(필수)</b> 개인정보 수집이용 내역</label>
+								</div>
+								<div class="list-body">
+									<div class="inner">
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="list-head">
+									<input type="checkbox" name="check" id="check"/>
+									<label for="check"><b>(필수)</b> 개인정보 수집이용 내역</label>
+								</div>
+								<div class="list-body">
+									<div class="inner">
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+										<p>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service<br/>
+											Contents of Terms of Service
+										</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="button-box mt40 mt-lg-32">
+				<div class="w280 flex-md-1 mr12 mr-lg-8">
+					<a href="" class="btn btn-gray-outline ft-white">취소</a>
+				</div>
+				<div class="w280 flex-md-1">
+					<a href="" class="btn btn-active">입력완료</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="bg-box">
+		<img src="./asset/images/bg_body_member.png" class="is-pc"/>
+		<img src="./asset/images/bg_body_member_m.png" class="is-m"/>
+	</div>
+	<script src="./asset/js/swiper.js?a=1"></script>
+</body>
+</html>
