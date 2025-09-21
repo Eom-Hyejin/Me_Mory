@@ -331,15 +331,14 @@
   $('#btnSubmit').addEventListener('click', async (e) => {
     e.preventDefault();
 
-    // 필수값 체크
+    // 필수값 체크 (휴대폰 없이)
     const username = ipId.value.trim();
     const password = ipPw.value;
     const password2= ipPw2.value;
     const name     = ipName.value.trim();
-    const phone    = ipPhone.value.trim(); // 서버에서 안씀(무시됨)
     const email    = ipEmail.value.trim();
 
-    if (!username || !password || !password2 || !name || !phone || !email) {
+    if (!username || !password || !password2 || !name || !email) {
       alert('회원가입이 불가능합니다.\n(필수 항목을 모두 입력해주세요)');
       return;
     }
@@ -365,7 +364,6 @@
           username,
           password,
           name,
-          // img: null, // 필요 시 추가
           consents: {
             tosVersion: TOS_VERSION,
             privacyVersion: PRIVACY_VERSION,
@@ -379,13 +377,12 @@
         throw new Error(err.message || '회원가입 실패');
       }
 
-      const data = await res.json(); // { userId, email, username, name, token, refreshToken }
-      // 바로 로그인 상태 유지하고 싶으면 토큰 저장
-      if (data?.token)       localStorage.setItem('accessToken', data.token);
-      if (data?.refreshToken)localStorage.setItem('refreshToken', data.refreshToken);
+      const data = await res.json(); 
+      if (data?.token)        localStorage.setItem('accessToken', data.token);
+      if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
 
       alert('회원가입이 완료되었습니다.');
-      window.location.href = '/index.html';
+      window.location.href = '/register_02.html';
     } catch (err) {
       alert('회원가입 처리 중 오류가 발생했습니다.\n' + (err.message || 'Unknown error'));
     }

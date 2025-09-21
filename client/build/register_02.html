@@ -1,104 +1,123 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=2"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="theme-color" content="#162060" />
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+
+  <link rel="stylesheet" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" href="./asset/css/base.css">
+  <link rel="stylesheet" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" href="./asset/css/layout.css">
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="container container-sm">
-			<div class="title-box">
-				<h2>회원가입</h2>
-			</div>
-			<div class="result-box">
-				<h3>가입완료</h3>
-				<div class="result-text">
-					<strong>홍길동<em>님</em></strong>
-					<p>Me:mory에 오신 걸 환영합니다!</p>
-				</div>
-				<div class="face-box">
-					<img src="./asset/images/img_face_all.png"/>
-				</div>
-				<div class="button-box mt60 mt-lg-32">
-					<div class="w200 flex-md-1 mr12 mr-lg-8">
-						<a href="" class="btn btn-gray-outline ft-white">메인으로</a>
-					</div>
-					<div class="w200 flex-md-1">
-						<a href="" class="btn btn-active">로그인</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_member.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_member_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=28"></script>
+  <!-- Header (공통 네비) -->
+  <header>
+    <div class="container">
+      <div class="header-logo">
+        <h1><a href="/"><img src="./asset/images/logo.png" alt="Me:mory"></a></h1>
+      </div>
+      <div class="header-cate">
+        <ul>
+          <li><a href="#" data-nav="record">감정기록</a></li>
+          <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+          <li><a href="#" data-nav="around">내 주변 감정</a></li>
+          <li><a href="#" data-nav="map">감정지도</a></li>
+          <li><a href="#" data-nav="memory">감정회고</a></li>
+        </ul>
+      </div>
+      <div class="header-right">
+        <div class="right-button">
+          <ul>
+            <li class="border"><a href="#" data-nav="login">로그인</a></li>
+            <li><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+        <div class="right-menu">
+          <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+          <div class="inner">
+            <ul>
+              <li><a href="#" data-nav="record">감정기록</a></li>
+              <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+              <li><a href="#" data-nav="around">내 주변 감정</a></li>
+              <li><a href="#" data-nav="map">감정지도</a></li>
+              <li><a href="#" data-nav="memory">감정회고</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container container-sm">
+      <div class="title-box">
+        <h2>회원가입</h2>
+      </div>
+      <div class="result-box">
+        <h3>가입완료</h3>
+        <div class="result-text">
+          <strong><span id="welcomeName">회원</span><em>님</em></strong>
+          <p>Me:mory에 오신 걸 환영합니다!</p>
+        </div>
+        <div class="face-box">
+          <img src="./asset/images/img_face_all.png" alt="">
+        </div>
+        <div class="button-box mt60 mt-lg-32">
+          <div class="w200 flex-md-1 mr12 mr-lg-8">
+            <a href="/index.html" class="btn btn-gray-outline ft-white">메인으로</a>
+          </div>
+          <div class="w200 flex-md-1">
+            <a href="/login_02.html" class="btn btn-active">로그인</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bg-box">
+    <img src="./asset/images/bg_body_member.png" class="is-pc" alt="">
+    <img src="./asset/images/bg_body_member_m.png" class="is-m" alt="">
+  </div>
+
+  <script src="./asset/js/swiper.js?a=1" defer></script>
+  <script src="/asset/js/app.js?ver=28" defer></script>
+  <!-- 공통 헤더 스크립트(네비/세션) -->
+  <script src="/asset/js/header.js?v=1" defer></script>
+
+  <script>
+  // 이름 채우기: register_01에서 저장해 둔 값 → 없으면 토큰으로 조회 → 그래도 없으면 '회원'
+  window.addEventListener('DOMContentLoaded', async () => {
+    const el = document.getElementById('welcomeName');
+    let name = localStorage.getItem('registerName');
+
+    if (!name) {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        try {
+          const res = await fetch('/api/auth/me', {
+            headers: { 'Authorization': token } // 서버가 Bearer 없이도 허용되도록 구현되어 있음
+          });
+          if (res.ok) {
+            const me = await res.json();
+            name = me?.name || me?.username || '';
+          }
+        } catch {}
+      }
+    }
+
+    el.textContent = name && name.trim() ? name.trim() : '회원';
+
+    // 한 번 표시했으면 깔끔하게 제거(선택)
+    if (localStorage.getItem('registerName')) {
+      localStorage.removeItem('registerName');
+    }
+  });
+  </script>
 </body>
 </html>
