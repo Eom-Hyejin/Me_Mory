@@ -40,7 +40,7 @@ const staticDir = path.join(__dirname, '../client/build');
 app.use(express.static(staticDir));
 
 app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(staticDir, 'index.html'));
+  res.sendFile(path.join(staticDir, 'intro.html'));
 });
 /* ================== 서버 시작 ================== */
 app.listen(PORT, '0.0.0.0', () => {
