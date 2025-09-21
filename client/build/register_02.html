@@ -14,6 +14,19 @@
   <link rel="stylesheet" href="./asset/css/grid.css?a=2">
   <link rel="stylesheet" href="./asset/css/common.css?a=1">
   <link rel="stylesheet" href="./asset/css/layout.css">
+
+  <style>
+    /* 이름만 크게 보이도록 추가 */
+    .result-text .welcome-name {
+      font-size: 2rem;      /* 기존 글씨보다 크게 */
+      font-weight: bold;    /* 굵게 */
+      color: #162060;       /* 브랜드 컬러 맞춤 */
+      margin-right: 4px;
+    }
+    .result-text em {
+      font-size: 1.5rem;    /* "님"은 약간 작게 */
+    }
+  </style>
 </head>
 <body>
   <!-- Header (공통 네비) -->
@@ -62,7 +75,7 @@
       <div class="result-box">
         <h3>가입완료</h3>
         <div class="result-text">
-          <strong><span id="welcomeName">회원</span><em>님</em></strong>
+          <strong><span id="welcomeName" class="welcome-name">회원</span><em>님</em></strong>
           <p>Me:mory에 오신 걸 환영합니다!</p>
         </div>
         <div class="face-box">
@@ -87,11 +100,10 @@
 
   <script src="./asset/js/swiper.js?a=1" defer></script>
   <script src="/asset/js/app.js?ver=28" defer></script>
-  <!-- 공통 헤더 스크립트(네비/세션) -->
   <script src="/asset/js/header.js?v=1" defer></script>
 
   <script>
-  // 이름 채우기: register_01에서 저장해 둔 값 → 없으면 토큰으로 조회 → 그래도 없으면 '회원'
+  // 이름 채우기
   window.addEventListener('DOMContentLoaded', async () => {
     const el = document.getElementById('welcomeName');
     let name = localStorage.getItem('registerName');
@@ -101,7 +113,7 @@
       if (token) {
         try {
           const res = await fetch('/api/auth/me', {
-            headers: { 'Authorization': token } // 서버가 Bearer 없이도 허용되도록 구현되어 있음
+            headers: { 'Authorization': token }
           });
           if (res.ok) {
             const me = await res.json();
@@ -112,8 +124,6 @@
     }
 
     el.textContent = name && name.trim() ? name.trim() : '회원';
-
-    // 한 번 표시했으면 깔끔하게 제거(선택)
     if (localStorage.getItem('registerName')) {
       localStorage.removeItem('registerName');
     }
