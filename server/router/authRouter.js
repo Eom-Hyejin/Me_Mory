@@ -538,4 +538,55 @@ router.get('/user/:userId', verifyToken, async (req, res) => {
   }
 });
 
+/* ====== (N) 아이디 찾기 ====== */
+// body: { name, email }
+router.post('/find-id', async (req, res) => {
+  try {
+    const name = (req.body?.name || '').trim();
+    const email = (req.body?.email || '').trim();
+    if (!name || !email) return fail(res, 400, '이름과 이메일은 필수입니다');
+
+    const [rows] = await db.query(
+      'SELECT username FROM Users WHERE name = ? AND email = ?',
+      [name, email]
+    );
+    if (!rows.length) return fail(res, 404, '해당 정보로 가입된 아이디가 없습니다');
+
+    return res.status(200).json({ username: rows[0].username });
+  } catch (err) {
+    return fail(res, 500, '아이디 찾기 실패', err.message);
+  }
+});
+
+/* ====== (O) 비밀번호 찾기 ====== */
+// body: { username, name, email }
+router.post('/find-pw', async (req, res) => {
+  try {
+    const username = (req.body?.username || '').trim();
+    const name = (req.body?.name || '').trim();
+    const email = (req.body?.email || '').trim();
+    if (!username || !name || !email) {
+      return fail(res, 400, '아이디, 이름, 이메일은 필수입니다');
+    }
+
+    const [rows] = await db.query(
+      'SELECT id FROM Users WHERE username = ? AND name = ? AND email = ?',
+      [username, name, email]
+    );
+    if (!rows.length) return fail(res, 404, '해당 정보로 가입된 계정이 없습니다');
+
+    // 임시 비밀번호 생성
+    const tempPw = Math.random().toString(36).slice(-10) + '!';
+
+    // DB 업데이트
+    const hashed = await bcrypt.hash(tempPw, 12);
+    await db.query('UPDATE Users SET password = ? WHERE id = ?', [hashed, rows[0].id]);
+
+    // 이메일 발송 대신 → JSON 응답에 포함
+    return res.status(200).json({ tempPassword: tempPw });
+  } catch (err) {
+    return fail(res, 500, '비밀번호 찾기 실패', err.message);
+  }
+});
+
 module.exports = router;
