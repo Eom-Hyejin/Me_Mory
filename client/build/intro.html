@@ -36,33 +36,33 @@
 	<header>
 		<div class="container">
 			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
+				<h1><a href="/"><img src="./asset/images/logo.png"/></a></h1>
 			</div>
 			<div class="header-cate">
 				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
+   					 <li><a href="#" data-nav="record">감정기록</a></li>
+  					 <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+  					 <li><a href="#" data-nav="around">내 주변 감정</a></li>
+					 <li><a href="#" data-nav="map">감정지도</a></li>
+					 <li><a href="#" data-nav="memory">감정회고</a></li>
 				</ul>
 			</div>
 			<div class="header-right">
 				<div class="right-button">
 					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
+ 					   <li class="border"><a href="#" data-nav="login">로그인</a></li>
+  					   <li><a href="#" data-nav="register">회원가입</a></li>
 					</ul>
 				</div>
 				<div class="right-menu">
 					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
 					<div class="inner">
 						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
+  						    <li><a href="#" data-nav="record">감정기록</a></li>
+  						    <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+ 						 	<li><a href="#" data-nav="around">내 주변 감정</a></li>
+      						<li><a href="#" data-nav="map">감정지도</a></li>
+      						<li><a href="#" data-nav="memory">감정회고</a></li>
 						</ul>
 					</div>
 				</div>
@@ -90,5 +90,62 @@
 	</div>
 	<script src="./asset/js/swiper.js?a=1"></script>
 	<script src="/asset/js/app.js?ver=20"></script>
+	<script>
+  // 로그인 여부: 토큰이 있으면 로그인으로 간주
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+
+  // 백엔드에서 만든 BLE 동의/상태 조회 API 사용 (/api/bluetooth/consent)
+  async function hasBleConsent() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    try {
+      const res = await fetch('/api/bluetooth/consent', {
+        headers: { 'Authorization': token } // Bearer 없어도 서버에서 허용하도록 구현됨
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return !!(data && (data.enabled === 1 || data.enabled === true));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function go(url) { window.location.href = url; }
+
+  async function handleNav(e) {
+    e.preventDefault();
+    const key = this.getAttribute('data-nav');
+
+    // 로그인/회원가입은 무조건 해당 페이지로
+    if (key === 'login')   return go('/login_01.html');
+    if (key === 'register')return go('/register_01.html');
+
+    // 비로그인 → 전부 로그인 페이지로
+    if (!isLoggedIn()) return go('/login_01.html');
+
+    // 로그인 상태에서 각 메뉴 분기
+    switch (key) {
+      case 'record':
+        return go('/emotion_select_01.html');
+      case 'calendar':
+        return go('/emotion_calendar.html');
+      case 'map':
+        return go('/emotion_map.html');
+      case 'memory':
+        return go('/emotion_memory.html');
+      case 'around': {
+        // BLE 권한(동의) 여부에 따라 분기
+        const ok = await hasBleConsent();
+        return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+      }
+    }
+  }
+
+  // data-nav 달린 모든 링크에 연결
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    a.style.cursor = 'pointer';
+    a.addEventListener('click', handleNav);
+  });
+</script>
 </body>
 </html>
