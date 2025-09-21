@@ -3,20 +3,56 @@
 <head>
   <title>Memory</title>
   <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-  <meta name="theme-color" content="#162060" />
-  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
 
-  <link rel="stylesheet" href="./asset/css/swiper.min.css">
-  <link rel="stylesheet" href="./asset/css/base.css">
-  <link rel="stylesheet" href="./asset/css/grid.css?a=2">
-  <link rel="stylesheet" href="./asset/css/common.css?a=1">
-  <link rel="stylesheet" href="./asset/css/layout.css">
+  <!-- 파비콘 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+
+  <!-- JS (공통 라이브러리) -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <!-- ⚠️ 이 페이지엔 슬라이더가 없으므로 init 스크립트는 제외
+  <script src="./asset/js/swiper.js?a=1"></script>
+  -->
+  <script src="./asset/js/common.js?a=2"></script>
+
+  <style>
+    /* 인라인 오류 메시지 */
+    .err-msg{display:none;color:#e5484d;font-size:12px;margin-top:6px;line-height:1.4}
+    .err-show{display:block}
+    /* 결과 표시 */
+    .result-msg{margin-top:12px;font-size:14px;line-height:1.5;word-break:break-all;white-space:pre-line}
+    .result-ok{color:#0e7c10}
+    .result-fail{color:#e5484d}
+    .button-box .btn[aria-busy="true"]{opacity:.6;pointer-events:none}
+  </style>
 </head>
 <body>
-  <!-- Header (공통 네비) -->
+  <!-- Header (기존 페이지와 동일) -->
   <header>
     <div class="container">
       <div class="header-logo">
@@ -24,29 +60,29 @@
       </div>
       <div class="header-cate">
         <ul>
-          <li><a href="/record.html">감정기록</a></li>
-          <li><a href="/calendar.html">감정캘린더</a></li>
-          <li><a href="/around.html">내 주변 감정</a></li>
-          <li><a href="/map.html">감정지도</a></li>
-          <li><a href="/memory.html">감정회고</a></li>
+          <li><a href="#" data-nav="record">감정기록</a></li>
+          <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+          <li><a href="#" data-nav="around">내 주변 감정</a></li>
+          <li><a href="#" data-nav="map">감정지도</a></li>
+          <li><a href="#" data-nav="memory">감정회고</a></li>
         </ul>
       </div>
       <div class="header-right">
         <div class="right-button">
           <ul>
-            <li class="border"><a href="/login_02.html">로그인</a></li>
-            <li><a href="/register_01.html">회원가입</a></li>
+            <li class="border"><a href="#" data-nav="login">로그인</a></li>
+            <li><a href="#" data-nav="register">회원가입</a></li>
           </ul>
         </div>
         <div class="right-menu">
           <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
           <div class="inner">
             <ul>
-              <li><a href="/record.html">감정기록</a></li>
-              <li><a href="/calendar.html">감정캘린더</a></li>
-              <li><a href="/around.html">내 주변 감정</a></li>
-              <li><a href="/map.html">감정지도</a></li>
-              <li><a href="/memory.html">감정회고</a></li>
+              <li><a href="#" data-nav="record">감정기록</a></li>
+              <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+              <li><a href="#" data-nav="around">내 주변 감정</a></li>
+              <li><a href="#" data-nav="map">감정지도</a></li>
+              <li><a href="#" data-nav="memory">감정회고</a></li>
             </ul>
           </div>
         </div>
@@ -54,6 +90,7 @@
     </div>
   </header>
 
+  <!-- Body -->
   <section>
     <div class="container container-sm">
       <div class="title-box">
@@ -62,174 +99,286 @@
 
       <!-- 아이디 찾기 -->
       <div class="inner-box">
-        <div class="member-box">
+        <div class="member-box" id="find-id-box">
           <div class="title-box md">
             <h3>아이디 찾기</h3>
-            <p>가입시 작성하신 이름과 이메일 주소를 입력하시면 <br/>아이디를 알려드립니다.</p>
+            <p>가입 시 작성하신 이름과 이메일 주소를 입력하시면<br>아이디를 알려드립니다.</p>
           </div>
+
           <div class="write-box">
             <ul>
               <li class="full">
                 <strong class="req">이름</strong>
-                <div class="input-box input-lg">
-                  <input type="text" id="findIdName" placeholder="실명을 입력해 주세요"/>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="fid-name" type="text" placeholder="실명을 입력해 주세요" autocomplete="name">
+                  </div>
+                  <p class="err-msg" id="fid-name-err">이름은 필수입니다.</p>
                 </div>
               </li>
               <li class="full">
                 <strong class="req">이메일</strong>
-                <div class="input-box input-lg">
-                  <input type="text" id="findIdEmail" placeholder="이메일 주소를 입력해 주세요"/>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="fid-email" type="email" placeholder="이메일 주소를 입력해 주세요" autocomplete="email">
+                  </div>
+                  <p class="err-msg" id="fid-email-err">올바른 이메일을 입력해 주세요.</p>
                 </div>
               </li>
             </ul>
           </div>
+
           <div class="button-box mt40 mt-lg-32">
-            <a href="javascript:;" id="btnFindId" class="btn btn-active">아이디 찾기</a>
+            <a href="javascript:;" id="btn-find-id" class="btn btn-active" role="button" aria-controls="fid-result">아이디 찾기</a>
           </div>
+          <div id="fid-result" class="result-msg" aria-live="polite"></div>
         </div>
       </div>
 
       <!-- 비밀번호 찾기 -->
       <div class="inner-box mt24 mt-lg-16">
-        <div class="member-box">
+        <div class="member-box" id="find-pw-box">
           <div class="title-box md">
             <h3>비밀번호 찾기</h3>
-            <p>가입시 작성하신 아이디, 이름, 이메일 주소를 입력하시면 <br/>임시비밀번호를 알려드립니다.</p>
+            <p>가입 시 작성하신 아이디와 이름, 이메일 주소를 입력하시면<br>임시 비밀번호를 알려드립니다.</p>
           </div>
+
           <div class="write-box">
             <ul>
               <li class="full">
                 <strong class="req">아이디</strong>
-                <div class="input-box input-lg">
-                  <input type="text" id="findPwUsername" placeholder="아이디를 입력해 주세요"/>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="fpw-username" type="text" placeholder="아이디를 입력해 주세요" autocomplete="username">
+                  </div>
+                  <p class="err-msg" id="fpw-username-err">아이디는 필수입니다.</p>
                 </div>
               </li>
               <li class="full">
                 <strong class="req">이름</strong>
-                <div class="input-box input-lg">
-                  <input type="text" id="findPwName" placeholder="실명을 입력해 주세요"/>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="fpw-name" type="text" placeholder="실명을 입력해 주세요" autocomplete="name">
+                  </div>
+                  <p class="err-msg" id="fpw-name-err">이름은 필수입니다.</p>
                 </div>
               </li>
               <li class="full">
                 <strong class="req">이메일</strong>
-                <div class="input-box input-lg">
-                  <input type="text" id="findPwEmail" placeholder="이메일 주소를 입력해 주세요"/>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="fpw-email" type="email" placeholder="이메일 주소를 입력해 주세요" autocomplete="email">
+                  </div>
+                  <p class="err-msg" id="fpw-email-err">올바른 이메일을 입력해 주세요.</p>
                 </div>
               </li>
             </ul>
           </div>
+
           <div class="button-box mt40 mt-lg-32">
-            <a href="javascript:;" id="btnFindPw" class="btn btn-active">비밀번호 찾기</a>
+            <a href="javascript:;" id="btn-find-pw" class="btn btn-active" role="button" aria-controls="fpw-result">비밀번호 찾기</a>
           </div>
+          <div id="fpw-result" class="result-msg" aria-live="polite"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 모달: 아이디 -->
-  <div class="modal-box modal-sm" id="modal-id" role="dialog" aria-hidden="true">
-    <div class="box">
-      <div class="modal-head">
-        <h2>아이디 찾기 결과</h2>
-        <a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-      </div>
-      <div class="modal-body">
-        <p>가입한 아이디는 <b id="foundId"></b> 입니다.</p>
-      </div>
-      <div class="modal-foot">
-        <div class="button-box">
-          <a href="javascript:;" class="btn btn-active btn-lg flex-lg-1" onclick="modalClose(this)">확인</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 모달: 비밀번호 -->
-  <div class="modal-box modal-sm" id="modal-pw" role="dialog" aria-hidden="true">
-    <div class="box">
-      <div class="modal-head">
-        <h2>비밀번호 찾기 결과</h2>
-        <a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-      </div>
-      <div class="modal-body">
-        <p>임시 비밀번호는 <b id="foundPw"></b> 입니다.<br/>로그인 후 반드시 변경해주세요.</p>
-      </div>
-      <div class="modal-foot">
-        <div class="button-box">
-          <a href="javascript:;" class="btn btn-active btn-lg flex-lg-1" onclick="modalClose(this)">확인</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- 배경 -->
   <div class="bg-box">
-    <img src="./asset/images/bg_body_member.png" class="is-pc"/>
-    <img src="./asset/images/bg_body_member_m.png" class="is-m"/>
+    <img src="./asset/images/bg_body_member.png" class="is-pc" alt="">
+    <img src="./asset/images/bg_body_member_m.png" class="is-m" alt="">
   </div>
 
-  <script src="./asset/js/swiper.js?a=1"></script>
-  <script src="/asset/js/app.js?ver=19"></script>
+  <!-- 공통 스크립트 -->
+  <!-- (init 스크립트 제외) -->
+  <script src="/asset/js/app.js?ver=21"></script>
 
+  <!-- 네비 동작: 로그인 페이지와 동일 로직 -->
   <script>
-  // ===== 아이디 찾기 =====
-  document.getElementById('btnFindId').addEventListener('click', async () => {
-    const name = document.getElementById('findIdName').value.trim();
-    const email = document.getElementById('findIdEmail').value.trim();
-    if (!name || !email) {
-      return alert("이름과 이메일을 모두 입력해주세요.");
-    }
-    try {
-      const res = await fetch('/api/auth/find-id', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById('foundId').textContent = data.username;
-        modalOpen(null, document.getElementById('modal-id'));
-      } else {
-        alert(data.message || "아이디 찾기 실패");
+    const isLoggedIn = () => !!localStorage.getItem('accessToken');
+    function go(url){ window.location.href = url; }
+    async function handleNav(e){
+      e.preventDefault();
+      const key = this.getAttribute('data-nav');
+      if (key === 'login')    return go('/login_01.html');
+      if (key === 'register') return go('/register_01.html');
+      if (!isLoggedIn()) return go('/login_01.html');
+      switch (key){
+        case 'record':   return go('/emotion_select_01.html');
+        case 'calendar': return go('/emotion_calendar.html');
+        case 'map':      return go('/emotion_map.html');
+        case 'memory':   return go('/emotion_memory.html');
+        case 'around':   return go('/emotion_arround_bluetooth.html');
       }
-    } catch (err) {
-      alert("서버 오류: " + err.message);
     }
-  });
+    document.querySelectorAll('[data-nav]').forEach(a=>{
+      a.style.cursor = 'pointer';
+      a.addEventListener('click', handleNav);
+    });
+  </script>
 
-  // ===== 비밀번호 찾기 =====
-  document.getElementById('btnFindPw').addEventListener('click', async () => {
-    const username = document.getElementById('findPwUsername').value.trim();
-    const name = document.getElementById('findPwName').value.trim();
-    const email = document.getElementById('findPwEmail').value.trim();
-    if (!username || !name || !email) {
-      return alert("아이디, 이름, 이메일을 모두 입력해주세요.");
-    }
-    try {
-      const res = await fetch('/api/auth/find-pw', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, name, email })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById('foundPw').textContent = data.tempPassword;
-        modalOpen(null, document.getElementById('modal-pw'));
-      } else {
-        alert(data.message || "비밀번호 찾기 실패");
+  <!-- 아이디/비번 찾기 스크립트 (백엔드 /api/auth 또는 /auth 자동 탐지) -->
+  <script>
+    (function(){
+      // ====== 전역 충돌 방지: 페이지 전용 네임스페이스 ======
+      const EMAIL_POLICY = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // 전역 재선언 방지용 전역 변수
+      if (!window.__AUTH_API_BASE) window.__AUTH_API_BASE = null;
+
+      // API base 자동탐지 (/api/auth 우선, 실패 시 /auth 폴백)
+      async function pickApiBase() {
+        const candidates = ['/api/auth', '/auth'];
+        try { await fetch('/api/health', { cache: 'no-store' }); } catch (_) {}
+        for (const base of candidates) {
+          try {
+            await fetch(`${base}/__ping__`, { method: 'HEAD' });
+            window.__AUTH_API_BASE = base;
+            return base;
+          } catch (_) {}
+        }
+        window.__AUTH_API_BASE = '/api/auth';
+        return window.__AUTH_API_BASE;
       }
-    } catch (err) {
-      alert("서버 오류: " + err.message);
-    }
-  });
 
-  // ===== 모달 열기/닫기 =====
-  function modalOpen(e, el) {
-    const target = typeof el === "string" ? document.getElementById(el) : el;
-    if (target) target.style.display = "block";
-  }
-  function modalClose(el) {
-    el.closest(".modal-box").style.display = "none";
-  }
+      function showErr(el, show, msg){
+        if (!el) return;
+        if (msg) el.textContent = msg;
+        el.classList.toggle('err-show', !!show);
+      }
+      function setBusy(btn, busy){
+        if (!btn) return;
+        btn.setAttribute('aria-busy', busy ? 'true' : 'false');
+      }
+      function setResult(el, ok, msg){
+        if (!el) return;
+        el.className = 'result-msg ' + (ok ? 'result-ok' : 'result-fail');
+        el.textContent = msg;
+      }
+
+      async function init(){
+        await pickApiBase();
+
+        // 아이디 찾기
+        document.getElementById('btn-find-id').addEventListener('click', async function(){
+          const name  = document.getElementById('fid-name');
+          const email = document.getElementById('fid-email');
+
+          const eName  = document.getElementById('fid-name-err');
+          const eEmail = document.getElementById('fid-email-err');
+          const result = document.getElementById('fid-result');
+
+          showErr(eName,  false);
+          showErr(eEmail, false);
+          setResult(result, true, '');
+
+          const vName  = (name.value  || '').trim();
+          const vEmail = (email.value || '').trim();
+
+          let bad = false;
+          if (!vName){ showErr(eName, true, '이름은 필수입니다.'); bad = true; }
+          if (!vEmail || !EMAIL_POLICY.test(vEmail)){ showErr(eEmail, true, '올바른 이메일을 입력해 주세요.'); bad = true; }
+          if (bad) return;
+
+          setBusy(this, true);
+          try{
+            let res = await fetch(`${window.__AUTH_API_BASE}/find-id`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: vName, email: vEmail })
+            });
+
+            // 경로 폴백 1회
+            if (!res.ok && (res.status === 404 || res.status === 405)) {
+              const alt = (window.__AUTH_API_BASE === '/api/auth') ? '/auth' : '/api/auth';
+              try {
+                const res2 = await fetch(`${alt}/find-id`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name: vName, email: vEmail })
+                });
+                if (res2.ok) { res = res2; window.__AUTH_API_BASE = alt; }
+              } catch (_) {}
+            }
+
+            const data = await res.json().catch(()=> ({}));
+            if (!res.ok){
+              const msg = data?.message || `아이디 찾기 실패 (HTTP ${res.status})`;
+              setResult(result, false, msg);
+              return;
+            }
+            setResult(result, true, `가입 아이디: ${data.username}`);
+          }catch(err){
+            setResult(result, false, '네트워크 오류가 발생했습니다.');
+          }finally{
+            setBusy(this, false);
+          }
+        });
+
+        // 비밀번호 찾기
+        document.getElementById('btn-find-pw').addEventListener('click', async function(){
+          const username = document.getElementById('fpw-username');
+          const name     = document.getElementById('fpw-name');
+          const email    = document.getElementById('fpw-email');
+
+          const eUser  = document.getElementById('fpw-username-err');
+          const eName  = document.getElementById('fpw-name-err');
+          const eEmail = document.getElementById('fpw-email-err');
+          const result = document.getElementById('fpw-result');
+
+          [eUser, eName, eEmail].forEach(el=>showErr(el, false));
+          setResult(result, true, '');
+
+          const vUser  = (username.value || '').trim();
+          const vName  = (name.value     || '').trim();
+          const vEmail = (email.value    || '').trim();
+
+          let bad = false;
+          if (!vUser){ showErr(eUser, true, '아이디는 필수입니다.'); bad = true; }
+          if (!vName){ showErr(eName, true, '이름은 필수입니다.'); bad = true; }
+          if (!vEmail || !EMAIL_POLICY.test(vEmail)){ showErr(eEmail, true, '올바른 이메일을 입력해 주세요.'); bad = true; }
+          if (bad) return;
+
+          setBusy(this, true);
+          try{
+            let res = await fetch(`${window.__AUTH_API_BASE}/find-pw`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: vUser, name: vName, email: vEmail })
+            });
+
+            // 경로 폴백 1회
+            if (!res.ok && (res.status === 404 || res.status === 405)) {
+              const alt = (window.__AUTH_API_BASE === '/api/auth') ? '/auth' : '/api/auth';
+              try {
+                const res2 = await fetch(`${alt}/find-pw`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username: vUser, name: vName, email: vEmail })
+                });
+                if (res2.ok) { res = res2; window.__AUTH_API_BASE = alt; }
+              } catch (_) {}
+            }
+
+            const data = await res.json().catch(()=> ({}));
+            if (!res.ok){
+              const msg = data?.message || `비밀번호 찾기 실패 (HTTP ${res.status})`;
+              setResult(result, false, msg);
+              return;
+            }
+            setResult(result, true, `임시 비밀번호: ${data.tempPassword}\n로그인 후 반드시 비밀번호를 변경해 주세요.`);
+          }catch(err){
+            setResult(result, false, '네트워크 오류가 발생했습니다.');
+          }finally{
+            setBusy(this, false);
+          }
+        });
+      }
+
+      // 시작
+      init();
+    })();
   </script>
 </body>
 </html>
