@@ -12,6 +12,7 @@ header .header-right .right-menu {display:none;}
 header .header-right .right-button ul {display:flex; flex-wrap:wrap; align-items:center;}
 header .header-right .right-button ul li a {width:87px; height:36px; font-size:15px; font-weight:500; color:var(--color-white); border-radius:50px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
 header .header-right .right-button ul li.border a {border:1px solid var(--color-white);}
+header.main {box-shadow:none; backdrop-filter:blur(0px); background:none;}
 @media (max-width:1200px){
 header .header-cate ul li a {padding:0 16px;}
 }
@@ -25,6 +26,8 @@ header .header-right .right-menu .inner {pointer-events:none; opacity:0; positio
 header .header-right .right-menu .inner ul li {margin:0 0 8px;}
 header .header-right .right-menu .inner ul li:last-of-type {margin:0;}
 header .header-right .right-menu .inner ul li a {width:112px; height:36px; font-size:14px; font-family:'SacheonUniverse'; box-shadow:0 4px 10px rgba(0,0,0,0.3); border-radius:6px; background:var(--color-active3); color:var(--color-white); display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-right .right-menu .inner ul li.ye {display:flex; flex-wrap:wrap; align-items:center; justify-content:center;}
+header .header-right .right-menu .inner ul li.ye a {width:80%; background:#ffbc00; height:30px; font-size:13px; border-radius:3px; margin:0 auto;}
 header .header-right .right-menu.active .menu {background-image:url('../images/icon_menu_close.svg');}
 header .header-right .right-menu.active .inner {pointer-events:inherit; opacity:1; top:100%;}
 header .header-right .right-button {display:none;}

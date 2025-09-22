@@ -1,150 +1,179 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=2"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- 파비콘 이미지 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+  <style>.is-hidden{display:none!important}</style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href="/"><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-   					 <li><a href="#" data-nav="record">감정기록</a></li>
-  					 <li><a href="#" data-nav="calendar">감정캘린더</a></li>
-  					 <li><a href="#" data-nav="around">내 주변 감정</a></li>
-					 <li><a href="#" data-nav="map">감정지도</a></li>
-					 <li><a href="#" data-nav="memory">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
- 					   <li class="border"><a href="#" data-nav="login">로그인</a></li>
-  					   <li><a href="#" data-nav="register">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-  						    <li><a href="#" data-nav="record">감정기록</a></li>
-  						    <li><a href="#" data-nav="calendar">감정캘린더</a></li>
- 						 	<li><a href="#" data-nav="around">내 주변 감정</a></li>
-      						<li><a href="#" data-nav="map">감정지도</a></li>
-      						<li><a href="#" data-nav="memory">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="container container-sm">
-					<div class="logo-box">
-						<h2><img src="./asset/images/logo.png"/></h2>
-						<p class="su">나의 감정 우주로 떠나는 타임캡슐 여행</p>
-					</div>
-					<div class="face-box">
-						<img src="./asset/images/img_face_all.png" class="lg"/>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_login.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_login_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=20"></script>
-	<script>
-  // 로그인 여부: 토큰이 있으면 로그인으로 간주
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트용 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+
+      <!-- 로그인용 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+
+            <!-- 로그인 상태 -->
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+            <!-- 게스트 상태 -->
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="full-box">
+    <div class="full-inner full-height">
+      <div class="container container-sm">
+        <div class="logo-box">
+          <h2><img src="./asset/images/logo.png" alt="Memory"/></h2>
+          <p class="su">나의 감정 우주로 떠나는 타임캡슐 여행</p>
+        </div>
+        <div class="face-box">
+          <img src="./asset/images/img_face_all.png" class="lg" alt="faces"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_login.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_login_m.png" class="is-m" alt="">
+</div>
+
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=20"></script>
+<script>
+  // 로그인 여부
   const isLoggedIn = () => !!localStorage.getItem('accessToken');
 
-  // 백엔드에서 만든 BLE 동의/상태 조회 API 사용 (/api/bluetooth/consent)
+  // BLE 동의 조회
   async function hasBleConsent() {
     const token = localStorage.getItem('accessToken');
     if (!token) return false;
     try {
-      const res = await fetch('/api/bluetooth/consent', {
-        headers: { 'Authorization': token } // Bearer 없어도 서버에서 허용하도록 구현됨
-      });
+      const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
       if (!res.ok) return false;
       const data = await res.json();
       return !!(data && (data.enabled === 1 || data.enabled === true));
-    } catch (e) {
-      return false;
-    }
+    } catch (e) { return false; }
   }
 
-  function go(url) { window.location.href = url; }
+  const go = (url) => window.location.href = url;
 
-  async function handleNav(e) {
+  // 헤더 토글
+  function renderHeaderByAuth() {
+    const loggedIn = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item')
+      .forEach(el => el.classList.toggle('is-hidden', loggedIn));
+    document.querySelectorAll('.header-user, .header-user-item')
+      .forEach(el => el.classList.toggle('is-hidden', !loggedIn));
+  }
+
+  // 네비 처리
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-nav]');
+    if (!a) return;
     e.preventDefault();
-    const key = this.getAttribute('data-nav');
+    const key = a.getAttribute('data-nav');
 
-    // 로그인/회원가입은 무조건 해당 페이지로
-    if (key === 'login')   return go('/login_01.html');
-    if (key === 'register')return go('/register_01.html');
+    if (key === 'login')    return go('/login_01.html');
+    if (key === 'register') return go('/register_01.html');
+    if (key === 'logout')   {
+      localStorage.removeItem('accessToken');
+      renderHeaderByAuth();
+      return go('/');
+    }
+    if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
 
-    // 비로그인 → 전부 로그인 페이지로
     if (!isLoggedIn()) return go('/login_01.html');
 
-    // 로그인 상태에서 각 메뉴 분기
     switch (key) {
-      case 'record':
-        return go('/emotion_select_01.html');
-      case 'calendar':
-        return go('/emotion_calendar.html');
-      case 'map':
-        return go('/emotion_map.html');
-      case 'memory':
-        return go('/emotion_memory.html');
+      case 'record':   return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map':      return go('/emotion_map.html');
+      case 'memory':   return go('/emotion_memory.html');
       case 'around': {
-        // BLE 권한(동의) 여부에 따라 분기
         const ok = await hasBleConsent();
         return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
       }
     }
-  }
+  });
 
-  // data-nav 달린 모든 링크에 연결
-  document.querySelectorAll('[data-nav]').forEach(a => {
-    a.style.cursor = 'pointer';
-    a.addEventListener('click', handleNav);
+  renderHeaderByAuth();
+  window.addEventListener('storage', (ev) => {
+    if (ev.key === 'accessToken') renderHeaderByAuth();
   });
 </script>
 </body>
