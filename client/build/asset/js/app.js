@@ -64,34 +64,39 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ email, password })
       });
       const j = await res.json();
-      if (!res.ok) return alert(j.message || '로그인 실패');
+      if (!res.ok) {
+        console.log(j.message || '로그인 실패');
+        return;
+      }
       Auth.set(j.accessToken);
       if (j.refreshToken) Auth.setRefresh(j.refreshToken);
-      alert('로그인 성공!');
+      console.log('로그인 성공!');
       // 필요 시 이동
       // location.href = '/emotion_calendar.html';
-    } catch { alert('서버 오류'); }
+    } catch { 
+      console.error('서버 오류'); 
+    }
   });
 
   // 2) 메인 이모지(감정 선택) 핸들링
-  // 각 이모지 요소에 data-emotion="happy" 같은 속성만 달아두면 됨
   document.querySelectorAll('[data-emotion]').forEach(el => {
     el.addEventListener('click', async () => {
       const emotion = el.getAttribute('data-emotion');
-      if (!Auth.loggedIn()) { alert('로그인이 필요합니다'); return; }
+      if (!Auth.loggedIn()) { 
+        console.log('로그인이 필요합니다'); 
+        return; 
+      }
       try {
-        // 초안 저장 (있으면 PUT, 없으면 POST 식으로 서버 구현됐을 텐데 예시는 POST)
         await apiFetch('/record-drafts', {
           method:'PUT',
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ step:'emotion', value: emotion })
         });
-        // 최종 기록으로 바로 저장하고 싶다면 아래 POST 사용:
-        // await apiFetch('/record', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ emotion_type: emotion }) });
-        alert(`선택한 감정: ${emotion}`);
+        // 필요하다면 다음 페이지 이동:
         // location.href = '/emotion_text.html';
+        console.log("선택한 감정:", emotion);
       } catch (e) {
-        console.error(e); alert('기록 저장 실패');
+        console.error('기록 저장 실패', e);
       }
     });
   });
@@ -99,7 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3) “감정기록 작성하기” 버튼(id="btn-write")
   const btnWrite = document.getElementById('btn-write');
   if (btnWrite) btnWrite.addEventListener('click', () => {
-    if (!Auth.loggedIn()) { alert('로그인이 필요합니다'); return; }
+    if (!Auth.loggedIn()) { 
+      console.log('로그인이 필요합니다'); 
+      return; 
+    }
     location.href = '/emotion_text.html'; // 다음 단계 페이지로 이동
   });
 
