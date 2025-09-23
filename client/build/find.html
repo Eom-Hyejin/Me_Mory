@@ -35,29 +35,31 @@
   <!-- JS (공통 라이브러리) -->
   <script src="./asset/js/jquery-3.3.1.js"></script>
   <script src="./asset/js/swiper.min.js"></script>
-  <!-- ⚠️ 이 페이지엔 슬라이더가 없으므로 init 스크립트는 제외
-  <script src="./asset/js/swiper.js?a=1"></script>
-  -->
+  <!-- ⚠️ 이 페이지엔 슬라이더가 없으므로 init 스크립트는 제외 -->
+  <!-- <script src="./asset/js/swiper.js?a=1"></script> -->
   <script src="./asset/js/common.js?a=2"></script>
 
   <style>
-    /* 인라인 오류 메시지 */
-    .err-msg{display:none;color:#e5484d;font-size:12px;margin-top:6px;line-height:1.4}
-    .err-show{display:block}
-    /* 결과 표시 */
-    .result-msg{margin-top:12px;font-size:14px;line-height:1.5;word-break:break-all;white-space:pre-line}
-    .result-ok{color:#0e7c10}
-    .result-fail{color:#e5484d}
+    /* 전역: 헤더 상태 토글 */
+    .is-hidden{display:none!important}
+
+    /* 회원가입 페이지와 동일한 메시지 스타일 */
+    .message-box p{font-size:13px;margin-top:6px;line-height:1.4}
+    .ft-red{color:#e5484d}
+    .ft-green{color:#0e7c10}
+
+    /* 버튼 로딩 상태 */
     .button-box .btn[aria-busy="true"]{opacity:.6;pointer-events:none}
   </style>
 </head>
 <body>
-  <!-- Header (기존 페이지와 동일) -->
+  <!-- Header (두 번째 예시와 동일) -->
   <header>
     <div class="container">
       <div class="header-logo">
-        <h1><a href="/"><img src="./asset/images/logo.png" alt="Me:mory"></a></h1>
+        <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
       </div>
+
       <div class="header-cate">
         <ul>
           <li><a href="#" data-nav="record">감정기록</a></li>
@@ -67,13 +69,24 @@
           <li><a href="#" data-nav="memory">감정회고</a></li>
         </ul>
       </div>
+
       <div class="header-right">
-        <div class="right-button">
+        <!-- 게스트용 -->
+        <div class="right-button header-guest">
           <ul>
             <li class="border"><a href="#" data-nav="login">로그인</a></li>
             <li><a href="#" data-nav="register">회원가입</a></li>
           </ul>
         </div>
+
+        <!-- 로그인용 -->
+        <div class="right-button header-user is-hidden">
+          <ul>
+            <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li><a href="#" data-nav="logout">로그아웃</a></li>
+          </ul>
+        </div>
+
         <div class="right-menu">
           <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
           <div class="inner">
@@ -83,6 +96,14 @@
               <li><a href="#" data-nav="around">내 주변 감정</a></li>
               <li><a href="#" data-nav="map">감정지도</a></li>
               <li><a href="#" data-nav="memory">감정회고</a></li>
+
+              <!-- 로그인 상태 -->
+              <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+              <!-- 게스트 상태 -->
+              <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+              <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
             </ul>
           </div>
         </div>
@@ -113,7 +134,8 @@
                   <div class="input-box input-lg">
                     <input id="fid-name" type="text" placeholder="실명을 입력해 주세요" autocomplete="name">
                   </div>
-                  <p class="err-msg" id="fid-name-err">이름은 필수입니다.</p>
+                  <!-- 바뀐 메시지 구조 -->
+                  <div class="message-box"><p id="fid-name-msg"></p></div>
                 </div>
               </li>
               <li class="full">
@@ -122,7 +144,8 @@
                   <div class="input-box input-lg">
                     <input id="fid-email" type="email" placeholder="이메일 주소를 입력해 주세요" autocomplete="email">
                   </div>
-                  <p class="err-msg" id="fid-email-err">올바른 이메일을 입력해 주세요.</p>
+                  <!-- 바뀐 메시지 구조 -->
+                  <div class="message-box"><p id="fid-email-msg"></p></div>
                 </div>
               </li>
             </ul>
@@ -131,7 +154,8 @@
           <div class="button-box mt40 mt-lg-32">
             <a href="javascript:;" id="btn-find-id" class="btn btn-active" role="button" aria-controls="fid-result">아이디 찾기</a>
           </div>
-          <div id="fid-result" class="result-msg" aria-live="polite"></div>
+          <!-- 결과 메시지 -->
+          <div id="fid-result" class="message-box" aria-live="polite"><p id="fid-result-msg"></p></div>
         </div>
       </div>
 
@@ -151,7 +175,7 @@
                   <div class="input-box input-lg">
                     <input id="fpw-username" type="text" placeholder="아이디를 입력해 주세요" autocomplete="username">
                   </div>
-                  <p class="err-msg" id="fpw-username-err">아이디는 필수입니다.</p>
+                  <div class="message-box"><p id="fpw-username-msg"></p></div>
                 </div>
               </li>
               <li class="full">
@@ -160,7 +184,7 @@
                   <div class="input-box input-lg">
                     <input id="fpw-name" type="text" placeholder="실명을 입력해 주세요" autocomplete="name">
                   </div>
-                  <p class="err-msg" id="fpw-name-err">이름은 필수입니다.</p>
+                  <div class="message-box"><p id="fpw-name-msg"></p></div>
                 </div>
               </li>
               <li class="full">
@@ -169,7 +193,7 @@
                   <div class="input-box input-lg">
                     <input id="fpw-email" type="email" placeholder="이메일 주소를 입력해 주세요" autocomplete="email">
                   </div>
-                  <p class="err-msg" id="fpw-email-err">올바른 이메일을 입력해 주세요.</p>
+                  <div class="message-box"><p id="fpw-email-msg"></p></div>
                 </div>
               </li>
             </ul>
@@ -178,7 +202,7 @@
           <div class="button-box mt40 mt-lg-32">
             <a href="javascript:;" id="btn-find-pw" class="btn btn-active" role="button" aria-controls="fpw-result">비밀번호 찾기</a>
           </div>
-          <div id="fpw-result" class="result-msg" aria-live="polite"></div>
+          <div id="fpw-result" class="message-box" aria-live="polite"><p id="fpw-result-msg"></p></div>
         </div>
       </div>
     </div>
@@ -194,38 +218,90 @@
   <!-- (init 스크립트 제외) -->
   <script src="/asset/js/app.js?ver=21"></script>
 
-  <!-- 네비 동작: 로그인 페이지와 동일 로직 -->
+  <!-- 헤더/네비 동작: 두 번째 예시와 동일 -->
   <script>
+    // 로그인 여부
     const isLoggedIn = () => !!localStorage.getItem('accessToken');
-    function go(url){ window.location.href = url; }
-    async function handleNav(e){
+
+    // BLE 동의 조회
+    async function hasBleConsent() {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return false;
+      try {
+        const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
+        if (!res.ok) return false;
+        const data = await res.json();
+        return !!(data && (data.enabled === 1 || data.enabled === true));
+      } catch (e) { return false; }
+    }
+
+    const go = (url) => window.location.href = url;
+
+    // 헤더 토글
+    function renderHeaderByAuth() {
+      const loggedIn = isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item')
+        .forEach(el => el.classList.toggle('is-hidden', loggedIn));
+      document.querySelectorAll('.header-user, .header-user-item')
+        .forEach(el => el.classList.toggle('is-hidden', !loggedIn));
+    }
+
+    // 전역 네비 처리(위임)
+    document.addEventListener('click', async (e) => {
+      const a = e.target.closest('[data-nav]');
+      if (!a) return;
       e.preventDefault();
-      const key = this.getAttribute('data-nav');
+      const key = a.getAttribute('data-nav');
+
       if (key === 'login')    return go('/login_01.html');
       if (key === 'register') return go('/register_01.html');
+      if (key === 'logout')   {
+        localStorage.removeItem('accessToken');
+        renderHeaderByAuth();
+        return go('/');
+      }
+      if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+
       if (!isLoggedIn()) return go('/login_01.html');
-      switch (key){
+
+      switch (key) {
         case 'record':   return go('/emotion_select_01.html');
         case 'calendar': return go('/emotion_calendar.html');
         case 'map':      return go('/emotion_map.html');
         case 'memory':   return go('/emotion_memory.html');
-        case 'around':   return go('/emotion_arround_bluetooth.html');
+        case 'around': {
+          const ok = await hasBleConsent();
+          return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+        }
       }
-    }
-    document.querySelectorAll('[data-nav]').forEach(a=>{
-      a.style.cursor = 'pointer';
-      a.addEventListener('click', handleNav);
+    });
+
+    renderHeaderByAuth();
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === 'accessToken') renderHeaderByAuth();
     });
   </script>
 
   <!-- 아이디/비번 찾기 스크립트 (백엔드 /api/auth 또는 /auth 자동 탐지) -->
   <script>
     (function(){
-      // ====== 전역 충돌 방지: 페이지 전용 네임스페이스 ======
       const EMAIL_POLICY = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // 전역 재선언 방지용 전역 변수
       if (!window.__AUTH_API_BASE) window.__AUTH_API_BASE = null;
+
+      // 회원가입 페이지 스타일의 메시지 헬퍼
+      function setMsg(el, text, ok){
+        if (!el) return;
+        el.textContent = text || '';
+        if (!text){ el.className = ''; return; }
+        el.className = ok ? 'ft-green' : 'ft-red';
+        el.innerHTML = text.replace(/\n/g, '<br>');
+        el.className = ok ? 'ft-green' : 'ft-red';
+      }
+      function setBusy(btn, busy){
+        if (!btn) return;
+        btn.setAttribute('aria-busy', busy ? 'true' : 'false');
+      }
 
       // API base 자동탐지 (/api/auth 우선, 실패 시 /auth 폴백)
       async function pickApiBase() {
@@ -242,43 +318,31 @@
         return window.__AUTH_API_BASE;
       }
 
-      function showErr(el, show, msg){
-        if (!el) return;
-        if (msg) el.textContent = msg;
-        el.classList.toggle('err-show', !!show);
-      }
-      function setBusy(btn, busy){
-        if (!btn) return;
-        btn.setAttribute('aria-busy', busy ? 'true' : 'false');
-      }
-      function setResult(el, ok, msg){
-        if (!el) return;
-        el.className = 'result-msg ' + (ok ? 'result-ok' : 'result-fail');
-        el.textContent = msg;
-      }
-
       async function init(){
         await pickApiBase();
 
-        // 아이디 찾기
+        // ===== 아이디 찾기 =====
         document.getElementById('btn-find-id').addEventListener('click', async function(){
-          const name  = document.getElementById('fid-name');
-          const email = document.getElementById('fid-email');
+          const name   = document.getElementById('fid-name');
+          const email  = document.getElementById('fid-email');
 
-          const eName  = document.getElementById('fid-name-err');
-          const eEmail = document.getElementById('fid-email-err');
-          const result = document.getElementById('fid-result');
+          const mName  = document.getElementById('fid-name-msg');
+          const mEmail = document.getElementById('fid-email-msg');
+          const mResult= document.getElementById('fid-result-msg');
 
-          showErr(eName,  false);
-          showErr(eEmail, false);
-          setResult(result, true, '');
+          // 초기화
+          setMsg(mName,  '', true);
+          setMsg(mEmail, '', true);
+          setMsg(mResult,'', true);
 
           const vName  = (name.value  || '').trim();
           const vEmail = (email.value || '').trim();
 
           let bad = false;
-          if (!vName){ showErr(eName, true, '이름은 필수입니다.'); bad = true; }
-          if (!vEmail || !EMAIL_POLICY.test(vEmail)){ showErr(eEmail, true, '올바른 이메일을 입력해 주세요.'); bad = true; }
+          if (!vName){ setMsg(mName, '이름은 필수입니다.', false); bad = true; }
+          if (!vEmail || !EMAIL_POLICY.test(vEmail)){
+            setMsg(mEmail, '올바른 이메일을 입력해 주세요.', false); bad = true;
+          }
           if (bad) return;
 
           setBusy(this, true);
@@ -305,39 +369,41 @@
             const data = await res.json().catch(()=> ({}));
             if (!res.ok){
               const msg = data?.message || `아이디 찾기 실패 (HTTP ${res.status})`;
-              setResult(result, false, msg);
+              setMsg(mResult, msg, false);
               return;
             }
-            setResult(result, true, `가입 아이디: ${data.username}`);
+            setMsg(mResult, `가입 아이디: ${data.username}`, true);
           }catch(err){
-            setResult(result, false, '네트워크 오류가 발생했습니다.');
+            setMsg(mResult, '네트워크 오류가 발생했습니다.', false);
           }finally{
             setBusy(this, false);
           }
         });
 
-        // 비밀번호 찾기
+        // ===== 비밀번호 찾기 =====
         document.getElementById('btn-find-pw').addEventListener('click', async function(){
           const username = document.getElementById('fpw-username');
           const name     = document.getElementById('fpw-name');
           const email    = document.getElementById('fpw-email');
 
-          const eUser  = document.getElementById('fpw-username-err');
-          const eName  = document.getElementById('fpw-name-err');
-          const eEmail = document.getElementById('fpw-email-err');
-          const result = document.getElementById('fpw-result');
+          const mUser   = document.getElementById('fpw-username-msg');
+          const mName   = document.getElementById('fpw-name-msg');
+          const mEmail  = document.getElementById('fpw-email-msg');
+          const mResult = document.getElementById('fpw-result-msg');
 
-          [eUser, eName, eEmail].forEach(el=>showErr(el, false));
-          setResult(result, true, '');
+          [mUser, mName, mEmail].forEach(el=>setMsg(el,'',true));
+          setMsg(mResult,'',true);
 
           const vUser  = (username.value || '').trim();
           const vName  = (name.value     || '').trim();
           const vEmail = (email.value    || '').trim();
 
           let bad = false;
-          if (!vUser){ showErr(eUser, true, '아이디는 필수입니다.'); bad = true; }
-          if (!vName){ showErr(eName, true, '이름은 필수입니다.'); bad = true; }
-          if (!vEmail || !EMAIL_POLICY.test(vEmail)){ showErr(eEmail, true, '올바른 이메일을 입력해 주세요.'); bad = true; }
+          if (!vUser){ setMsg(mUser, '아이디는 필수입니다.', false); bad = true; }
+          if (!vName){ setMsg(mName, '이름은 필수입니다.', false); bad = true; }
+          if (!vEmail || !EMAIL_POLICY.test(vEmail)){
+            setMsg(mEmail, '올바른 이메일을 입력해 주세요.', false); bad = true;
+          }
           if (bad) return;
 
           setBusy(this, true);
@@ -364,12 +430,12 @@
             const data = await res.json().catch(()=> ({}));
             if (!res.ok){
               const msg = data?.message || `비밀번호 찾기 실패 (HTTP ${res.status})`;
-              setResult(result, false, msg);
+              setMsg(mResult, msg, false);
               return;
             }
-            setResult(result, true, `임시 비밀번호: ${data.tempPassword}\n로그인 후 반드시 비밀번호를 변경해 주세요.`);
+            setMsg(mResult, `임시 비밀번호: ${data.tempPassword}\n로그인 후 반드시 비밀번호를 변경해 주세요.`, true);
           }catch(err){
-            setResult(result, false, '네트워크 오류가 발생했습니다.');
+            setMsg(mResult, '네트워크 오류가 발생했습니다.', false);
           }finally{
             setBusy(this, false);
           }
