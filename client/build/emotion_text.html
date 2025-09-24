@@ -22,10 +22,13 @@
     .emotion-chip img{width:20px;height:20px;display:inline-block;vertical-align:middle;border-radius:50%}
     textarea{white-space:pre-wrap}
     #chipWrap, #emotionChip{display:none!important}
+
     .file-image-box li { position: relative; }
     .thumb { display:block; width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #e6e8ef; margin-top:8px }
     .thumb.empty { display:none; }
-    .file-hint { font-size:12px; color:#7a7a7a; margin-top:4px }
+
+    /* 남아있는 힌트/상태 문구 강제 숨김 */
+    .file-hint, [data-upload-status], .upload-status, .status-chip { display:none !important; }
   </style>
 </head>
 <body>
@@ -92,6 +95,7 @@
                   <div class="is-m">
                     <div class="emotion-result-box">
                       <div class="result">
+                        <!-- ✅ 업로드 이미지로 교체하지 않음 -->
                         <img id="emojiPreviewTop" src="./asset/images/icon_happy_02.png" alt="preview">
                       </div>
                     </div>
@@ -118,26 +122,22 @@
                   <li>
                     <input type="file" id="file1" accept="image/*"/>
                     <label for="file1">파일첨부 1</label>
-                    <img class="thumb empty" id="thumb1" alt="">
-                    <div class="file-hint" id="hint1"></div>
+                    <img class="thumb empty" id="thumb1" alt="" style="display:none;">
                   </li>
                   <li>
                     <input type="file" id="file2" accept="image/*"/>
                     <label for="file2">파일첨부 2</label>
-                    <img class="thumb empty" id="thumb2" alt="">
-                    <div class="file-hint" id="hint2"></div>
+                    <img class="thumb empty" id="thumb2" alt="" style="display:none;">
                   </li>
                   <li>
                     <input type="file" id="file3" accept="image/*"/>
                     <label for="file3">파일첨부 3</label>
-                    <img class="thumb empty" id="thumb3" alt="">
-                    <div class="file-hint" id="hint3"></div>
+                    <img class="thumb empty" id="thumb3" alt="" style="display:none;">
                   </li>
                   <li>
                     <input type="file" id="file4" accept="image/*"/>
                     <label for="file4">파일첨부 4</label>
-                    <img class="thumb empty" id="thumb4" alt="">
-                    <div class="file-hint" id="hint4"></div>
+                    <img class="thumb empty" id="thumb4" alt="" style="display:none;">
                   </li>
                 </ul>
               </div>
@@ -156,7 +156,7 @@
     </div>
   </section>
 
-  <!-- 하단 큰 프리뷰 -->
+  <!-- 하단 큰 프리뷰(여기도 업로드 이미지로 교체하지 않음) -->
   <div class="circle-border-box">
     <div class="inner">
       <div>
@@ -208,37 +208,42 @@
       }
     });
 
-    /* ========= 드래프트/프리뷰 ========= */
-    const qs = new URLSearchParams(location.search);
-    const draftId = qs.get('draftId');
-
-    const emojiPreviewTop    = document.getElementById('emojiPreviewTop');
-    const emojiPreviewBottom = document.getElementById('emojiPreviewBottom');
-    const contentEl          = document.getElementById('content');
-    const prevBtn            = document.getElementById('prevBtn');
-    const nextBtn            = document.getElementById('nextBtn');
-
-    const fileInputs = [1,2,3,4].map(i => document.getElementById('file'+i));
-    const thumbs     = [1,2,3,4].map(i => document.getElementById('thumb'+i));
-    const hints      = [1,2,3,4].map(i => document.getElementById('hint'+i));
-
-    const PREFIX_BY_EMO = { joy:'happy', sadness:'sad', anger:'angry', worry:'uneasy', proud:'envious', upset:'upset' };
-    const INDEX_BY_CODE = { emoji01:'02', emoji02:'03', emoji03:'04', emoji04:'05', emoji05:'06', emoji06:'07' };
+    /* ========= 키/매핑 ========= */
+    const PREFIX_BY_EMO = {
+      joy:'happy',
+      sadness:'sad',
+      anger:'angry',
+      worry:'uneasy',
+      proud:'proud',     // 🔧 envious가 아니라 proud로 고정
+      upset:'upset'
+    };
+    const INDEX_BY_CODE = {   // 기본 아이콘 파일명이 02~07인 경우 대응
+      emoji01:'02', emoji02:'03', emoji03:'04',
+      emoji04:'05', emoji05:'06', emoji06:'07'
+    };
+    const DEFAULT_ICON = './asset/images/icon_happy_02.png';
 
     function resolveImg(emotion_type, expression_type){
       const prefix = PREFIX_BY_EMO[emotion_type];
-      const idx = INDEX_BY_CODE[expression_type];
-      if (!prefix || !idx) return '';
+      const idx = INDEX_BY_CODE[expression_type] || '02';
+      if (!prefix) return DEFAULT_ICON;
       return `./asset/images/icon_${prefix}_${idx}.png`;
     }
 
-    function getLocalTempDraft(){
-      try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; }
-    }
-    function saveLocalTemp(updates){
+    /* ========= 드래프트 저장/읽기 ========= */
+    const qs = new URLSearchParams(location.search);
+    const draftId = qs.get('draftId');
+
+    const LS_KEY = 'recordDraft.temp';
+    const getLocalTempDraft = () => {
+      try { return JSON.parse(localStorage.getItem(LS_KEY)||'null'); }
+      catch(e){ return null; }
+    };
+    const saveLocalTemp = (updates) => {
       const cur = getLocalTempDraft() || {};
-      localStorage.setItem('recordDraft.temp', JSON.stringify({...cur, ...updates, ts: Date.now()}));
-    }
+      localStorage.setItem(LS_KEY, JSON.stringify({...cur, ...updates, ts: Date.now()}));
+    };
+
     async function fetchServerDraft(id){
       if(!isLoggedIn()||!id) return null;
       try{
@@ -263,7 +268,8 @@
 
     /* ========= Presigned URL ========= */
     async function getPresignedUrl(filename){
-      const res = await fetch(`/api/record-drafts/upload-url?filename=${encodeURIComponent(filename)}`, {
+      const safe = filename || `image_${Date.now()}.png`;
+      const res = await fetch(`/api/record-drafts/upload-url?filename=${encodeURIComponent(safe)}`, {
         headers: { 'Authorization': authHeader() }
       });
       if(!res.ok) throw new Error('upload-url 생성 실패');
@@ -279,23 +285,25 @@
         throw new Error(`S3 업로드 실패: ${r.status}`);
       }
     }
-
     async function putToS3Smart(uploadUrl, file) {
-      // 1) 무헤더
       try { await putRaw(uploadUrl, file, undefined); return; } catch(e) {}
-
-      // 2) Content-Type만
       const ct = file.type || 'application/octet-stream';
       try { await putRaw(uploadUrl, file, { 'Content-Type': ct }); return; } catch(e) {}
-
-      // 3) (서버가 ACL을 서명했다면) ACL 포함 시도
       try { await putRaw(uploadUrl, file, { 'Content-Type': ct, 'x-amz-acl': 'public-read' }); return; } catch(e) {}
-
-      // 그래도 실패면 throw
       throw new Error('S3 업로드 3회 실패');
     }
 
-    /* ========= 업로드/미리보기 ========= */
+    /* ========= 엘리먼트 ========= */
+    const emojiPreviewTop    = document.getElementById('emojiPreviewTop');
+    const emojiPreviewBottom = document.getElementById('emojiPreviewBottom');
+    const contentEl          = document.getElementById('content');
+    const prevBtn            = document.getElementById('prevBtn');
+    const nextBtn            = document.getElementById('nextBtn');
+
+    const fileInputs = [1,2,3,4].map(i => document.getElementById('file'+i));
+    const thumbs     = [1,2,3,4].map(i => document.getElementById('thumb'+i));
+
+    /* ========= 상태/썸네일 ========= */
     let uploadedImages = [null,null,null,null];
 
     function refreshThumb(slot, url){
@@ -303,28 +311,39 @@
       if(url){ img.src=url; img.classList.remove('empty'); }
       else { img.src=''; img.classList.add('empty'); }
     }
-    function setHint(slot, msg){ hints[slot].textContent = msg || ''; }
+
+    // 잔여 상태 문구 제거
+    function removeUploadStatusChips() {
+      document.querySelectorAll('.file-image-box .file-hint, #hint1, #hint2, #hint3, #hint4').forEach(el=>el.remove());
+      document.querySelectorAll('.status-chip, .upload-status, [data-upload-status]').forEach(el=>el.remove());
+      // 텍스트 노드로만 남아있는 "업로드 완료" 제거
+      document.querySelectorAll('.file-image-box, .circle-border-box, body').forEach(scope=>{
+        scope.querySelectorAll('*').forEach(el=>{
+          if (el.childNodes.length===1 && el.childNodes[0].nodeType===3 && el.textContent.trim()==='업로드 완료') {
+            el.remove();
+          }
+        });
+      });
+    }
 
     async function uploadOneFile(slot, file){
       if(!file) return;
       const MAX_MB=15;
-      if(file.size>MAX_MB*1024*1024){ setHint(slot, `파일이 ${MAX_MB}MB 초과`); return; }
-      setHint(slot,'업로드 준비중...');
+      if(file.size>MAX_MB*1024*1024){ return; }
       try{
         const { uploadUrl, imageUrl } = await getPresignedUrl(file.name);
-        setHint(slot,'S3 업로드 중...');
         await putToS3Smart(uploadUrl,file);
         uploadedImages[slot]=imageUrl;
         refreshThumb(slot,imageUrl);
-        setHint(slot,'업로드 완료');
 
+        // 대표 이미지는 프리뷰(이모지)로는 쓰지 않음
         const representative = uploadedImages.find(Boolean) || null;
         const payload={ images: uploadedImages.filter(Boolean), img: representative };
         let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload);
-        if(!ok) setHint(slot,'서버 반영 실패(로컬 저장)');
-        saveLocalTemp(payload);
-        if(representative){ emojiPreviewTop.src=representative; emojiPreviewBottom.src=representative; }
-      }catch(err){ console.error(err); setHint(slot,'업로드 오류'); }
+        if(!ok) saveLocalTemp(payload);
+
+        removeUploadStatusChips();
+      }catch(err){ console.error(err); }
     }
 
     function bindFileInputs(){
@@ -334,11 +353,10 @@
           if(!file){
             uploadedImages[i]=null;
             refreshThumb(i,null);
-            setHint(i,'');
             const representative=uploadedImages.find(Boolean)||(getLocalTempDraft()?.img||null);
-            await patchServerDraft(draftId,{images:uploadedImages.filter(Boolean),img:representative});
+            if(draftId) await patchServerDraft(draftId,{images:uploadedImages.filter(Boolean),img:representative});
             saveLocalTemp({images:uploadedImages.filter(Boolean),img:representative});
-            if(representative){ emojiPreviewTop.src=representative; emojiPreviewBottom.src=representative; }
+            removeUploadStatusChips();
             return;
           }
           await uploadOneFile(i,file);
@@ -346,26 +364,75 @@
       });
     }
 
-    function applyPreview({emotion_type, expression_type, img, content}){
-      let derived=img;
-      if(!derived) derived=resolveImg(emotion_type,expression_type);
-      if(derived){ emojiPreviewTop.src=derived; emojiPreviewBottom.src=derived; saveLocalTemp({img:derived,emotion_type,expression_type}); }
+    // 안전한 이미지 적용 (로드 실패 시 기본 아이콘)
+    function setPreviewImg(imgEl, src){
+      imgEl.onload = null;
+      imgEl.onerror = () => { imgEl.src = DEFAULT_ICON; };
+      imgEl.src = src || DEFAULT_ICON;
+    }
+
+    // 이모지/감정 복구
+    function pickEmotionFromAllSources(serverData, localData){
+  // 1) 쿼리스트링 우선
+  const qEmo = qs.get('emotion_type');
+  const qExpr = qs.get('expression_type');
+  if(qEmo && qExpr) return { emotion_type:qEmo, expression_type:qExpr };
+
+  // 2) 서버 드래프트 데이터 우선 (서버 데이터가 있으면 그 데이터를 사용)
+  if(serverData?.emotion_type && serverData?.expression_type)
+    return { emotion_type:serverData.emotion_type, expression_type:serverData.expression_type };
+
+  // 3) 로컬 데이터 (가장 최근에 저장된 감정/이모지)
+  if(localData?.emotion_type && localData?.expression_type)
+    return { emotion_type:localData.emotion_type, expression_type:localData.expression_type };
+
+  // 4) 폴백 (기본 감정 설정)
+  return { emotion_type:'joy', expression_type:'emoji01' };
+}
+
+    // 프리뷰 적용(업로드 이미지로 덮어쓰기 금지)
+    function applyPreview({emotion_type, expression_type, content}){
+      const derived = resolveImg(emotion_type,expression_type);
+      setPreviewImg(emojiPreviewTop, derived);
+      setPreviewImg(emojiPreviewBottom, derived);
+
       if(typeof content==='string') contentEl.value=content||'';
+      saveLocalTemp({emotion_type,expression_type,img:derived});
+      removeUploadStatusChips();
+    }
+
+    // 새 플로우면 과거 이미지/상태 싹 정리
+    function clearOldImagesIfNewFlow(){
+      if(draftId) return; // 서버 드래프트가 있으면 유지
+      uploadedImages=[null,null,null,null];
+      thumbs.forEach((_,i)=>refreshThumb(i,null));
+      const cur = getLocalTempDraft() || {};
+      delete cur.images; delete cur.img;
+      localStorage.setItem(LS_KEY, JSON.stringify({...cur, ts:Date.now()}));
+      removeUploadStatusChips();
     }
 
     async function init(){
       renderHeaderByAuth();
-      let data=null;
-      if(draftId) data=await fetchServerDraft(draftId);
-      if(!data) data=getLocalTempDraft();
-      const local=getLocalTempDraft()||{};
-      data={...(data||{}),...(local||{})};
-      if(Array.isArray(data.images)&&data.images.length){
+
+      let server = null;
+      if(draftId) server = await fetchServerDraft(draftId);
+      const local  = getLocalTempDraft() || {};
+
+      // 감정/이모지 복구
+      const picked = pickEmotionFromAllSources(server, local);
+      applyPreview({ ...picked, content: (server?.content ?? local?.content ?? '') });
+
+      // 이미지 복구: 서버 드래프트가 있을 때만
+      if (draftId && Array.isArray(server?.images) && server.images.length){
         uploadedImages=[null,null,null,null];
-        data.images.slice(0,4).forEach((url,idx)=>{ uploadedImages[idx]=url; refreshThumb(idx,url); setHint(idx,'이미 업로드됨'); });
+        server.images.slice(0,4).forEach((url,idx)=>{ uploadedImages[idx]=url; refreshThumb(idx,url); });
+      } else {
+        clearOldImagesIfNewFlow();
       }
-      applyPreview({ emotion_type:data?.emotion_type, expression_type:data?.expression_type, img:data?.img, content:data?.content });
+
       bindFileInputs();
+      removeUploadStatusChips();
 
       prevBtn.addEventListener('click',(e)=>{
         e.preventDefault();
@@ -381,8 +448,8 @@
         const representative=uploadedImages.find(Boolean)||cur.img||null;
         const payload={
           content: contentEl.value || '',
-          emotion_type: cur.emotion_type || data?.emotion_type || null,
-          expression_type: cur.expression_type || data?.expression_type || null,
+          emotion_type: cur.emotion_type || picked.emotion_type,
+          expression_type: cur.expression_type || picked.expression_type,
           img: representative,
           images: uploadedImages.filter(Boolean)
         };
@@ -397,6 +464,9 @@
     }
 
     init();
+
+    // 혹시 페이지 교체 시 남아있는 상태문구가 보이는 경우 방지
+    window.addEventListener('pageshow', removeUploadStatusChips);
   </script>
 </body>
 </html>

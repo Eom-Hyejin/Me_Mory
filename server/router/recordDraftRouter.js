@@ -236,9 +236,11 @@ router.post('/drafts/:id/confirm', verifyToken, async (req, res) => {
   const draftId = parseInt(req.params.id, 10);
   const userId = req.user.userId;
   const conn = await db.getConnection();
+
   try {
     await conn.beginTransaction();
 
+    // 드래프트 데이터 조회
     const [[draft]] = await conn.query(
       `SELECT * FROM RecordDrafts WHERE id=? AND userId=? FOR UPDATE`, [draftId, userId]
     );
@@ -246,27 +248,25 @@ router.post('/drafts/:id/confirm', verifyToken, async (req, res) => {
       await conn.rollback();
       return res.status(404).json({ message: 'Draft 없음' });
     }
+
     if (draft.status === 'confirmed') {
       await conn.rollback();
       return res.status(409).json({ message: '이미 확정된 드래프트입니다' });
     }
-    if (!draft.emotion_type) return res.status(400).json({ message: 'emotion_type 필요' });
-    if (!draft.visibility)   return res.status(400).json({ message: 'visibility 필요' });
 
+    // 이미지 정보 조회 (RecordDrafts에 연결된 이미지들)
     const [imgs] = await conn.query(
-      `SELECT url, sort_order FROM RecordImages WHERE draftId=? ORDER BY sort_order ASC, id ASC`,
-      [draftId]
+      `SELECT url, sort_order FROM RecordImages WHERE draftId=? ORDER BY sort_order ASC`, [draftId]
     );
     const top4 = ensureMax4(imgs);
-    const repImage = top4.length ? top4[0].url : null;
+    const repImage = top4.length ? top4[0].url : null; // 대표 이미지는 첫 번째 이미지
 
     let revealAt = draft.reveal_at;
     if (!revealAt) {
       if (draft.period === '6' || draft.period === '12') {
         const months = parseInt(draft.period, 10);
         const [[calc]] = await conn.query(
-          `SELECT DATE_ADD(?, INTERVAL ? MONTH) as ra`,
-          [draft.created_at, months]
+          `SELECT DATE_ADD(?, INTERVAL ? MONTH) as ra`, [draft.created_at, months]
         );
         revealAt = calc.ra;
       } else {
@@ -274,14 +274,12 @@ router.post('/drafts/:id/confirm', verifyToken, async (req, res) => {
       }
     }
 
+    // Records에 새로운 기록 추가
     const [rec] = await conn.query(
-      `INSERT INTO Records
-       (userId, title, emotion_type, expression_type, content, img, created_at, reveal_at, period,
-        latitude, longitude, place, visibility)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO Records (userId, emotion_type, expression_type, content, img, created_at, reveal_at, period, latitude, longitude, place, visibility)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         userId,
-        draft.title || null,
         draft.emotion_type,
         draft.expression_type || null,
         draft.content || null,
@@ -295,45 +293,26 @@ router.post('/drafts/:id/confirm', verifyToken, async (req, res) => {
         draft.visibility,
       ]
     );
+
     const recordId = rec.insertId;
 
+    // RecordImages 테이블에 이미지 저장
     for (const it of top4) {
       await conn.query(
-        `INSERT INTO RecordImages (recordId, url, sort_order) VALUES (?, ?, ?)`,
-        [recordId, it.url, it.sort_order]
+        `UPDATE RecordImages SET recordId = ? WHERE draftId = ? AND url = ?`,
+        [recordId, draftId, it.url]
       );
     }
-    await conn.query(`DELETE FROM RecordImages WHERE draftId=?`, [draftId]);
 
-    const [[dt]] = await conn.query(
-      `SELECT DATE(created_at) as d FROM Records WHERE id=?`,
-      [recordId]
-    );
-    const dateStr = dt.d;
-
-    await recomputeDailySummary(conn, userId, dateStr);
-
-    await conn.query(
-      `INSERT INTO Today_Emotion (userId, latitude, longitude, emotion_type, expression_type, updated_at)
-       VALUES (?, ?, ?, ?, ?, NOW())
-       ON DUPLICATE KEY UPDATE
-         latitude=VALUES(latitude), longitude=VALUES(longitude),
-         emotion_type=VALUES(emotion_type), expression_type=VALUES(expression_type),
-         updated_at=NOW()`,
-      [
-        userId,
-        draft.latitude || null,
-        draft.longitude || null,
-        draft.emotion_type,
-        draft.expression_type || null,
-      ]
-    );
-
+    // 드래프트 상태를 확정으로 변경
     await conn.query(`UPDATE RecordDrafts SET status='confirmed' WHERE id=?`, [draftId]);
+
+    // 드래프트 삭제 (확정 후)
     await conn.query(`DELETE FROM RecordDrafts WHERE id=?`, [draftId]);
 
     await conn.commit();
     res.json({ message: '기록 확정 완료', recordId });
+
   } catch (err) {
     await conn.rollback();
     console.error(err);

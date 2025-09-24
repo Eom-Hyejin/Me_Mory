@@ -28,6 +28,26 @@
     .notice{margin-top:12px;color:#666;font-size:14px;line-height:1.4}
     .err{color:#c9302c}
     .ok{color:#2a7c2a;font-weight:700}
+
+    /* 수정된 부분 */
+    .emotion-thumb-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .is-pc .emotion-thumb-box {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .is-m .emotion-thumb-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -75,13 +95,12 @@
               <li><a href="#" data-nav="map">감정지도</a></li>
               <li><a href="#" data-nav="memory">감정회고</a></li>
               <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
-              <li class="header-user-item is-hidden"><a href="#" data-nav="logout">로그아웃</a></li>
+              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
               <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
               <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
             </ul>
           </div>
         </div>
-
       </div>
     </div>
   </header>
@@ -110,7 +129,6 @@
                     <div class="emotion-thumb-box">
                       <img id="emojiTop" class="result-img" src="./asset/images/icon_happy_02.png" alt="">
                     </div>
-                    <div id="emotionTextTop" class="emotion-title"></div>
                   </div>
                 </div>
               </div>
@@ -122,7 +140,6 @@
                 <div class="emotion-thumb-box">
                   <img id="emojiBottom" class="result-img" src="./asset/images/icon_happy_02.png" alt="">
                 </div>
-                <div id="emotionTextBottom" class="emotion-title"></div>
                 <p id="saveMsg" class="notice"></p>
               </div>
               <div class="is-m">
@@ -168,7 +185,7 @@
     }
     const go = (url)=> window.location.href = url;
 
-    document.addEventListener('click', (e)=>{
+    document.addEventListener('click', (e)=> {
       const a = e.target.closest('[data-nav]'); if(!a) return;
       e.preventDefault();
       const k = a.getAttribute('data-nav');
@@ -227,6 +244,7 @@
         return await r.json();
       }catch(e){ return null; }
     }
+
     async function confirmServerDraft(id){
       return fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}/confirm`, {
         method:'POST',
@@ -249,8 +267,8 @@
     function setStatusMsg(html, ok=false){
       const cls = ok ? 'ok' : 'err';
       const h = `<span class="${cls}">${html}</span>`;
-      if (saveMsg) saveMsg.innerHTML = h;
-      if (saveMsgM) saveMsgM.innerHTML = h;
+      if (saveMsg) saveMsg.innerHTML = '';
+      if (saveMsgM) saveMsgM.innerHTML = '';
     }
 
     function renderPreview(data){
@@ -277,7 +295,6 @@
         return;
       }
 
-      // 서버 초안 or 로컬 fallback
       let data = null;
       if(draftId){
         data = await fetchServerDraft(draftId);
@@ -292,9 +309,8 @@
 
       renderPreview(data);
 
-      doneBtn?.addEventListener('click', async (e)=>{
+      doneBtn?.addEventListener('click', async (e)=> {
         e.preventDefault();
-        // draftId 없으면 서버 확정 불가 → 캘린더 이동만
         if(!draftId){
           alert('임시 초안 ID가 없어 확정할 수 없습니다. 캘린더로 이동합니다.');
           go('/emotion_calendar.html');
@@ -326,13 +342,11 @@
         }
       });
 
-      // 토큰 변경 반영
-      window.addEventListener('storage', (ev)=>{
+      window.addEventListener('storage', (ev)=> {
         if(ev.key === 'accessToken'){ renderHeaderByAuth(); }
       });
     }
 
-    // activeParent 안전 가드 (외부 스크립트에 없을 때)
     if (typeof window.activeParent !== 'function') {
       window.activeParent = function(){};
     }
