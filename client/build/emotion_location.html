@@ -1,199 +1,515 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#162060" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- CSS -->
+  <link rel="stylesheet" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" href="./asset/css/base.css">
+  <link rel="stylesheet" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" href="./asset/css/common.css?a=2">
+  <link rel="stylesheet" href="./asset/css/layout.css">
+  <!-- JS -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=1"></script>
+  <!-- ✅ Kakao Maps SDK -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5f4aa439c7ba1f3a816ecec2b2c36eab&libraries=services"></script>
+  <style>
+    .is-hidden{display:none!important}
+    .btn[disabled]{opacity:.5; pointer-events:none}
+    .emotion-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f4f6ff;font-weight:600;font-size:14px}
+    .emotion-chip img{width:20px;height:20px;border-radius:50%}
+    /* 페이지 내 위경도 텍스트는 숨김 */
+    #coordInfo{display:none}
+
+    /* ===== 모달 스타일 ===== */
+    .modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center}
+    .modal.is-hidden{display:none!important}
+    .modal-dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+    .modal-panel{
+      position:relative; width:min(960px,92vw); max-height:90vh;
+      background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.2);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .modal-header{padding:14px 16px;border-bottom:1px solid #eef0f5;display:flex;align-items:center;justify-content:space-between}
+    .modal-title{font-weight:700}
+    .modal-close{border:none;background:transparent;font-size:18px;cursor:pointer}
+    .modal-body{padding:12px 16px;overflow:auto}
+    .modal-footer{padding:12px 16px;border-top:1px solid #eef0f5;display:flex;gap:8px;justify-content:flex-end}
+    .map-area{width:100%;height:420px;margin-top:12px;border:1px solid #e6e8ef;border-radius:12px;overflow:hidden}
+    .muted{color:#7a7a7a;font-size:12px}
+    .input-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .input-row input[type="text"]{flex:1}
+	.modal .modal-footer .btn,
+	.modal #modalMyLocBtn{
+  		background: transparent !important;
+  		border: 0 !important;
+  		box-shadow: none !important;
+  		color: #3b5bff !important;      /* 기존 느낌의 파란 텍스트 */
+  		padding: 8px 10px;              /* 클릭 영역은 유지 */
+  		cursor: pointer;
+	}
+
+	/* hover/focus 접근성 */
+	.modal .modal-footer .btn:hover,
+	.modal #modalMyLocBtn:hover{
+  		text-decoration: underline;
+	}
+	.modal .modal-footer .btn:focus-visible,
+	.modal #modalMyLocBtn:focus-visible{
+  		outline: 2px solid rgba(59,91,255,.35);
+  		outline-offset: 2px;
+  		border-radius: 8px;
+	}
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li class="active"><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section class="py-lg-0">
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="circle-box cate-01">
-					<div class="circle-inner">
-						<div class="circle-head">
-							<div class="step-box step-04">
-								<div class="bar"></div>
-							</div>
-						</div>
-						<div class="circle-body">
-							<div class="circle-title">
-								<div class="inner">
-									<div class="is-m">
-										<div class="emotion-result-box">
-											<div class="result"><img src="./asset/images/icon_happy_02.png"/></div>
-										</div>
-									</div>
-									<h2 class="md">오늘의 감정은 <br class="is-m"/>어디로 기록할까요?</h2>
-								</div>
-							</div>
-							<div class="write-box">
-								<ul>
-									<li class="full">
-										<strong class="active">기록할 장소를 입력해주세요</strong>
-										<div>
-											<div class="input-box active">
-												<input type="text" placeholder=""/>
-												<button type="button" class="search" aria-haspopup="dialog" aria-controls="modal-map" onclick="modalOpen(event, this);">검색</button>
-											</div>
-										</div>
-									</li>
-									<li class="full">
-										<strong class="active">공개 여부를 알려주세요</strong>
-										<div>
-											<div class="radio-check-box">
-												<ul>
-													<li>
-														<input type="radio" name="radio01" id="radio01_01"/>
-														<label for="radio01_01" class="eye">공개</label>
-													</li>
-													<li>
-														<input type="radio" name="radio01" id="radio01_02"/>
-														<label for="radio01_02" class="eye-off">비공개</label>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</li>
-									<li class="full">
-										<strong class="active">되돌아볼 시점을 선택해주세요</strong>
-										<div>
-											<div class="radio-check-box">
-												<ul>
-													<li>
-														<input type="radio" name="radio02" id="radio02_01"/>
-														<label for="radio02_01">다시 보지 않음</label>
-													</li>
-													<li>
-														<input type="radio" name="radio02" id="radio02_02"/>
-														<label for="radio02_02">6개월 뒤</label>
-													</li>
-													<li>
-														<input type="radio" name="radio02" id="radio03_02"/>
-														<label for="radio03_02">1년 뒤</label>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="circle-foot">
-							<div class="button-box">
-								<a href="" class="btn btn-active-outline w100 flex-0 mr12 mr-lg-8">이전 단계</a>
-								<a href="" class="btn btn-active flex-1">다음</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="circle-border-box">
-		<div class="inner">
-			<div>
-				<div class="emotion-result-box mb0">
-					<div class="result"><img src="./asset/images/icon_happy_02.png"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="modal-box" id="modal-map" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true">
-		<div class="box">
-			<div class="modal-head">
-				<h2>오늘의 감정은 어디로 기록할까요?</h2>
-				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-			</div>
-			<div class="modal-body">
-				<div class="map-modal-box">
-					<div class="map-search">
-						<form>
-							<input type="text" placeholder="주소를 입력해주세요">
-							<button type="button" class="delete">삭제</button>
-						</form>
-					</div>
-					<div class="map-iframe">
-						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25326.57044652474!2d126.99650799648472!3d37.48854301430885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca16abf1bd3b3%3A0xa4dcd8abd096a6e6!2z7ISc7Jq47Yq567OE7IucIOyEnOy0iOq1rCDshJzstIjrj5k!5e0!3m2!1sko!2skr!4v1757306356663!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-						<div class="pin" style="left:50%; top:50%;"></div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-foot">
-				<div class="button-box">
-					<a href="" class="btn btn-active btn-lg">완료</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_01.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_cate_01_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=6"></script>
+  <!-- 헤더 -->
+  <header>
+    <div class="container">
+      <div class="header-logo">
+        <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+      </div>
+      <div class="header-cate">
+        <ul>
+          <li class="active"><a href="#" data-nav="record">감정기록</a></li>
+          <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+          <li><a href="#" data-nav="around">내 주변 감정</a></li>
+          <li><a href="#" data-nav="map">감정지도</a></li>
+          <li><a href="#" data-nav="memory">감정회고</a></li>
+        </ul>
+      </div>
+      <div class="header-right">
+        <!-- 게스트 -->
+        <div class="right-button header-guest">
+          <ul>
+            <li class="border"><a href="#" data-nav="login">로그인</a></li>
+            <li><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+        <!-- 로그인 -->
+        <div class="right-button header-user is-hidden">
+          <ul>
+            <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li><a href="#" data-nav="logout">로그아웃</a></li>
+          </ul>
+        </div>
+        <div class="right-menu">
+          <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+          <div class="inner">
+            <ul>
+              <li><a href="#" data-nav="record">감정기록</a></li>
+              <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+              <li><a href="#" data-nav="around">내 주변 감정</a></li>
+              <li><a href="#" data-nav="map">감정지도</a></li>
+              <li><a href="#" data-nav="memory">감정회고</a></li>
+              <!-- 로그인 상태 -->
+              <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+              <!-- 게스트 상태 -->
+              <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+              <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 본문 -->
+  <section class="py-lg-0">
+    <div class="full-box">
+      <div class="full-inner full-height">
+        <div class="circle-box cate-01">
+          <div class="circle-inner">
+            <div class="circle-head">
+              <div class="step-box step-04"><div class="bar"></div></div>
+            </div>
+            <div class="circle-body">
+              <div class="circle-title">
+                <div class="inner">
+                  <div class="is-m">
+                    <div class="emotion-result-box">
+                      <div class="result"><img id="emojiPreviewTop" src="./asset/images/icon_happy_02.png" alt=""></div>
+                    </div>
+                  </div>
+                  <h2 class="md">오늘의 감정은 <br class="is-m"/>어디로 기록할까요?</h2>
+                  <div class="mt12">
+                    <span id="emotionChip" class="emotion-chip is-hidden">
+                      <img id="emotionChipImg" src="./asset/images/icon_happy_02.png" alt="">
+                      <span id="emotionChipText"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="write-box">
+                <ul>
+                  <!-- 장소/지도 -->
+                  <li class="full">
+                    <strong class="active">기록할 장소를 검색하세요</strong>
+                    <div class="input-box active">
+                      <input type="text" id="placeInput" placeholder="예) 강남역 카페"/>
+                      <!-- 🔍 돋보기 버튼 → 지도 팝업 열기 -->
+                      <button type="button" id="btnSearchPlace" class="search">검색</button>
+                    </div>
+                    <div class="input-row">
+                      <!-- 내 위치 버튼은 팝업 내부에서 제공 → 여기선 안내만 -->
+                      <span id="coordInfo" class="muted"> </span>
+                    </div>
+                    <!-- ⚠️ 페이지 본문에서는 지도 DOM을 두지 않습니다 (팝업 전용) -->
+                  </li>
+
+                  <!-- 공개 여부 -->
+                  <li class="full">
+                    <strong class="active">공개 여부를 알려주세요</strong>
+                    <div class="radio-check-box">
+                      <ul>
+                        <li><input type="radio" name="visibility" id="vis_public" value="public"/><label for="vis_public" class="eye">공개</label></li>
+                        <li><input type="radio" name="visibility" id="vis_private" value="private"/><label for="vis_private" class="eye-off">비공개</label></li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <!-- 되돌아볼 시점 -->
+                  <li class="full">
+                    <strong class="active">되돌아볼 시점을 선택해주세요</strong>
+                    <div class="radio-check-box">
+                      <ul>
+                        <li><input type="radio" name="period" id="per_none" value="none"/><label for="per_none">다시 보지 않음</label></li>
+                        <li><input type="radio" name="period" id="per_6" value="6"/><label for="per_6">6개월 뒤</label></li>
+                        <li><input type="radio" name="period" id="per_12" value="12"/><label for="per_12">1년 뒤</label></li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="circle-foot">
+              <div class="button-box">
+                <a id="prevBtn" href="#" class="btn btn-active-outline w100 flex-0 mr12 mr-lg-8">이전 단계</a>
+                <a id="nextBtn" href="#" class="btn btn-active flex-1">다음</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 하단 큰 프리뷰 -->
+  <div class="circle-border-box">
+    <div class="inner">
+      <div>
+        <div class="emotion-result-box mb0">
+          <div class="result"><img id="emojiPreviewBottom" src="./asset/images/icon_happy_02.png" alt=""></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-box">
+    <img src="./asset/images/bg_body_cate_01.png" class="is-pc" alt="">
+    <img src="./asset/images/bg_body_cate_01_m.png" class="is-m" alt="">
+  </div>
+
+  <!-- ===== 지도 모달 ===== -->
+  <div id="mapModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
+    <div class="modal-dim"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title" id="mapModalTitle">장소 선택</div>
+        <button type="button" class="modal-close" id="mapCloseBtn" aria-label="닫기">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-row">
+          <input type="text" id="modalSearchInput" placeholder="장소 또는 주소를 입력하세요">
+          <button type="button" id="modalSearchBtn" class="search">검색</button>
+          <button type="button" id="modalMyLocBtn" class="btn btn-active-outline">내 위치</button>
+        </div>
+        <div id="map" class="map-area"></div>
+        <p class="muted">지도를 클릭하거나 검색 결과를 선택해 주세요. “이 위치 사용”을 누르면 적용됩니다.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="mapCancelBtn" class="btn btn-active-outline">취소</button>
+        <button type="button" id="mapUseBtn" class="btn btn-active">이 위치 사용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 스크립트 -->
+  <script src="./asset/js/swiper.js?a=1"></script>
+  <script src="/asset/js/app.js?ver=6"></script>
+  <script>
+    /* ========= 공통 유틸 ========= */
+    const getToken = () => localStorage.getItem('accessToken') || '';
+    const isLoggedIn = () => !!getToken();
+    function renderHeaderByAuth(){
+      const on=isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));
+      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));
+    }
+    const go=(url)=>window.location.href=url;
+
+    document.addEventListener('click', async (e)=>{
+      const a=e.target.closest('[data-nav]'); if(!a) return;
+      e.preventDefault();
+      const k=a.getAttribute('data-nav');
+      if(k==='login') return go('/login_01.html');
+      if(k==='register') return go('/register_01.html');
+      if(k==='logout'){ localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+      if(k==='mypage') return isLoggedIn()?go('/mypage_main.html'):go('/login_01.html');
+      if(!isLoggedIn()) return go('/login_01.html');
+      switch(k){
+        case 'record':  return go('/emotion_select_01.html');
+        case 'calendar':return go('/emotion_calendar.html');
+        case 'map':     return go('/emotion_map.html');
+        case 'memory':  return go('/emotion_memory.html');
+        case 'around':  return go('/emotion_arround_bluetooth.html');
+      }
+    });
+
+    /* ========= 상태 ========= */
+    const qs = new URLSearchParams(location.search);
+    const draftId = qs.get('draftId');
+    const EMO_KO = { joy:'기쁨', sadness:'슬픔', anger:'분노', worry:'걱정', proud:'뿌듯', upset:'속상' };
+
+    const emojiPreviewTop    = document.getElementById('emojiPreviewTop');
+    const emojiPreviewBottom = document.getElementById('emojiPreviewBottom');
+    const emotionChip        = document.getElementById('emotionChip');
+    const emotionChipImg     = document.getElementById('emotionChipImg');
+    const emotionChipText    = document.getElementById('emotionChipText');
+
+    const placeInput       = document.getElementById('placeInput');
+    const btnSearchPlace   = document.getElementById('btnSearchPlace');
+
+    const visPublic        = document.getElementById('vis_public');
+    const visPrivate       = document.getElementById('vis_private');
+    const perNone          = document.getElementById('per_none');
+    const per6             = document.getElementById('per_6');
+    const per12            = document.getElementById('per_12');
+
+    const prevBtn          = document.getElementById('prevBtn');
+    const nextBtn          = document.getElementById('nextBtn');
+
+    // 모달 요소
+    const mapModal       = document.getElementById('mapModal');
+    const mapCloseBtn    = document.getElementById('mapCloseBtn');
+    const mapCancelBtn   = document.getElementById('mapCancelBtn');
+    const mapUseBtn      = document.getElementById('mapUseBtn');
+    const modalSearch    = document.getElementById('modalSearchInput');
+    const modalSearchBtn = document.getElementById('modalSearchBtn');
+    const modalMyLocBtn  = document.getElementById('modalMyLocBtn');
+
+    /* ========= Draft IO ========= */
+    function getLocalTempDraft(){ try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; } }
+    function saveLocalTemp(updates){ const cur=getLocalTempDraft()||{}; localStorage.setItem('recordDraft.temp', JSON.stringify({...cur,...updates,ts:Date.now()})); }
+    async function fetchServerDraft(id){
+      if(!isLoggedIn()||!id) return null;
+      try{
+        const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, { headers:{'Authorization':getToken()} });
+        if(!r.ok) return null;
+        return await r.json();
+      }catch(e){ return null; }
+    }
+    async function patchServerDraft(id, payload){
+      if(!isLoggedIn()||!id) return false;
+      try{
+        const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
+          method:'PATCH',
+          headers:{'Content-Type':'application/json','Authorization':getToken()},
+          body: JSON.stringify(payload)
+        });
+        return r.ok;
+      }catch(e){ return false; }
+    }
+    const persist = async (payload)=>{ let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload); if(!ok) saveLocalTemp(payload); };
+
+    /* ========= Kakao 지도 (모달 내 초기화) ========= */
+    let map, marker, geocoder, places, mapInited=false;
+    let selected = {lat:null, lng:null, addr:''};
+
+    function ensureMap(){
+      if(mapInited) return;
+      const container = document.getElementById('map');
+      const options = { center: new kakao.maps.LatLng(36.5, 127.9), level: 13 };
+      map = new kakao.maps.Map(container, options);
+      marker = new kakao.maps.Marker({ map });
+      geocoder = new kakao.maps.services.Geocoder();
+      places = new kakao.maps.services.Places();
+      mapInited = true;
+
+      // 지도 클릭 → 마커 이동 + 역지오코딩
+      kakao.maps.event.addListener(map, 'click', function(mouseEvent){
+        const latlng = mouseEvent.latLng;
+        setMarkerAndState(latlng.getLat(), latlng.getLng(), null, true);
+      });
+    }
+
+    function relayoutMap(){
+      // 모달 표시 후 리레이아웃
+      if(!mapInited) return;
+      setTimeout(()=>{ map.relayout(); }, 0);
+    }
+
+    function setMarkerAndState(lat, lng, addr=null, doReverse=false){
+      const coord = new kakao.maps.LatLng(lat, lng);
+      map.setLevel(3);
+      map.setCenter(coord);
+      marker.setPosition(coord);
+
+      if (doReverse){
+        geocoder.coord2Address(lng, lat, function(result, status){
+          const got = (status===kakao.maps.services.Status.OK)
+            ? (result[0].road_address?.address_name || result[0].address?.address_name || '')
+            : '';
+          selected = {lat, lng, addr: got};
+          if (got) modalSearch.value = got;
+        });
+      } else {
+        selected = {lat, lng, addr: addr||selected.addr||''};
+        if (addr) modalSearch.value = addr;
+      }
+    }
+
+    // 키워드 우선 → 실패 시 주소검색 (모달 전용)
+    function modalSearchPlace(keyword){
+      const q = (keyword||'').trim();
+      if(!q) return;
+      places.keywordSearch(q, function(results, status){
+        if (status === kakao.maps.services.Status.OK && results.length){
+          const r = results[0];
+          setMarkerAndState(parseFloat(r.y), parseFloat(r.x), r.place_name, false);
+        } else {
+          geocoder.addressSearch(q, function(result, status2){
+            if (status2 === kakao.maps.services.Status.OK && result.length){
+              setMarkerAndState(parseFloat(result[0].y), parseFloat(result[0].x), q, false);
+            } else {
+              alert('해당 장소/주소를 찾지 못했어요.');
+            }
+          });
+        }
+      });
+    }
+
+    // 브라우저 GPS → 역지오코딩 (모달 전용)
+    function modalUseMyLocation(){
+      if (!('geolocation' in navigator)) return alert('이 브라우저는 위치정보를 지원하지 않습니다.');
+      navigator.geolocation.getCurrentPosition(
+        pos=>{
+          const lat = pos.coords.latitude, lng = pos.coords.longitude;
+          setMarkerAndState(lat, lng, null, true);
+        },
+        err=> alert('현재 위치를 가져오지 못했습니다: '+err.message),
+        { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
+      );
+    }
+
+    /* ========= 모달 열기/닫기 ========= */
+    function openMapModal(initialQuery){
+      mapModal.classList.remove('is-hidden');
+      ensureMap();
+      relayoutMap();
+
+      // 기존 선택값이 있으면 그 위치로, 없으면 한반도 줌
+      const cur = getLocalTempDraft() || {};
+      if (Number.isFinite(cur.latitude) && Number.isFinite(cur.longitude)){
+        setMarkerAndState(Number(cur.latitude), Number(cur.longitude), cur.place||'', false);
+      }
+
+      // 초기 검색어가 있으면 자동 검색
+      modalSearch.value = initialQuery || '';
+      if (modalSearch.value.trim()){
+        modalSearchPlace(modalSearch.value);
+      }
+    }
+    function closeMapModal(){
+      mapModal.classList.add('is-hidden');
+    }
+
+    /* ========= UI/초기화 ========= */
+    function applyPreview({img, emotion_type}){
+      if(img){ emojiPreviewTop.src=img; emojiPreviewBottom.src=img; emotionChipImg.src=img; }
+      const emoText = EMO_KO[emotion_type] || '';
+      if (emoText){ emotionChip.classList.remove('is-hidden'); emotionChipText.textContent = emoText; }
+      else { emotionChip.classList.add('is-hidden'); emotionChipText.textContent=''; }
+    }
+    function applyOptions({place, visibility, period}){
+      if (typeof place==='string') placeInput.value = place;
+      if (visibility === 'public') visPublic.checked = true; else visPrivate.checked = true;
+      if (period==='6') per6.checked = true; else if (period==='12') per12.checked = true; else perNone.checked = true;
+    }
+
+    async function init(){
+      renderHeaderByAuth();
+
+      let data = null;
+      if (draftId) data = await fetchServerDraft(draftId);
+      if (!data)  data = getLocalTempDraft() || {};
+
+      applyPreview({ img: data.img, emotion_type: data.emotion_type });
+      applyOptions({
+        place: data.place,
+        visibility: data.visibility || 'private',
+        period: data.period || 'none'
+      });
+
+      // 이벤트 바인딩 (모달 오픈)
+      btnSearchPlace.addEventListener('click', ()=> openMapModal(placeInput.value));
+      // 입력창 엔터 → 팝업 열고 검색
+      placeInput.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter'){
+          e.preventDefault();
+          openMapModal(placeInput.value);
+        }
+      });
+
+      // 모달 내부
+      modalSearchBtn.addEventListener('click', ()=> modalSearchPlace(modalSearch.value));
+      modalSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); modalSearchPlace(modalSearch.value); }});
+      modalMyLocBtn.addEventListener('click', modalUseMyLocation);
+      mapUseBtn.addEventListener('click', async ()=>{
+        // 선택값 적용 + 저장
+        placeInput.value = selected.addr || modalSearch.value || '';
+        const payload = {
+          place: placeInput.value || null,
+          latitude: selected.lat,
+          longitude: selected.lng
+        };
+        await persist(payload);
+        closeMapModal();
+      });
+      mapCancelBtn.addEventListener('click', closeMapModal);
+      mapCloseBtn.addEventListener('click', closeMapModal);
+      mapModal.querySelector('.modal-dim').addEventListener('click', closeMapModal);
+
+      [visPublic, visPrivate].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ visibility:r.value }); }));
+      [perNone, per6, per12].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ period:r.value }); }));
+
+      prevBtn.addEventListener('click', (e)=>{ e.preventDefault(); go(`/emotion_text.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`); });
+      nextBtn.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        // 마지막 동기화(장소/공개/시점)
+        const payload = {
+          place: placeInput.value || null,
+          visibility: visPublic.checked ? 'public' : 'private',
+          period: per6.checked ? '6' : (per12.checked ? '12' : 'none')
+        };
+        let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload); if(!ok) saveLocalTemp(payload);
+        go(`/emotion_result.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`);
+      });
+
+      window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); }});
+    }
+
+    init();
+  </script>
 </body>
 </html>

@@ -38,7 +38,7 @@
   </style>
 </head>
 <body>
-  <!-- 헤더 (네가 준 마크업과 동일, ye 클래스 포함) -->
+  <!-- 헤더 -->
   <header>
     <div class="container">
       <div class="header-logo">
@@ -199,15 +199,15 @@
     }
     let draftId = getQueryDraftId(); // page1에서 전달된 값 기대
 
-    // 폴백: page1에서 서버 저장 실패했다면 로컬에 임시 저장돼 있음
     function getLocalTempDraft(){
       try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; }
     }
 
+    // ✅ PATCH 경로 서버 라우터에 맞게 수정 (/record-drafts/drafts/:id)
     async function updateDraftOnServer(payload){
       if(!isLoggedIn() || !draftId) return false;
       try{
-        const res = await fetch(`/api/record-drafts/${encodeURIComponent(draftId)}`, {
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
           method: 'PATCH',
           headers: {'Content-Type':'application/json','Authorization':getToken()},
           body: JSON.stringify(payload)
@@ -215,6 +215,18 @@
         if(!res.ok) throw new Error('patch failed');
         return true;
       }catch(e){ return false; }
+    }
+
+    // 서버 드래프트(있으면) 가져오기
+    async function fetchServerDraft(){
+      if(!isLoggedIn() || !draftId) return null;
+      try{
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
+          headers:{'Authorization':getToken()}
+        });
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){ return null; }
     }
 
     function mergeLocalTempDraft(updates){
@@ -231,25 +243,58 @@
     let selectedExp = '';      // expression_type (emoji01 ~ emoji06)
     let selectedImg = '';      // 선택된 프리뷰 이미지 경로
 
-    emojiList.addEventListener('click', async (e)=>{
+    // 라디오 변경 이벤트(라벨 클릭 포함 안정 처리)
+    emojiList.addEventListener('change', async (e)=>{
       const input = e.target.closest('input[type="radio"][data-exp]');
       if(!input) return;
-
       selectedExp = input.getAttribute('data-exp');
       selectedImg = input.getAttribute('data-img');
-
-      // 프리뷰 갱신
       if(selectedImg) previewImg.src = selectedImg;
 
-      // 저장: 서버 PATCH 시도 → 실패 시 로컬 폴백
       const payload = { expression_type: selectedExp, img: selectedImg };
       const ok = await updateDraftOnServer(payload);
       if(!ok) mergeLocalTempDraft(payload);
 
-      // 다음 버튼 활성화
       nextBtn.removeAttribute('disabled');
       nextBtn.setAttribute('aria-disabled','false');
     });
+
+    // 초기 상태 복원: 서버 > 로컬 폴백
+    async function hydrateFromDraft(){
+      // 1) 서버 시도
+      let draft = await fetchServerDraft();
+      // 2) 없으면 로컬 폴백
+      if(!draft){
+        draft = getLocalTempDraft();
+      }
+      if(!draft) return;
+
+      // 이미지/이모지 반영
+      if(draft.img){
+        previewImg.src = draft.img;
+        selectedImg = draft.img;
+      }
+      if(draft.expression_type){
+        selectedExp = draft.expression_type;
+      }
+
+      // 해당 라디오 체크 (expression_type 또는 img 매칭)
+      const radios = emojiList.querySelectorAll('input[type="radio"][data-exp]');
+      let matched = false;
+      radios.forEach(r=>{
+        const byExp = selectedExp && r.getAttribute('data-exp') === selectedExp;
+        const byImg = selectedImg && r.getAttribute('data-img') === selectedImg;
+        if(byExp || byImg){
+          r.checked = true;
+          matched = true;
+        }
+      });
+
+      if(matched){
+        nextBtn.removeAttribute('disabled');
+        nextBtn.setAttribute('aria-disabled','false');
+      }
+    }
 
     /* ========= 네비게이션 ========= */
     prevBtn.addEventListener('click', (e)=>{
@@ -261,7 +306,6 @@
     nextBtn.addEventListener('click', (e)=>{
       e.preventDefault();
       if(!selectedExp) return;
-      // 다음 단계(텍스트 입력 공통 페이지)로 이동
       let url = '/emotion_text.html';
       if(draftId) url += `?draftId=${encodeURIComponent(draftId)}`;
       go(url);
@@ -270,6 +314,7 @@
     /* ========= 초기화 ========= */
     renderHeaderByAuth();
     setNickname();
+    hydrateFromDraft();
     window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); setNickname(); }});
   </script>
 </body>
