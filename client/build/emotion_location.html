@@ -17,25 +17,18 @@
   <script src="./asset/js/jquery-3.3.1.js"></script>
   <script src="./asset/js/swiper.min.js"></script>
   <script src="./asset/js/common.js?a=1"></script>
-  <!-- ✅ Kakao Maps SDK -->
+  <!-- Kakao Maps SDK -->
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5f4aa439c7ba1f3a816ecec2b2c36eab&libraries=services"></script>
   <style>
     .is-hidden{display:none!important}
     .btn[disabled]{opacity:.5; pointer-events:none}
-    .emotion-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f4f6ff;font-weight:600;font-size:14px}
-    .emotion-chip img{width:20px;height:20px;border-radius:50%}
-    /* 페이지 내 위경도 텍스트는 숨김 */
     #coordInfo{display:none}
 
-    /* ===== 모달 스타일 ===== */
+    /* 모달 */
     .modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center}
     .modal.is-hidden{display:none!important}
     .modal-dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
-    .modal-panel{
-      position:relative; width:min(960px,92vw); max-height:90vh;
-      background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.2);
-      display:flex; flex-direction:column; overflow:hidden;
-    }
+    .modal-panel{position:relative;width:min(960px,92vw);max-height:90vh;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}
     .modal-header{padding:14px 16px;border-bottom:1px solid #eef0f5;display:flex;align-items:center;justify-content:space-between}
     .modal-title{font-weight:700}
     .modal-close{border:none;background:transparent;font-size:18px;cursor:pointer}
@@ -45,27 +38,10 @@
     .muted{color:#7a7a7a;font-size:12px}
     .input-row{display:flex;gap:8px;align-items:center;margin-top:8px}
     .input-row input[type="text"]{flex:1}
-	.modal .modal-footer .btn,
-	.modal #modalMyLocBtn{
-  		background: transparent !important;
-  		border: 0 !important;
-  		box-shadow: none !important;
-  		color: #3b5bff !important;      /* 기존 느낌의 파란 텍스트 */
-  		padding: 8px 10px;              /* 클릭 영역은 유지 */
-  		cursor: pointer;
-	}
-
-	/* hover/focus 접근성 */
-	.modal .modal-footer .btn:hover,
-	.modal #modalMyLocBtn:hover{
-  		text-decoration: underline;
-	}
-	.modal .modal-footer .btn:focus-visible,
-	.modal #modalMyLocBtn:focus-visible{
-  		outline: 2px solid rgba(59,91,255,.35);
-  		outline-offset: 2px;
-  		border-radius: 8px;
-	}
+    .modal .modal-footer .btn,
+    .modal #modalMyLocBtn{background:transparent!important;border:0!important;box-shadow:none!important;color:#3b5bff!important;padding:8px 10px;cursor:pointer}
+    .modal .modal-footer .btn:hover,.modal #modalMyLocBtn:hover{text-decoration:underline}
+    .modal .modal-footer .btn:focus-visible,.modal #modalMyLocBtn:focus-visible{outline:2px solid rgba(59,91,255,.35);outline-offset:2px;border-radius:8px}
   </style>
 </head>
 <body>
@@ -85,14 +61,12 @@
         </ul>
       </div>
       <div class="header-right">
-        <!-- 게스트 -->
         <div class="right-button header-guest">
           <ul>
             <li class="border"><a href="#" data-nav="login">로그인</a></li>
             <li><a href="#" data-nav="register">회원가입</a></li>
           </ul>
         </div>
-        <!-- 로그인 -->
         <div class="right-button header-user is-hidden">
           <ul>
             <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
@@ -108,10 +82,8 @@
               <li><a href="#" data-nav="around">내 주변 감정</a></li>
               <li><a href="#" data-nav="map">감정지도</a></li>
               <li><a href="#" data-nav="memory">감정회고</a></li>
-              <!-- 로그인 상태 -->
               <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
               <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
-              <!-- 게스트 상태 -->
               <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
               <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
             </ul>
@@ -139,12 +111,6 @@
                     </div>
                   </div>
                   <h2 class="md">오늘의 감정은 <br class="is-m"/>어디로 기록할까요?</h2>
-                  <div class="mt12">
-                    <span id="emotionChip" class="emotion-chip is-hidden">
-                      <img id="emotionChipImg" src="./asset/images/icon_happy_02.png" alt="">
-                      <span id="emotionChipText"></span>
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -155,14 +121,9 @@
                     <strong class="active">기록할 장소를 검색하세요</strong>
                     <div class="input-box active">
                       <input type="text" id="placeInput" placeholder="예) 강남역 카페"/>
-                      <!-- 🔍 돋보기 버튼 → 지도 팝업 열기 -->
                       <button type="button" id="btnSearchPlace" class="search">검색</button>
                     </div>
-                    <div class="input-row">
-                      <!-- 내 위치 버튼은 팝업 내부에서 제공 → 여기선 안내만 -->
-                      <span id="coordInfo" class="muted"> </span>
-                    </div>
-                    <!-- ⚠️ 페이지 본문에서는 지도 DOM을 두지 않습니다 (팝업 전용) -->
+                    <div class="input-row"><span id="coordInfo" class="muted"> </span></div>
                   </li>
 
                   <!-- 공개 여부 -->
@@ -220,7 +181,7 @@
     <img src="./asset/images/bg_body_cate_01_m.png" class="is-m" alt="">
   </div>
 
-  <!-- ===== 지도 모달 ===== -->
+  <!-- 지도 모달 -->
   <div id="mapModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
     <div class="modal-dim"></div>
     <div class="modal-panel">
@@ -246,10 +207,15 @@
 
   <!-- 하단 스크립트 -->
   <script src="./asset/js/swiper.js?a=1"></script>
-  <script src="/asset/js/app.js?ver=6"></script>
+  <script src="/asset/js/app.js?ver=8"></script>
   <script>
     /* ========= 공통 유틸 ========= */
     const getToken = () => localStorage.getItem('accessToken') || '';
+    const authHeader = () => {
+      const t = getToken();
+      if (!t) return '';
+      return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
+    };
     const isLoggedIn = () => !!getToken();
     function renderHeaderByAuth(){
       const on=isLoggedIn();
@@ -279,13 +245,9 @@
     /* ========= 상태 ========= */
     const qs = new URLSearchParams(location.search);
     const draftId = qs.get('draftId');
-    const EMO_KO = { joy:'기쁨', sadness:'슬픔', anger:'분노', worry:'걱정', proud:'뿌듯', upset:'속상' };
 
     const emojiPreviewTop    = document.getElementById('emojiPreviewTop');
     const emojiPreviewBottom = document.getElementById('emojiPreviewBottom');
-    const emotionChip        = document.getElementById('emotionChip');
-    const emotionChipImg     = document.getElementById('emotionChipImg');
-    const emotionChipText    = document.getElementById('emotionChipText');
 
     const placeInput       = document.getElementById('placeInput');
     const btnSearchPlace   = document.getElementById('btnSearchPlace');
@@ -308,13 +270,48 @@
     const modalSearchBtn = document.getElementById('modalSearchBtn');
     const modalMyLocBtn  = document.getElementById('modalMyLocBtn');
 
+    /* ========= 이모지 소스 ========= */
+    const EMOJI_SET = {
+      joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+      sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+      anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+      worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+      proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+      upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+    };
+    function getEmojiSrc(emotion_type, expression_type){
+      const list = EMOJI_SET[emotion_type] || EMOJI_SET.joy;
+      // expression_type: emoji01~emoji06  ← 프리뷰용 규격
+      const idx = Math.max(0, Math.min(5, (Number((expression_type||'').replace('emoji',''))||1)-1));
+      return `./asset/images/${list[idx]}`;
+    }
+
+    // ✳️ 서버 숫자('1'~'6') → 프리뷰용 'emoji0N'
+    function normalizeExprForPreview(expr){
+      if (!expr) return 'emoji01';
+      // 이미 emoji코드면 그대로
+      if (/^emoji0[1-6]$/.test(expr)) return expr;
+      // '1'~'6' 숫자면 변환
+      const n = Number(String(expr).trim());
+      if (Number.isInteger(n) && n>=1 && n<=6) return `emoji0${n}`;
+      return 'emoji01';
+    }
+    // ✳️ 프리뷰용 'emoji0N' → DB용 'N'
+    function mapExprForDB(exprEmoji){
+      const n = Number(String(exprEmoji||'emoji01').replace('emoji',''));
+      const clamped = Math.max(1, Math.min(6, Number.isFinite(n)? n : 1));
+      return String(clamped); // '1' ~ '6'
+    }
+
     /* ========= Draft IO ========= */
     function getLocalTempDraft(){ try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; } }
     function saveLocalTemp(updates){ const cur=getLocalTempDraft()||{}; localStorage.setItem('recordDraft.temp', JSON.stringify({...cur,...updates,ts:Date.now()})); }
     async function fetchServerDraft(id){
       if(!isLoggedIn()||!id) return null;
       try{
-        const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, { headers:{'Authorization':getToken()} });
+        const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
+          headers:{ 'Authorization': authHeader() }
+        });
         if(!r.ok) return null;
         return await r.json();
       }catch(e){ return null; }
@@ -324,7 +321,7 @@
       try{
         const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
           method:'PATCH',
-          headers:{'Content-Type':'application/json','Authorization':getToken()},
+          headers:{ 'Content-Type':'application/json', 'Authorization': authHeader() },
           body: JSON.stringify(payload)
         });
         return r.ok;
@@ -332,7 +329,98 @@
     }
     const persist = async (payload)=>{ let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload); if(!ok) saveLocalTemp(payload); };
 
-    /* ========= Kakao 지도 (모달 내 초기화) ========= */
+    /* ========= UI/초기화 ========= */
+    function applyPreview({emotion_type, expression_type, img}){
+      // 서버가 '1'~'6'을 보냈을 수 있으니 프리뷰용으로 변환
+      const exprForPreview = normalizeExprForPreview(expression_type);
+      let src = img;
+      if (!src) src = getEmojiSrc(emotion_type || 'joy', exprForPreview);
+      if (src){
+        emojiPreviewTop.src = src;
+        emojiPreviewBottom.src = src;
+      }
+      // 로컬에도 프리뷰 규격으로 유지(다음 단계에서도 일관)
+      saveLocalTemp({ emotion_type, expression_type: exprForPreview, img: src });
+    }
+    function applyOptions({place, visibility, period}){
+      if (typeof place==='string') placeInput.value = place;
+      if (visibility === 'public') visPublic.checked = true; else visPrivate.checked = true;
+      if (period==='6') per6.checked = true; else if (period==='12') per12.checked = true; else perNone.checked = true;
+    }
+
+    async function init(){
+      renderHeaderByAuth();
+
+      let data = null;
+      if (draftId) data = await fetchServerDraft(draftId);
+      if (!data)  data = getLocalTempDraft() || {};
+
+      // 로컬 보강(서버 우선)
+      const local = getLocalTempDraft() || {};
+      data = { ...data, ...Object.fromEntries(Object.entries(local).filter(([k,v]) => data[k] == null)) };
+
+      applyPreview({
+        emotion_type: data.emotion_type,
+        expression_type: data.expression_type, // 숫자일 수도 있음 → 내부에서 정규화
+        img: data.img
+      });
+
+      applyOptions({
+        place: data.place,
+        visibility: data.visibility || 'private',
+        period: data.period || 'none'
+      });
+
+      // 버튼 핸들러
+      btnSearchPlace.addEventListener('click', ()=> openMapModal(placeInput.value));
+      placeInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); openMapModal(placeInput.value); }});
+
+      modalSearchBtn.addEventListener('click', ()=> modalSearchPlace(modalSearch.value));
+      modalSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); modalSearchPlace(modalSearch.value); }});
+      modalMyLocBtn.addEventListener('click', modalUseMyLocation);
+      mapUseBtn.addEventListener('click', async ()=>{
+        placeInput.value = selected.addr || modalSearch.value || '';
+        const payload = { place: placeInput.value || null, latitude: selected.lat, longitude: selected.lng };
+        await persist(payload);
+        closeMapModal();
+      });
+      mapCancelBtn.addEventListener('click', closeMapModal);
+      mapCloseBtn.addEventListener('click', closeMapModal);
+      mapModal.querySelector('.modal-dim').addEventListener('click', closeMapModal);
+
+      [visPublic, visPrivate].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ visibility:r.value }); }));
+      [perNone, per6, per12].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ period:r.value }); }));
+
+      prevBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        go(`/emotion_text.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`);
+      });
+
+      // ✅ 다음 클릭 시 expression_type을 DB 규격('1'~'6')으로 변환하여 PATCH
+      nextBtn.addEventListener('click', async (e)=>{
+        e.preventDefault();
+
+        const cur = getLocalTempDraft() || {};
+        // 프리뷰 규격을 DB 규격으로 변환
+        const exprDB = mapExprForDB(cur.expression_type || data.expression_type);
+
+        const payload = {
+          place: placeInput.value || null,
+          visibility: visPublic.checked ? 'public' : 'private',
+          period: per6.checked ? '6' : (per12.checked ? '12' : null),
+          expression_type: exprDB,                    // ← 여기! '1'~'6'
+          emotion_type: cur.emotion_type || data.emotion_type || null,
+          img: cur.img || data.img || null           // 대표 이미지는 유지
+        };
+
+        let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload); if(!ok) saveLocalTemp(payload);
+        go(`/emotion_result.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`);
+      });
+
+      window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); }});
+    }
+
+    /* ========= 지도 ========= */
     let map, marker, geocoder, places, mapInited=false;
     let selected = {lat:null, lng:null, addr:''};
 
@@ -346,25 +434,15 @@
       places = new kakao.maps.services.Places();
       mapInited = true;
 
-      // 지도 클릭 → 마커 이동 + 역지오코딩
       kakao.maps.event.addListener(map, 'click', function(mouseEvent){
         const latlng = mouseEvent.latLng;
         setMarkerAndState(latlng.getLat(), latlng.getLng(), null, true);
       });
     }
-
-    function relayoutMap(){
-      // 모달 표시 후 리레이아웃
-      if(!mapInited) return;
-      setTimeout(()=>{ map.relayout(); }, 0);
-    }
-
+    function relayoutMap(){ if(!mapInited) return; setTimeout(()=>{ map.relayout(); }, 0); }
     function setMarkerAndState(lat, lng, addr=null, doReverse=false){
       const coord = new kakao.maps.LatLng(lat, lng);
-      map.setLevel(3);
-      map.setCenter(coord);
-      marker.setPosition(coord);
-
+      map.setLevel(3); map.setCenter(coord); marker.setPosition(coord);
       if (doReverse){
         geocoder.coord2Address(lng, lat, function(result, status){
           const got = (status===kakao.maps.services.Status.OK)
@@ -378,8 +456,6 @@
         if (addr) modalSearch.value = addr;
       }
     }
-
-    // 키워드 우선 → 실패 시 주소검색 (모달 전용)
     function modalSearchPlace(keyword){
       const q = (keyword||'').trim();
       if(!q) return;
@@ -398,116 +474,26 @@
         }
       });
     }
-
-    // 브라우저 GPS → 역지오코딩 (모달 전용)
     function modalUseMyLocation(){
       if (!('geolocation' in navigator)) return alert('이 브라우저는 위치정보를 지원하지 않습니다.');
       navigator.geolocation.getCurrentPosition(
-        pos=>{
-          const lat = pos.coords.latitude, lng = pos.coords.longitude;
-          setMarkerAndState(lat, lng, null, true);
-        },
+        pos=>{ setMarkerAndState(pos.coords.latitude, pos.coords.longitude, null, true); },
         err=> alert('현재 위치를 가져오지 못했습니다: '+err.message),
         { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
       );
     }
-
-    /* ========= 모달 열기/닫기 ========= */
     function openMapModal(initialQuery){
       mapModal.classList.remove('is-hidden');
       ensureMap();
       relayoutMap();
-
-      // 기존 선택값이 있으면 그 위치로, 없으면 한반도 줌
       const cur = getLocalTempDraft() || {};
       if (Number.isFinite(cur.latitude) && Number.isFinite(cur.longitude)){
         setMarkerAndState(Number(cur.latitude), Number(cur.longitude), cur.place||'', false);
       }
-
-      // 초기 검색어가 있으면 자동 검색
       modalSearch.value = initialQuery || '';
-      if (modalSearch.value.trim()){
-        modalSearchPlace(modalSearch.value);
-      }
+      if (modalSearch.value.trim()){ modalSearchPlace(modalSearch.value); }
     }
-    function closeMapModal(){
-      mapModal.classList.add('is-hidden');
-    }
-
-    /* ========= UI/초기화 ========= */
-    function applyPreview({img, emotion_type}){
-      if(img){ emojiPreviewTop.src=img; emojiPreviewBottom.src=img; emotionChipImg.src=img; }
-      const emoText = EMO_KO[emotion_type] || '';
-      if (emoText){ emotionChip.classList.remove('is-hidden'); emotionChipText.textContent = emoText; }
-      else { emotionChip.classList.add('is-hidden'); emotionChipText.textContent=''; }
-    }
-    function applyOptions({place, visibility, period}){
-      if (typeof place==='string') placeInput.value = place;
-      if (visibility === 'public') visPublic.checked = true; else visPrivate.checked = true;
-      if (period==='6') per6.checked = true; else if (period==='12') per12.checked = true; else perNone.checked = true;
-    }
-
-    async function init(){
-      renderHeaderByAuth();
-
-      let data = null;
-      if (draftId) data = await fetchServerDraft(draftId);
-      if (!data)  data = getLocalTempDraft() || {};
-
-      applyPreview({ img: data.img, emotion_type: data.emotion_type });
-      applyOptions({
-        place: data.place,
-        visibility: data.visibility || 'private',
-        period: data.period || 'none'
-      });
-
-      // 이벤트 바인딩 (모달 오픈)
-      btnSearchPlace.addEventListener('click', ()=> openMapModal(placeInput.value));
-      // 입력창 엔터 → 팝업 열고 검색
-      placeInput.addEventListener('keydown', (e)=>{
-        if(e.key==='Enter'){
-          e.preventDefault();
-          openMapModal(placeInput.value);
-        }
-      });
-
-      // 모달 내부
-      modalSearchBtn.addEventListener('click', ()=> modalSearchPlace(modalSearch.value));
-      modalSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); modalSearchPlace(modalSearch.value); }});
-      modalMyLocBtn.addEventListener('click', modalUseMyLocation);
-      mapUseBtn.addEventListener('click', async ()=>{
-        // 선택값 적용 + 저장
-        placeInput.value = selected.addr || modalSearch.value || '';
-        const payload = {
-          place: placeInput.value || null,
-          latitude: selected.lat,
-          longitude: selected.lng
-        };
-        await persist(payload);
-        closeMapModal();
-      });
-      mapCancelBtn.addEventListener('click', closeMapModal);
-      mapCloseBtn.addEventListener('click', closeMapModal);
-      mapModal.querySelector('.modal-dim').addEventListener('click', closeMapModal);
-
-      [visPublic, visPrivate].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ visibility:r.value }); }));
-      [perNone, per6, per12].forEach(r=> r.addEventListener('change', ()=>{ if(r.checked) persist({ period:r.value }); }));
-
-      prevBtn.addEventListener('click', (e)=>{ e.preventDefault(); go(`/emotion_text.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`); });
-      nextBtn.addEventListener('click', async (e)=>{
-        e.preventDefault();
-        // 마지막 동기화(장소/공개/시점)
-        const payload = {
-          place: placeInput.value || null,
-          visibility: visPublic.checked ? 'public' : 'private',
-          period: per6.checked ? '6' : (per12.checked ? '12' : 'none')
-        };
-        let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload); if(!ok) saveLocalTemp(payload);
-        go(`/emotion_result.html${draftId?`?draftId=${encodeURIComponent(draftId)}`:''}`);
-      });
-
-      window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); }});
-    }
+    function closeMapModal(){ mapModal.classList.add('is-hidden'); }
 
     init();
   </script>

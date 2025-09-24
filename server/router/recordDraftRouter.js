@@ -2,16 +2,13 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
-const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 const { recomputeDailySummary } = require('../util/dailySummary');
+const multer = require('multer');
+const { s3 } = require('../util/s3');
 require('dotenv').config();
 
-const s3 = new AWS.S3({
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
 const EMOTIONS = ['joy', 'sadness', 'anger', 'worry', 'proud', 'upset'];
 const ALLOWED_IMG = {
@@ -415,6 +412,63 @@ router.delete('/drafts/:id', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Draft 삭제 실패', detail: e.message });
   } finally {
     conn.release();
+  }
+});
+
+/* ================== (NEW) 드래프트 이미지 업로드 ================== */
+// 단일 파일 업로드 (FormData 키: 'file')
+router.post('/drafts/:id/images', verifyToken, upload.single('file'), async (req, res) => {
+  try {
+    const draftId = parseInt(req.params.id, 10);
+    const userId = req.user.userId;
+
+    // 드래프트 소유/상태 확인
+    const [[d]] = await db.query(
+      `SELECT id, status FROM RecordDrafts WHERE id=? AND userId=?`,
+      [draftId, userId]
+    );
+    if (!d) return res.status(404).json({ message: 'Draft 없음' });
+    if (d.status === 'confirmed') {
+      return res.status(409).json({ message: '이미 확정된 드래프트에는 업로드할 수 없습니다' });
+    }
+
+    // 파일 검증
+    if (!req.file) return res.status(400).json({ message: 'file 필드가 필요합니다' });
+    const file = req.file;
+
+    const MAX_BYTES = 15 * 1024 * 1024; // 15MB
+    if (file.size > MAX_BYTES) return res.status(400).json({ message: '파일 용량 초과(<=15MB)' });
+
+    // MIME 타입 허용
+    const ALLOWED_IMG = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+    };
+    const ext = ALLOWED_IMG[file.mimetype];
+    if (!ext) return res.status(400).json({ message: '허용되지 않는 이미지 형식' });
+
+    // S3 업로드
+    const key = `records/${userId}/${uuidv4()}.${ext}`;
+    await s3
+      .putObject({
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        ACL: 'public-read',
+      })
+      .promise();
+
+    const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
+    // 바로 DB에 넣지는 않고(정렬/삭제 편의), 프론트가 PATCH /drafts/:id 로
+    // images 배열과 대표 img를 갱신하도록 응답만 반환
+    return res.json({ url });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: '이미지 업로드 실패', detail: err.message });
   }
 });
 

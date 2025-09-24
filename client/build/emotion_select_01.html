@@ -117,42 +117,42 @@
 
             <div class="face-check-box">
               <ul id="emotionList">
-                <li class="happy"  data-emotion="joy">
+                <li class="happy"  data-em="joy">
                   <input type="radio" name="radio" id="radio01"/>
                   <label for="radio01">
                     <div class="spark"><span class="face"></span></div>
                     <p>행복해요</p>
                   </label>
                 </li>
-                <li class="sad"    data-emotion="sadness">
+                <li class="sad"    data-em="sadness">
                   <input type="radio" name="radio" id="radio02"/>
                   <label for="radio02">
                     <div class="spark"><span class="face"></span></div>
                     <p>슬퍼요</p>
                   </label>
                 </li>
-                <li class="angry"  data-emotion="anger">
+                <li class="angry"  data-em="anger">
                   <input type="radio" name="radio" id="radio03"/>
                   <label for="radio03">
                     <div class="spark"><span class="face"></span></div>
                     <p>화나요</p>
                   </label>
                 </li>
-                <li class="uneasy" data-emotion="worry">
+                <li class="uneasy" data-em="worry">
                   <input type="radio" name="radio" id="radio04"/>
                   <label for="radio04">
                     <div class="spark"><span class="face"></span></div>
                     <p>불안해요</p>
                   </label>
                 </li>
-                <li class="envious" data-emotion="proud">
+                <li class="envious" data-em="proud">
                   <input type="radio" name="radio" id="radio05"/>
                   <label for="radio05">
                     <div class="spark"><span class="face"></span></div>
                     <p>부러워요</p>
                   </label>
                 </li>
-                <li class="upset"  data-emotion="upset">
+                <li class="upset"  data-em="upset">
                   <input type="radio" name="radio" id="radio06"/>
                   <label for="radio06">
                     <div class="spark"><span class="face"></span></div>
@@ -182,9 +182,15 @@
 <script src="./asset/js/swiper.js?a=1"></script>
 <script src="/asset/js/app.js?ver=20"></script>
 <script>
-  /* ================= 공통 유틸 (JWT/닉네임) ================= */
+  /* =============== 공통 유틸 (JWT/닉네임) =============== */
   const getToken = () => localStorage.getItem('accessToken') || '';
   const isLoggedIn = () => !!getToken();
+
+  function authHeader() {
+    const t = getToken();
+    if (!t) return '';
+    return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
+  }
 
   function b64urlToUtf8(b64url) {
     let b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
@@ -219,7 +225,7 @@
   }
 
   async function hasBleConsent() {
-    const token = getToken();
+    const token = authHeader();
     if (!token) return false;
     try {
       const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
@@ -260,7 +266,7 @@
     }
   });
 
-  /* ================= 감정 선택 & 저장/이동 ================= */
+  /* ========== 감정 선택 & 드래프트 생성/이동 ========== */
   const EMOTION_KEYS = ['joy','sadness','anger','worry','proud','upset'];
   const PAGE_BY_EMOTION = {
     joy:     '/emotion_select_02.html',
@@ -289,16 +295,29 @@
 
   async function saveDraftToServer(emotion) {
     try {
-      const res = await fetch('/api/record-drafts', {
+      const res = await fetch('/api/record-drafts/drafts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': getToken() },
-        body: JSON.stringify({ emotion_type: emotion })
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader()
+        },
+        body: JSON.stringify({
+          emotion_type: emotion,
+          expression_type: 'neutral', // 초기 기본값
+          visibility: 'private'       // 초기 기본값
+        })
       });
-      if (!res.ok) throw new Error('draft save failed');
+      if (!res.ok) {
+        console.warn('Draft POST failed', res.status);
+        return false;
+      }
       const data = await res.json();
-      currentDraftId = data.draftId || data.id || null;
-      return true;
-    } catch (e) { return false; }
+      currentDraftId = data.draftId ?? data.id ?? null;
+      return !!currentDraftId;
+    } catch (e) {
+      console.error('Draft POST error', e);
+      return false;
+    }
   }
 
   function saveDraftFallback(emotion) {
@@ -306,29 +325,26 @@
   }
 
   async function onSelectEmotion(li) {
-    const emotion = li.getAttribute('data-emotion');
+    const emotion = li.getAttribute('data-em');  // ← 변경됨
     if (!EMOTION_KEYS.includes(emotion)) return;
 
     selectedEmotion = emotion;
     markSelected(li);
 
-    if (!isLoggedIn()) return; // 비로그인은 저장 생략(팝업/안내 없음)
-
+    if (!isLoggedIn()) return; // 비로그인: 서버 저장 생략
     const ok = await saveDraftToServer(emotion);
     if (!ok) saveDraftFallback(emotion);
-    // 알림/토스트 없음
   }
 
+  // 레거시 app.js 리스너를 피하기 위해 data-em 사용
   document.getElementById('emotionList').addEventListener('click', (e) => {
-    const li = e.target.closest('li[data-emotion]');
+    const li = e.target.closest('li[data-em]');
     if (li) onSelectEmotion(li);
   });
 
   document.getElementById('nextBtn').addEventListener('click', (e) => {
     e.preventDefault();
     if (!selectedEmotion) return;
-
-    // 감정별 목적지 결정
     let url = PAGE_BY_EMOTION[selectedEmotion] || '/emotion_select_02.html';
     if (currentDraftId) url += `?draftId=${encodeURIComponent(currentDraftId)}`;
     go(url);

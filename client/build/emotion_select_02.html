@@ -22,14 +22,14 @@
   <!-- 파비콘 이미지 -->
   <link href="" rel="icon" type="image/jpg">
   <link href="" rel="shortcut icon" type="image/jpg">
-  <link href="" rel="apple-touch-icon" type="image/jpg">				
-  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-  <link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
   <script src="./asset/js/jquery-3.3.1.js"></script>
-  <script src="./asset/js/swiper.min.js"></script>	
+  <script src="./asset/js/swiper.min.js"></script>
   <script src="./asset/js/common.js?a=1"></script>
   <style>
     .is-hidden{display:none!important}
@@ -164,14 +164,28 @@
   <script src="./asset/js/swiper.js?a=1"></script>
   <script src="/asset/js/app.js?ver=11"></script>
   <script>
-    /* ========= 공통 유틸 (토큰/닉네임/헤더) ========= */
+    /* ========= 공통 유틸 (토큰/헤더) ========= */
     const getToken = () => localStorage.getItem('accessToken') || '';
     const isLoggedIn = () => !!getToken();
-    function b64urlToUtf8(b64url){let b64=b64url.replace(/-/g,'+').replace(/_/g,'/');const pad=b64.length%4;if(pad)b64+='='.repeat(4-pad);const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder('utf-8').decode(bytes);}
-    function parseJwtName(tokenRaw){try{const t=tokenRaw.startsWith('Bearer ')?tokenRaw.slice(7).trim():tokenRaw.trim();const p=b64urlToUtf8(t.split('.')[1]);const d=JSON.parse(p);return d.name||d.nickname||d.userName||d.username||'';}catch(e){return''}}
-    function setNickname(){const n=isLoggedIn()?(parseJwtName(getToken())||'메모리'):'메모리';/* 이 페이지 타이틀에 별도 닉네임 노출 X */ }
-    function renderHeaderByAuth(){const on=isLoggedIn();document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));}
-    async function hasBleConsent(){const t=getToken();if(!t) return false;try{const r=await fetch('/api/bluetooth/consent',{headers:{'Authorization':t}});if(!r.ok) return false;const d=await r.json();return !!(d&&(d.enabled===1||d.enabled===true));}catch(e){return false}}
+    const authHeader = () => {
+      const t = getToken();
+      if (!t) return '';
+      return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
+    };
+    function renderHeaderByAuth(){
+      const on=isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));
+      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));
+    }
+    async function hasBleConsent(){
+      const t=authHeader(); if(!t) return false;
+      try{
+        const r=await fetch('/api/bluetooth/consent',{headers:{'Authorization':t}});
+        if(!r.ok) return false;
+        const d=await r.json();
+        return !!(d&&(d.enabled===1||d.enabled===true));
+      }catch(e){return false}
+    }
     const go=(url)=>window.location.href=url;
 
     document.addEventListener('click', async (e)=>{
@@ -193,104 +207,108 @@
     });
 
     /* ========= 드래프트 핸들링 ========= */
-    function getQueryDraftId(){
-      const p=new URLSearchParams(location.search);
-      return p.get('draftId');
-    }
-    let draftId = getQueryDraftId(); // page1에서 전달된 값 기대
+    const qs = new URLSearchParams(location.search);
+    const draftId = qs.get('draftId') || null;
 
     function getLocalTempDraft(){
       try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; }
     }
-
-    // ✅ PATCH 경로 서버 라우터에 맞게 수정 (/record-drafts/drafts/:id)
-    async function updateDraftOnServer(payload){
-      if(!isLoggedIn() || !draftId) return false;
-      try{
-        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
-          method: 'PATCH',
-          headers: {'Content-Type':'application/json','Authorization':getToken()},
-          body: JSON.stringify(payload)
-        });
-        if(!res.ok) throw new Error('patch failed');
-        return true;
-      }catch(e){ return false; }
+    function saveLocalTemp(updates){
+      const cur = getLocalTempDraft() || {};
+      localStorage.setItem('recordDraft.temp', JSON.stringify({ ...cur, ...updates, ts: Date.now() }));
     }
 
-    // 서버 드래프트(있으면) 가져오기
     async function fetchServerDraft(){
       if(!isLoggedIn() || !draftId) return null;
       try{
         const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
-          headers:{'Authorization':getToken()}
+          headers: { 'Authorization': authHeader() }
         });
         if(!res.ok) return null;
         return await res.json();
       }catch(e){ return null; }
     }
 
-    function mergeLocalTempDraft(updates){
-      const cur = getLocalTempDraft() || {};
-      localStorage.setItem('recordDraft.temp', JSON.stringify({...cur, ...updates, ts: Date.now()}));
+    async function patchDraft(payload){
+      if(!isLoggedIn() || !draftId) return false;
+      try{
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization': authHeader()
+          },
+          body: JSON.stringify(payload)
+        });
+        return res.ok;
+      }catch(e){ return false; }
     }
 
     /* ========= 이모지 선택 로직 ========= */
     const previewImg = document.getElementById('previewImg');
-    const emojiList = document.getElementById('emojiList');
-    const nextBtn   = document.getElementById('nextBtn');
-    const prevBtn   = document.getElementById('prevBtn');
+    const emojiList  = document.getElementById('emojiList');
+    const nextBtn    = document.getElementById('nextBtn');
+    const prevBtn    = document.getElementById('prevBtn');
 
-    let selectedExp = '';      // expression_type (emoji01 ~ emoji06)
-    let selectedImg = '';      // 선택된 프리뷰 이미지 경로
+    // expression_type → 이미지 경로 매핑(서버에 img가 없어도 복원 가능)
+    const EXP_TO_IMG = {
+      emoji01: './asset/images/icon_happy_02.png',
+      emoji02: './asset/images/icon_happy_03.png',
+      emoji03: './asset/images/icon_happy_04.png',
+      emoji04: './asset/images/icon_happy_05.png',
+      emoji05: './asset/images/icon_happy_06.png',
+      emoji06: './asset/images/icon_happy_07.png',
+    };
 
-    // 라디오 변경 이벤트(라벨 클릭 포함 안정 처리)
+    let selectedExp = '';
+    let selectedImg = '';
+
     emojiList.addEventListener('change', async (e)=>{
       const input = e.target.closest('input[type="radio"][data-exp]');
       if(!input) return;
-      selectedExp = input.getAttribute('data-exp');
-      selectedImg = input.getAttribute('data-img');
-      if(selectedImg) previewImg.src = selectedImg;
 
-      const payload = { expression_type: selectedExp, img: selectedImg };
-      const ok = await updateDraftOnServer(payload);
-      if(!ok) mergeLocalTempDraft(payload);
+      selectedExp = input.getAttribute('data-exp');
+      selectedImg = input.getAttribute('data-img') || EXP_TO_IMG[selectedExp] || previewImg.src;
+
+      // 프리뷰 갱신
+      if (selectedImg) previewImg.src = selectedImg;
+
+      // 서버에는 expression_type만 저장 (img는 허용 필드가 아님)
+      const ok = await patchDraft({ expression_type: selectedExp });
+      if(!ok){
+        // 서버 실패 시 로컬 임시저장
+        saveLocalTemp({ expression_type: selectedExp, img: selectedImg });
+      }else{
+        // 서버 성공이어도 로컬 프리뷰 복원을 위해 img 저장
+        saveLocalTemp({ img: selectedImg });
+      }
 
       nextBtn.removeAttribute('disabled');
       nextBtn.setAttribute('aria-disabled','false');
     });
 
-    // 초기 상태 복원: 서버 > 로컬 폴백
-    async function hydrateFromDraft(){
-      // 1) 서버 시도
-      let draft = await fetchServerDraft();
-      // 2) 없으면 로컬 폴백
-      if(!draft){
-        draft = getLocalTempDraft();
-      }
-      if(!draft) return;
+    async function hydrate(){
+      // 1) 서버 우선
+      let data = await fetchServerDraft();
+      // 2) 서버 없으면 로컬 폴백
+      if(!data) data = getLocalTempDraft();
+      if(!data) return;
 
-      // 이미지/이모지 반영
-      if(draft.img){
-        previewImg.src = draft.img;
-        selectedImg = draft.img;
-      }
-      if(draft.expression_type){
-        selectedExp = draft.expression_type;
-      }
+      // expression_type을 우선으로 프리뷰 복원
+      const exp = data.expression_type || '';
+      const img = data.img || EXP_TO_IMG[exp] || '';
 
-      // 해당 라디오 체크 (expression_type 또는 img 매칭)
-      const radios = emojiList.querySelectorAll('input[type="radio"][data-exp]');
-      let matched = false;
-      radios.forEach(r=>{
-        const byExp = selectedExp && r.getAttribute('data-exp') === selectedExp;
-        const byImg = selectedImg && r.getAttribute('data-img') === selectedImg;
-        if(byExp || byImg){
-          r.checked = true;
-          matched = true;
-        }
-      });
-
-      if(matched){
+      if (img) {
+        previewImg.src = img;
+        selectedImg = img;
+      }
+      if (exp) {
+        selectedExp = exp;
+        // 라디오 체크
+        const radios = emojiList.querySelectorAll('input[data-exp]');
+        radios.forEach(r=>{
+          if (r.getAttribute('data-exp') === exp) r.checked = true;
+        });
         nextBtn.removeAttribute('disabled');
         nextBtn.setAttribute('aria-disabled','false');
       }
@@ -299,8 +317,8 @@
     /* ========= 네비게이션 ========= */
     prevBtn.addEventListener('click', (e)=>{
       e.preventDefault();
-      const backUrl = draftId ? `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}` : '/emotion_select_01.html';
-      go(backUrl);
+      const url = draftId ? `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}` : '/emotion_select_01.html';
+      go(url);
     });
 
     nextBtn.addEventListener('click', (e)=>{
@@ -313,9 +331,8 @@
 
     /* ========= 초기화 ========= */
     renderHeaderByAuth();
-    setNickname();
-    hydrateFromDraft();
-    window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); setNickname(); }});
+    hydrate();
+    window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); }});
   </script>
 </body>
 </html>

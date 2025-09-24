@@ -3,23 +3,10 @@
 <head>
   <title>Memory</title>
   <meta charset="UTF-8">
-  <meta name="keywords" content="">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta name="generator" content="">
-  <meta name="robots" content="">
-  <meta property="og:type" content="">
-  <meta property="og:title" content="">
-  <meta property="og:url" content="">
-  <meta property="og:description" content="">
   <meta name="theme-color" content="#162060" />
-  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-  <link rel="icon" type="image/jpg" href="">
-  <link rel="shortcut icon" type="image/jpg" href="">
-  <link rel="apple-touch-icon" type="image/jpg" href="">
   <link rel="stylesheet" href="./asset/css/swiper.min.css">
   <link rel="stylesheet" href="./asset/css/base.css">
   <link rel="stylesheet" href="./asset/css/grid.css?a=2">
@@ -34,12 +21,17 @@
     .emotion-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f4f6ff;font-weight:600;font-size:14px}
     .emotion-chip img{width:20px;height:20px;display:inline-block;vertical-align:middle;border-radius:50%}
     textarea{white-space:pre-wrap}
-	#chipWrap,
-	#emotionChip { display: none !important; }
+    /* 칩은 숨김 유지 */
+    #chipWrap, #emotionChip{display:none!important}
+    /* 간단 썸네일 프리뷰 */
+    .file-image-box li { position: relative; }
+    .thumb { display:block; width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #e6e8ef; margin-top:8px }
+    .thumb.empty { display:none; }
+    .file-hint { font-size:12px; color:#7a7a7a; margin-top:4px }
   </style>
 </head>
 <body>
-  <!-- 헤더 (동일) -->
+  <!-- 헤더 -->
   <header>
     <div class="container">
       <div class="header-logo">
@@ -125,10 +117,30 @@
 
               <div class="file-image-box">
                 <ul>
-                  <li><input type="file" id="file1"/><label for="file1">파일첨부</label></li>
-                  <li><input type="file" id="file2"/><label for="file2">파일첨부</label></li>
-                  <li><input type="file" id="file3"/><label for="file3">파일첨부</label></li>
-                  <li><input type="file" id="file4"/><label for="file4">파일첨부</label></li>
+                  <li>
+                    <input type="file" id="file1" accept="image/*"/>
+                    <label for="file1">파일첨부 1</label>
+                    <img class="thumb empty" id="thumb1" alt="">
+                    <div class="file-hint" id="hint1"></div>
+                  </li>
+                  <li>
+                    <input type="file" id="file2" accept="image/*"/>
+                    <label for="file2">파일첨부 2</label>
+                    <img class="thumb empty" id="thumb2" alt="">
+                    <div class="file-hint" id="hint2"></div>
+                  </li>
+                  <li>
+                    <input type="file" id="file3" accept="image/*"/>
+                    <label for="file3">파일첨부 3</label>
+                    <img class="thumb empty" id="thumb3" alt="">
+                    <div class="file-hint" id="hint3"></div>
+                  </li>
+                  <li>
+                    <input type="file" id="file4" accept="image/*"/>
+                    <label for="file4">파일첨부 4</label>
+                    <img class="thumb empty" id="thumb4" alt="">
+                    <div class="file-hint" id="hint4"></div>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -163,12 +175,21 @@
   </div>
 
   <script src="./asset/js/swiper.js?a=1"></script>
-  <script src="/asset/js/app.js?ver=17"></script>
+  <script src="/asset/js/app.js?ver=19"></script>
   <script>
     /* ========= 공통 유틸 ========= */
     const getToken = () => localStorage.getItem('accessToken') || '';
     const isLoggedIn = () => !!getToken();
-    function renderHeaderByAuth(){const on=isLoggedIn();document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));}
+    const authHeader = () => {
+      const t = getToken();
+      if (!t) return '';
+      return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
+    };
+    function renderHeaderByAuth(){
+      const on=isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));
+      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));
+    }
     const go=(url)=>window.location.href=url;
 
     document.addEventListener('click', async (e)=>{
@@ -189,89 +210,206 @@
       }
     });
 
-    /* ========= 드래프트 로딩 ========= */
+    /* ========= 드래프트/프리뷰 ========= */
     const qs = new URLSearchParams(location.search);
     const draftId = qs.get('draftId');
 
     const emojiPreviewTop    = document.getElementById('emojiPreviewTop');
     const emojiPreviewBottom = document.getElementById('emojiPreviewBottom');
-    const emotionChip        = document.getElementById('emotionChip');
-    const emotionChipImg     = document.getElementById('emotionChipImg');
-    const emotionChipText    = document.getElementById('emotionChipText');
     const contentEl          = document.getElementById('content');
     const prevBtn            = document.getElementById('prevBtn');
     const nextBtn            = document.getElementById('nextBtn');
 
-    // 감정 한국어 라벨
-    const EMO_KO = { joy:'기쁨', sadness:'슬픔', anger:'분노', worry:'걱정', proud:'뿌듯', upset:'속상' };
+    const fileInputs = [1,2,3,4].map(i => document.getElementById('file'+i));
+    const thumbs     = [1,2,3,4].map(i => document.getElementById('thumb'+i));
+    const hints      = [1,2,3,4].map(i => document.getElementById('hint'+i));
+
+    // emotion_type → 파일 프리픽스
+    const PREFIX_BY_EMO = { joy:'happy', sadness:'sad', anger:'angry', worry:'uneasy', proud:'envious', upset:'upset' };
+    // expression_type(emoji01~06) → 번호(02~07)
+    const INDEX_BY_CODE = { emoji01:'02', emoji02:'03', emoji03:'04', emoji04:'05', emoji05:'06', emoji06:'07' };
+
+    function resolveImg(emotion_type, expression_type){
+      const prefix = PREFIX_BY_EMO[emotion_type];
+      const idx = INDEX_BY_CODE[expression_type];
+      if (!prefix || !idx) return '';
+      return `./asset/images/icon_${prefix}_${idx}.png`;
+    }
 
     function getLocalTempDraft(){
       try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; }
+    }
+    function saveLocalTemp(updates){
+      const cur = getLocalTempDraft() || {};
+      localStorage.setItem('recordDraft.temp', JSON.stringify({...cur, ...updates, ts: Date.now()}));
     }
     async function fetchServerDraft(id){
       if(!isLoggedIn()||!id) return null;
       try{
         const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
-          headers:{'Authorization':getToken()}
+          headers:{'Authorization': authHeader()}
         });
         if(!r.ok) return null;
         return await r.json();
       }catch(e){ return null; }
-    }
-    function saveLocalTemp(updates){
-      const cur = getLocalTempDraft() || {};
-      localStorage.setItem('recordDraft.temp', JSON.stringify({...cur, ...updates, ts: Date.now()}));
     }
     async function patchServerDraft(id, payload){
       if(!isLoggedIn()||!id) return false;
       try{
         const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
           method:'PATCH',
-          headers:{'Content-Type':'application/json','Authorization':getToken()},
+          headers:{'Content-Type':'application/json','Authorization': authHeader()},
           body: JSON.stringify(payload)
         });
         return r.ok;
       }catch(e){ return false; }
     }
 
-    // ✅ 칩 텍스트에서 emoji코드(emoji01~06) 절대 노출하지 않음
-	function applyPreview({expression_type, img, emotion_type, content}){
-  		if (img) {
-    		emojiPreviewTop.src = img;
-    		emojiPreviewBottom.src = img;
-    // emotionChipImg 등 칩 관련 DOM은 더 이상 사용하지 않음
-  		}
-  		if (typeof content === 'string' && content.length) {
-    		contentEl.value = content;
-  		}
-  // 칩을 강제로 숨김(혹시 다른 코드가 건드려도 무시되도록)
-  		const chipWrap = document.getElementById('chipWrap');
-  		const chip = document.getElementById('emotionChip');
-  		chipWrap && chipWrap.classList.add('is-hidden');
-  		chip && chip.classList.add('is-hidden');
-	}
+    // ===== 이미지 업로드 =====
+    // 업로드된 S3 URL들을 보관 (인덱스 = 슬롯-1)
+    let uploadedImages = [null, null, null, null];
+
+    function refreshThumb(slot, url){
+      const img = thumbs[slot];
+      if (url) {
+        img.src = url;
+        img.classList.remove('empty');
+      } else {
+        img.src = '';
+        img.classList.add('empty');
+      }
+    }
+    function setHint(slot, msg){ hints[slot].textContent = msg || ''; }
+
+    async function uploadOneFile(slot, file){
+      if (!draftId) { setHint(slot, '드래프트 ID가 없어 업로드할 수 없어요.'); return; }
+      if (!file) { return; }
+      // 간단한 제한 (백엔드에서 최종 검증)
+      const MAX_MB = 15;
+      if (file.size > MAX_MB*1024*1024){ setHint(slot, `파일이 ${MAX_MB}MB를 초과합니다.`); return; }
+
+      setHint(slot, '업로드 중...');
+      try{
+        const fd = new FormData();
+        fd.append('file', file);
+
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}/images`, {
+          method: 'POST',
+          headers: { 'Authorization': authHeader() },
+          body: fd
+        });
+        if (!res.ok){
+          setHint(slot, '업로드 실패');
+          return;
+        }
+        const data = await res.json(); // { url }
+        const url = data?.url;
+        if (!url){ setHint(slot, 'URL 없음'); return; }
+
+        uploadedImages[slot] = url;
+        refreshThumb(slot, url);
+        setHint(slot, '업로드 완료');
+
+        // 대표 이미지 = 첫 번째 존재하는 이미지
+        const representative = uploadedImages.find(Boolean) || null;
+
+        // 서버에 images & 대표 img 반영
+        const ok = await patchServerDraft(draftId, {
+          images: uploadedImages.filter(Boolean),
+          img: representative
+        });
+        if (!ok){
+          // 서버 PATCH 실패 시에도 로컬 캐시 유지
+          saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
+          setHint(slot, '서버 반영 실패(로컬 임시 저장)');
+        } else {
+          // 로컬에도 동기화
+          saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
+          // 프리뷰 대표 이미지도 교체(UX)
+          if (representative){
+            emojiPreviewTop.src = representative;
+            emojiPreviewBottom.src = representative;
+          }
+        }
+      }catch(err){
+        console.error(err);
+        setHint(slot, '업로드 오류');
+      }
+    }
+
+    function bindFileInputs(){
+      fileInputs.forEach((input, i)=>{
+        input.addEventListener('change', async ()=>{
+          const file = input.files && input.files[0];
+          // 비운 경우
+          if (!file){
+            uploadedImages[i] = null;
+            refreshThumb(i, null);
+            setHint(i, '');
+            // 남은 이미지로 대표 갱신
+            const representative = uploadedImages.find(Boolean) || (getLocalTempDraft()?.img || null);
+            await patchServerDraft(draftId, { images: uploadedImages.filter(Boolean), img: representative });
+            saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
+            if (representative){
+              emojiPreviewTop.src = representative;
+              emojiPreviewBottom.src = representative;
+            }
+            return;
+          }
+          // 새 업로드
+          await uploadOneFile(i, file);
+        });
+      });
+    }
+
+    // 프리뷰 반영 (img 없으면 emotion_type+expression_type로 유추)
+    function applyPreview({emotion_type, expression_type, img, content}){
+      let derived = img;
+      if (!derived) derived = resolveImg(emotion_type, expression_type);
+      if (derived){
+        emojiPreviewTop.src = derived;
+        emojiPreviewBottom.src = derived;
+        saveLocalTemp({ img: derived, emotion_type, expression_type });
+      }
+      if (typeof content === 'string') contentEl.value = content || '';
+    }
 
     async function init(){
       renderHeaderByAuth();
 
+      // 서버 → 로컬 폴백
       let data = null;
       if (draftId) data = await fetchServerDraft(draftId);
       if (!data)  data = getLocalTempDraft();
 
+      // 로컬 병합
+      const local = getLocalTempDraft() || {};
+      data = { ...(data||{}), ...(local||{}) };
+
+      // 기존 업로드 이미지 있으면 반영
+      if (Array.isArray(data.images) && data.images.length){
+        uploadedImages = [null,null,null,null];
+        data.images.slice(0,4).forEach((url, idx)=>{
+          uploadedImages[idx] = url;
+          refreshThumb(idx, url);
+          setHint(idx, '이미 업로드됨');
+        });
+      }
+
       applyPreview({
+        emotion_type: data?.emotion_type,
         expression_type: data?.expression_type,
         img: data?.img,
-        emotion_type: data?.emotion_type,
         content: data?.content
       });
 
-      // 이전: select 02~07 중 마지막 페이지로 복귀
+      bindFileInputs();
+
+      // 이전
       prevBtn.addEventListener('click', (e)=>{
         e.preventDefault();
-        const from = localStorage.getItem('recordDraft.fromPage'); // 예: /emotion_select05.html
-        const fallback = '/emotion_select_02.html'; // 안전 기본값
-        let back = from || fallback;
-        // draftId 유지
+        const from = localStorage.getItem('recordDraft.fromPage') || '/emotion_select_02.html';
+        let back = from;
         if (draftId) {
           const u = new URL(back, location.origin);
           u.searchParams.set('draftId', draftId);
@@ -280,9 +418,21 @@
         go(back);
       });
 
+      // 다음 (이모지/텍스트/이미지 상태 함께 유지)
       nextBtn.addEventListener('click', async (e)=>{
         e.preventDefault();
-        const payload = { content: contentEl.value || '' };
+
+        const cur = getLocalTempDraft() || {};
+        const representative = uploadedImages.find(Boolean) || cur.img || null;
+
+        const payload = {
+          content: contentEl.value || '',
+          emotion_type: cur.emotion_type || data?.emotion_type || null,
+          expression_type: cur.expression_type || data?.expression_type || null,
+          img: representative,
+          images: uploadedImages.filter(Boolean)
+        };
+
         let ok = false;
         if (draftId) ok = await patchServerDraft(draftId, payload);
         if (!ok) saveLocalTemp(payload);
