@@ -7,30 +7,37 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+
   <!-- CSS -->
   <link rel="stylesheet" href="./asset/css/swiper.min.css">
   <link rel="stylesheet" href="./asset/css/base.css">
   <link rel="stylesheet" href="./asset/css/grid.css?a=2">
   <link rel="stylesheet" href="./asset/css/common.css?a=2">
   <link rel="stylesheet" href="./asset/css/layout.css">
+
   <!-- JS -->
   <script src="./asset/js/jquery-3.3.1.js"></script>
   <script src="./asset/js/swiper.min.js"></script>
   <script src="./asset/js/common.js?a=1"></script>
+
   <style>
     .is-hidden{display:none!important}
-    .status-text{font-size:14px;color:#666;margin-top:8px}
-    .emotion-thumb-box img{width:128px;height:128px;object-fit:contain}
-    .center{text-align:center}
+    .btn[disabled]{opacity:.5;pointer-events:none}
+    .emotion-title{font-size:18px;margin-top:8px;color:#2d2d2d}
+    .result-img{width:164px;height:164px;object-fit:contain}
+    .notice{margin-top:12px;color:#666;font-size:14px;line-height:1.4}
+    .err{color:#c9302c}
+    .ok{color:#2a7c2a;font-weight:700}
   </style>
 </head>
 <body>
-  <!-- 헤더 -->
+  <!-- Header -->
   <header>
     <div class="container">
       <div class="header-logo">
         <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
       </div>
+
       <div class="header-cate">
         <ul>
           <li class="active"><a href="#" data-nav="record">감정기록</a></li>
@@ -40,8 +47,9 @@
           <li><a href="#" data-nav="memory">감정회고</a></li>
         </ul>
       </div>
+
       <div class="header-right">
-        <!-- 게스트 -->
+        <!-- 비로그인 -->
         <div class="right-button header-guest">
           <ul>
             <li class="border"><a href="#" data-nav="login">로그인</a></li>
@@ -55,8 +63,10 @@
             <li><a href="#" data-nav="logout">로그아웃</a></li>
           </ul>
         </div>
+
         <div class="right-menu">
-          <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+          <!-- activeParent가 외부 파일에 없을 때 에러 방지 -->
+          <button type="button" class="menu" onclick="window.activeParent ? activeParent(this, 'right-menu') : void 0;">메뉴바</button>
           <div class="inner">
             <ul>
               <li><a href="#" data-nav="record">감정기록</a></li>
@@ -64,15 +74,14 @@
               <li><a href="#" data-nav="around">내 주변 감정</a></li>
               <li><a href="#" data-nav="map">감정지도</a></li>
               <li><a href="#" data-nav="memory">감정회고</a></li>
-              <!-- 로그인 상태 -->
               <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
-              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
-              <!-- 게스트 상태 -->
+              <li class="header-user-item is-hidden"><a href="#" data-nav="logout">로그아웃</a></li>
               <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
               <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
             </ul>
           </div>
         </div>
+
       </div>
     </div>
   </header>
@@ -81,44 +90,49 @@
   <section class="py-lg-0">
     <div class="full-box">
       <div class="full-inner full-height">
-        <div class="circle-box cate-01">
+        <div class="circle-box cate-02">
           <div class="circle-inner">
             <div class="circle-head">
               <div class="is-m mt60">
                 <div class="title-box">
-                  <h2 id="titleMobile">오늘의 감정 타임캡슐이<br/>저장되었어요!</h2>
-                  <div id="savingMobile" class="status-text">저장 중입니다…</div>
+                  <h2>오늘의 감정 타임캡슐이<br/>저장되었어요!</h2>
                 </div>
               </div>
+
               <div class="circle-title mb0">
                 <div class="inner">
                   <div class="is-pc">
-                    <h2 id="titlePc" class="md">오늘의 감정 타임캡슐이 <br/>저장되었어요!</h2>
-                    <div id="savingPc" class="status-text">저장 중입니다…</div>
+                    <h2 class="md">오늘의 감정 타임캡슐이 <br/>저장되었어요!</h2>
                   </div>
+
+                  <!-- 모바일 상단 미리보기 -->
                   <div class="is-m">
-                    <div class="emotion-thumb-box center">
-                      <img id="emojiPreviewTop" src="./asset/images/icon_happy_02.png" alt="">
-                      <div id="emotionTextTop" class="mt8"></div>
+                    <div class="emotion-thumb-box">
+                      <img id="emojiTop" class="result-img" src="./asset/images/icon_happy_02.png" alt="">
                     </div>
+                    <div id="emotionTextTop" class="emotion-title"></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="circle-body">
+              <!-- PC 하단 큰 프리뷰 -->
               <div class="is-pc">
-                <div class="emotion-thumb-box center">
-                  <img id="emojiPreviewBottom" src="./asset/images/icon_happy_02.png" alt="">
-                  <div id="emotionTextBottom" class="mt8"></div>
+                <div class="emotion-thumb-box">
+                  <img id="emojiBottom" class="result-img" src="./asset/images/icon_happy_02.png" alt="">
                 </div>
+                <div id="emotionTextBottom" class="emotion-title"></div>
+                <p id="saveMsg" class="notice"></p>
+              </div>
+              <div class="is-m">
+                <p id="saveMsgM" class="notice"></p>
               </div>
             </div>
 
             <div class="circle-foot">
               <div class="button-box">
-                <a id="okBtn" href="#" class="btn btn-active flex-1">확인</a>
-                <a id="retryBtn" href="#" class="btn btn-active-outline flex-0 is-hidden">다시 시도</a>
+                <a href="#" id="doneBtn" class="btn btn-active flex-1">완료</a>
               </div>
             </div>
 
@@ -128,50 +142,51 @@
     </div>
   </section>
 
+  <!-- 배경 -->
   <div class="bg-box">
     <img src="./asset/images/bg_body_cate_02.png" class="is-pc" alt="">
     <img src="./asset/images/bg_body_cate_02_m.png" class="is-m" alt="">
   </div>
 
-  <!-- 하단 스크립트 -->
+  <!-- (프로젝트에 있다면) 커스텀 스와이퍼 초기화 -->
   <script src="./asset/js/swiper.js?a=1"></script>
-  <script src="/asset/js/app.js?ver=9"></script>
+
   <script>
-    /* ========= 공통 유틸 ========= */
+    /* ========= 인증/네비 ========= */
     const getToken = () => localStorage.getItem('accessToken') || '';
-    const isLoggedIn = () => !!getToken();
     const authHeader = () => {
       const t = getToken();
       if (!t) return '';
       return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
     };
-    function renderHeaderByAuth(){
-      const on=isLoggedIn();
-      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));
-      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));
-    }
-    const go=(url)=>window.location.href=url;
+    const isLoggedIn = () => !!getToken();
 
-    document.addEventListener('click', async (e)=>{
-      const a=e.target.closest('[data-nav]'); if(!a) return;
+    function renderHeaderByAuth(){
+      const on = isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', on));
+      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !on));
+    }
+    const go = (url)=> window.location.href = url;
+
+    document.addEventListener('click', (e)=>{
+      const a = e.target.closest('[data-nav]'); if(!a) return;
       e.preventDefault();
-      const k=a.getAttribute('data-nav');
-      if(k==='login') return go('/login_01.html');
+      const k = a.getAttribute('data-nav');
+      if(k==='login')    return go('/login_01.html');
       if(k==='register') return go('/register_01.html');
       if(k==='logout'){ localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
-      if(k==='mypage') return isLoggedIn()?go('/mypage_main.html'):go('/login_01.html');
-      if(!isLoggedIn()) return go('/login_01.html');
+      if(k==='mypage')   return isLoggedIn()?go('/mypage_main.html'):go('/login_01.html');
+      if(!isLoggedIn())  return go('/login_01.html');
       switch(k){
-        case 'record':  return go('/emotion_select_01.html');
-        case 'calendar':return go('/emotion_calendar.html');
-        case 'map':     return go('/emotion_map.html');
-        case 'memory':  return go('/emotion_memory.html');
-        case 'around':  return go('/emotion_arround_bluetooth.html');
+        case 'record':   return go('/emotion_select_01.html');
+        case 'calendar': return go('/emotion_calendar.html');
+        case 'map':      return go('/emotion_map.html');
+        case 'memory':   return go('/emotion_memory.html');
+        case 'around':   return go('/emotion_arround_bluetooth.html');
       }
     });
 
-    /* ========= 이모지 맵 ========= */
-    const EMO_KO = { joy:'기쁨', sadness:'슬픔', anger:'분노', worry:'걱정', proud:'뿌듯', upset:'속상' };
+    /* ========= 이모지/감정 매핑 ========= */
     const EMOJI_SET = {
       joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
       sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
@@ -180,130 +195,149 @@
       proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
       upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
     };
-    function iconFrom(emotion_type, expression_type){
+    const EMOJI_KO = {
+      joy:'기쁨', sadness:'슬픔', anger:'분노', worry:'걱정', proud:'뿌듯', upset:'속상'
+    };
+
+    function normalizeExprForPreview(expr){
+      if (!expr) return 'emoji01';
+      if (/^emoji0[1-6]$/.test(String(expr))) return String(expr);
+      const n = Number(String(expr).trim());
+      if (Number.isInteger(n) && n>=1 && n<=6) return `emoji0${n}`;
+      return 'emoji01';
+    }
+    function getEmojiSrc(emotion_type, expression_type){
       const list = EMOJI_SET[emotion_type] || EMOJI_SET.joy;
-      const idx = Math.max(0, Math.min(5, (Number((expression_type||'').replace('emoji',''))||1)-1));
+      const idx = Math.max(0, Math.min(5, (Number(String(expression_type||'').replace('emoji',''))||1)-1));
       return `./asset/images/${list[idx]}`;
     }
 
-    /* ========= Draft IO ========= */
-    function getLocalTempDraft(){ try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; } }
+    /* ========= 서버 IO ========= */
     async function fetchServerDraft(id){
-      if(!isLoggedIn()||!id) return null;
       try{
         const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}`, {
-          headers:{ 'Authorization': authHeader() }
+          headers: { 'Authorization': authHeader() }
         });
+        if(r.status === 401 || r.status === 403){
+          alert('로그인이 필요합니다.');
+          go('/login_01.html');
+          return null;
+        }
         if(!r.ok) return null;
         return await r.json();
       }catch(e){ return null; }
     }
-    async function confirmDraft(id){
-      const r = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}/confirm`, {
+    async function confirmServerDraft(id){
+      return fetch(`/api/record-drafts/drafts/${encodeURIComponent(id)}/confirm`, {
         method:'POST',
         headers:{ 'Authorization': authHeader() }
       });
-      if(!r.ok){
-        const t = await r.json().catch(()=>({}));
-        throw new Error(t.message || '확정 실패');
-      }
-      return r.json(); // { message, recordId }
     }
 
-    /* ========= UI 요소 ========= */
-    const emojiTop = document.getElementById('emojiPreviewTop');
-    const emojiBottom = document.getElementById('emojiPreviewBottom');
-    const emoTxtTop = document.getElementById('emotionTextTop');
-    const emoTxtBottom = document.getElementById('emotionTextBottom');
-    const okBtn = document.getElementById('okBtn');
-    const retryBtn = document.getElementById('retryBtn');
-    const savingPc = document.getElementById('savingPc');
-    const savingMobile = document.getElementById('savingMobile');
-
-    /* ========= 초기화 & 확정 ========= */
+    /* ========= 상태/DOM ========= */
     const qs = new URLSearchParams(location.search);
     const draftId = qs.get('draftId');
 
-    function drawPreview(data){
-      // 이미지 소스 우선순위: draft.images[0] → draft.img → emotion+expression 계산
-      let src = (Array.isArray(data?.images) && data.images.length) ? data.images[0] : (data?.img || null);
-      if(!src && data?.emotion_type && data?.expression_type){
-        src = iconFrom(data.emotion_type, data.expression_type);
-      }
-      if(src){
-        emojiTop.src = src;
-        emojiBottom.src = src;
-      }
-      const emoText = EMO_KO[data?.emotion_type] || '';
-      emoTxtTop.textContent = emoText;
-      emoTxtBottom.textContent = emoText;
+    const emojiTop = document.getElementById('emojiTop');
+    const emojiBottom = document.getElementById('emojiBottom');
+    const emotionTextTop = document.getElementById('emotionTextTop');
+    const emotionTextBottom = document.getElementById('emotionTextBottom');
+    const doneBtn = document.getElementById('doneBtn');
+    const saveMsg = document.getElementById('saveMsg');
+    const saveMsgM = document.getElementById('saveMsgM');
+
+    function setStatusMsg(html, ok=false){
+      const cls = ok ? 'ok' : 'err';
+      const h = `<span class="${cls}">${html}</span>`;
+      if (saveMsg) saveMsg.innerHTML = h;
+      if (saveMsgM) saveMsgM.innerHTML = h;
     }
 
-    function setSaving(on){
-      [savingPc, savingMobile].forEach(el=> el.classList.toggle('is-hidden', !on));
-      okBtn.classList.toggle('btn-active', !on);
-      okBtn.classList.toggle('btn-active-outline', on);
+    function renderPreview(data){
+      const emotion = data?.emotion_type || 'joy';
+      const exprPrev = normalizeExprForPreview(data?.expression_type);
+      const src = data?.img || getEmojiSrc(emotion, exprPrev);
+
+      if (emojiTop) emojiTop.src = src;
+      if (emojiBottom) emojiBottom.src = src;
+
+      const label = EMOJI_KO[emotion] || emotion;
+      const deg = String(exprPrev).replace('emoji',''); // 01~06
+      const txt = `${label} (표현 ${deg})`;
+      if (emotionTextTop) emotionTextTop.textContent = txt;
+      if (emotionTextBottom) emotionTextBottom.textContent = txt;
     }
 
-    async function run(){
+    async function init(){
       renderHeaderByAuth();
-      if(!isLoggedIn()) return go('/login_01.html');
 
-      // 드래프트 가져오기(서버 우선, 로컬 보강)
-      let data = null;
-      if(draftId) data = await fetchServerDraft(draftId);
-      const local = getLocalTempDraft() || {};
-      // 서버 값 우선, 누락은 로컬 보완
-      data = { ...(data||{}), ...Object.fromEntries(Object.entries(local).filter(([k,v]) => (data||{})[k]==null)) };
-
-      // 프리뷰 먼저 그려주기
-      drawPreview(data);
-
-      if(!draftId){
-        // draftId 없으면 확정 불가 → 확인만 가능
-        setSaving(false);
-        retryBtn.classList.add('is-hidden');
+      if(!isLoggedIn()){
+        alert('로그인이 필요합니다.');
+        go('/login_01.html');
         return;
       }
 
-      // 확정 시도
-      try{
-        setSaving(true);
-        await confirmDraft(draftId);
-        // 확정 성공 → 로컬 임시 드래프트 정리
-        localStorage.removeItem('recordDraft.temp');
-        setSaving(false);
-        retryBtn.classList.add('is-hidden');
-      }catch(e){
-        // 실패 → 재시도 버튼 노출
-        setSaving(false);
-        retryBtn.classList.remove('is-hidden');
-        console.error(e);
+      // 서버 초안 or 로컬 fallback
+      let data = null;
+      if(draftId){
+        data = await fetchServerDraft(draftId);
+        if(!data){
+          try{ data = JSON.parse(localStorage.getItem('recordDraft.temp')||'{}'); }catch(e){ data = {}; }
+        }
+      }else{
+        try{ data = JSON.parse(localStorage.getItem('recordDraft.temp')||'{}'); }catch(e){ data = {}; }
       }
+      if(!data || typeof data !== 'object') data = {};
+      if(!data.emotion_type) data.emotion_type = 'joy';
+
+      renderPreview(data);
+
+      doneBtn?.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        // draftId 없으면 서버 확정 불가 → 캘린더 이동만
+        if(!draftId){
+          alert('임시 초안 ID가 없어 확정할 수 없습니다. 캘린더로 이동합니다.');
+          go('/emotion_calendar.html');
+          return;
+        }
+        if(doneBtn.dataset.loading === '1') return;
+        doneBtn.dataset.loading = '1';
+        doneBtn.setAttribute('disabled','disabled');
+        setStatusMsg('기록을 확정 처리 중...', true);
+
+        try{
+          const r = await confirmServerDraft(draftId);
+          if(r.ok){
+            setStatusMsg('기록 확정 완료! 캘린더로 이동합니다.', true);
+            go('/emotion_calendar.html');
+          }else{
+            let msg = `확정 실패 (HTTP ${r.status})`;
+            try{
+              const t = await r.json();
+              if (t && t.message) msg = t.message;
+            }catch(_){}
+            setStatusMsg(msg, false);
+          }
+        }catch(err){
+          setStatusMsg('네트워크 오류로 확정에 실패했습니다.', false);
+        }finally{
+          doneBtn.dataset.loading = '0';
+          doneBtn.removeAttribute('disabled');
+        }
+      });
+
+      // 토큰 변경 반영
+      window.addEventListener('storage', (ev)=>{
+        if(ev.key === 'accessToken'){ renderHeaderByAuth(); }
+      });
     }
 
-    okBtn.addEventListener('click',(e)=>{
-      e.preventDefault();
-      // 완료 후 이동 위치(원하면 변경 가능)
-      go('/emotion_calendar.html');
-    });
+    // activeParent 안전 가드 (외부 스크립트에 없을 때)
+    if (typeof window.activeParent !== 'function') {
+      window.activeParent = function(){};
+    }
 
-    retryBtn.addEventListener('click', async (e)=>{
-      e.preventDefault();
-      if(!draftId) return;
-      try{
-        setSaving(true);
-        await confirmDraft(draftId);
-        localStorage.removeItem('recordDraft.temp');
-        setSaving(false);
-        retryBtn.classList.add('is-hidden');
-      }catch(err){
-        setSaving(false);
-        alert('저장을 다시 시도했지만 실패했습니다. 잠시 후 다시 시도해 주세요.');
-      }
-    });
-
-    run();
+    init();
   </script>
 </body>
 </html>

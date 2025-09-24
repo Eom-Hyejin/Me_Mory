@@ -21,9 +21,7 @@
     .emotion-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f4f6ff;font-weight:600;font-size:14px}
     .emotion-chip img{width:20px;height:20px;display:inline-block;vertical-align:middle;border-radius:50%}
     textarea{white-space:pre-wrap}
-    /* 칩은 숨김 유지 */
     #chipWrap, #emotionChip{display:none!important}
-    /* 간단 썸네일 프리뷰 */
     .file-image-box li { position: relative; }
     .thumb { display:block; width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #e6e8ef; margin-top:8px }
     .thumb.empty { display:none; }
@@ -224,9 +222,7 @@
     const thumbs     = [1,2,3,4].map(i => document.getElementById('thumb'+i));
     const hints      = [1,2,3,4].map(i => document.getElementById('hint'+i));
 
-    // emotion_type → 파일 프리픽스
     const PREFIX_BY_EMO = { joy:'happy', sadness:'sad', anger:'angry', worry:'uneasy', proud:'envious', upset:'upset' };
-    // expression_type(emoji01~06) → 번호(02~07)
     const INDEX_BY_CODE = { emoji01:'02', emoji02:'03', emoji03:'04', emoji04:'05', emoji05:'06', emoji06:'07' };
 
     function resolveImg(emotion_type, expression_type){
@@ -265,180 +261,137 @@
       }catch(e){ return false; }
     }
 
-    // ===== 이미지 업로드 =====
-    // 업로드된 S3 URL들을 보관 (인덱스 = 슬롯-1)
-    let uploadedImages = [null, null, null, null];
+    /* ========= Presigned URL ========= */
+    async function getPresignedUrl(filename){
+      const res = await fetch(`/api/record-drafts/upload-url?filename=${encodeURIComponent(filename)}`, {
+        headers: { 'Authorization': authHeader() }
+      });
+      if(!res.ok) throw new Error('upload-url 생성 실패');
+      return res.json(); // { uploadUrl, imageUrl }
+    }
+
+    /* ========= S3 업로드 (스마트 재시도) ========= */
+    async function putRaw(uploadUrl, file, headers) {
+      const r = await fetch(uploadUrl, { method: 'PUT', headers, body: file });
+      if (!r.ok) {
+        const txt = await r.text().catch(()=> '');
+        console.error('S3 PUT failed', r.status, r.statusText, txt);
+        throw new Error(`S3 업로드 실패: ${r.status}`);
+      }
+    }
+
+    async function putToS3Smart(uploadUrl, file) {
+      // 1) 무헤더
+      try { await putRaw(uploadUrl, file, undefined); return; } catch(e) {}
+
+      // 2) Content-Type만
+      const ct = file.type || 'application/octet-stream';
+      try { await putRaw(uploadUrl, file, { 'Content-Type': ct }); return; } catch(e) {}
+
+      // 3) (서버가 ACL을 서명했다면) ACL 포함 시도
+      try { await putRaw(uploadUrl, file, { 'Content-Type': ct, 'x-amz-acl': 'public-read' }); return; } catch(e) {}
+
+      // 그래도 실패면 throw
+      throw new Error('S3 업로드 3회 실패');
+    }
+
+    /* ========= 업로드/미리보기 ========= */
+    let uploadedImages = [null,null,null,null];
 
     function refreshThumb(slot, url){
       const img = thumbs[slot];
-      if (url) {
-        img.src = url;
-        img.classList.remove('empty');
-      } else {
-        img.src = '';
-        img.classList.add('empty');
-      }
+      if(url){ img.src=url; img.classList.remove('empty'); }
+      else { img.src=''; img.classList.add('empty'); }
     }
     function setHint(slot, msg){ hints[slot].textContent = msg || ''; }
 
     async function uploadOneFile(slot, file){
-      if (!draftId) { setHint(slot, '드래프트 ID가 없어 업로드할 수 없어요.'); return; }
-      if (!file) { return; }
-      // 간단한 제한 (백엔드에서 최종 검증)
-      const MAX_MB = 15;
-      if (file.size > MAX_MB*1024*1024){ setHint(slot, `파일이 ${MAX_MB}MB를 초과합니다.`); return; }
-
-      setHint(slot, '업로드 중...');
+      if(!file) return;
+      const MAX_MB=15;
+      if(file.size>MAX_MB*1024*1024){ setHint(slot, `파일이 ${MAX_MB}MB 초과`); return; }
+      setHint(slot,'업로드 준비중...');
       try{
-        const fd = new FormData();
-        fd.append('file', file);
+        const { uploadUrl, imageUrl } = await getPresignedUrl(file.name);
+        setHint(slot,'S3 업로드 중...');
+        await putToS3Smart(uploadUrl,file);
+        uploadedImages[slot]=imageUrl;
+        refreshThumb(slot,imageUrl);
+        setHint(slot,'업로드 완료');
 
-        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}/images`, {
-          method: 'POST',
-          headers: { 'Authorization': authHeader() },
-          body: fd
-        });
-        if (!res.ok){
-          setHint(slot, '업로드 실패');
-          return;
-        }
-        const data = await res.json(); // { url }
-        const url = data?.url;
-        if (!url){ setHint(slot, 'URL 없음'); return; }
-
-        uploadedImages[slot] = url;
-        refreshThumb(slot, url);
-        setHint(slot, '업로드 완료');
-
-        // 대표 이미지 = 첫 번째 존재하는 이미지
         const representative = uploadedImages.find(Boolean) || null;
-
-        // 서버에 images & 대표 img 반영
-        const ok = await patchServerDraft(draftId, {
-          images: uploadedImages.filter(Boolean),
-          img: representative
-        });
-        if (!ok){
-          // 서버 PATCH 실패 시에도 로컬 캐시 유지
-          saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
-          setHint(slot, '서버 반영 실패(로컬 임시 저장)');
-        } else {
-          // 로컬에도 동기화
-          saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
-          // 프리뷰 대표 이미지도 교체(UX)
-          if (representative){
-            emojiPreviewTop.src = representative;
-            emojiPreviewBottom.src = representative;
-          }
-        }
-      }catch(err){
-        console.error(err);
-        setHint(slot, '업로드 오류');
-      }
+        const payload={ images: uploadedImages.filter(Boolean), img: representative };
+        let ok=false; if(draftId) ok=await patchServerDraft(draftId,payload);
+        if(!ok) setHint(slot,'서버 반영 실패(로컬 저장)');
+        saveLocalTemp(payload);
+        if(representative){ emojiPreviewTop.src=representative; emojiPreviewBottom.src=representative; }
+      }catch(err){ console.error(err); setHint(slot,'업로드 오류'); }
     }
 
     function bindFileInputs(){
-      fileInputs.forEach((input, i)=>{
-        input.addEventListener('change', async ()=>{
-          const file = input.files && input.files[0];
-          // 비운 경우
-          if (!file){
-            uploadedImages[i] = null;
-            refreshThumb(i, null);
-            setHint(i, '');
-            // 남은 이미지로 대표 갱신
-            const representative = uploadedImages.find(Boolean) || (getLocalTempDraft()?.img || null);
-            await patchServerDraft(draftId, { images: uploadedImages.filter(Boolean), img: representative });
-            saveLocalTemp({ images: uploadedImages.filter(Boolean), img: representative });
-            if (representative){
-              emojiPreviewTop.src = representative;
-              emojiPreviewBottom.src = representative;
-            }
+      fileInputs.forEach((input,i)=>{
+        input.addEventListener('change',async()=>{
+          const file=input.files&&input.files[0];
+          if(!file){
+            uploadedImages[i]=null;
+            refreshThumb(i,null);
+            setHint(i,'');
+            const representative=uploadedImages.find(Boolean)||(getLocalTempDraft()?.img||null);
+            await patchServerDraft(draftId,{images:uploadedImages.filter(Boolean),img:representative});
+            saveLocalTemp({images:uploadedImages.filter(Boolean),img:representative});
+            if(representative){ emojiPreviewTop.src=representative; emojiPreviewBottom.src=representative; }
             return;
           }
-          // 새 업로드
-          await uploadOneFile(i, file);
+          await uploadOneFile(i,file);
         });
       });
     }
 
-    // 프리뷰 반영 (img 없으면 emotion_type+expression_type로 유추)
     function applyPreview({emotion_type, expression_type, img, content}){
-      let derived = img;
-      if (!derived) derived = resolveImg(emotion_type, expression_type);
-      if (derived){
-        emojiPreviewTop.src = derived;
-        emojiPreviewBottom.src = derived;
-        saveLocalTemp({ img: derived, emotion_type, expression_type });
-      }
-      if (typeof content === 'string') contentEl.value = content || '';
+      let derived=img;
+      if(!derived) derived=resolveImg(emotion_type,expression_type);
+      if(derived){ emojiPreviewTop.src=derived; emojiPreviewBottom.src=derived; saveLocalTemp({img:derived,emotion_type,expression_type}); }
+      if(typeof content==='string') contentEl.value=content||'';
     }
 
     async function init(){
       renderHeaderByAuth();
-
-      // 서버 → 로컬 폴백
-      let data = null;
-      if (draftId) data = await fetchServerDraft(draftId);
-      if (!data)  data = getLocalTempDraft();
-
-      // 로컬 병합
-      const local = getLocalTempDraft() || {};
-      data = { ...(data||{}), ...(local||{}) };
-
-      // 기존 업로드 이미지 있으면 반영
-      if (Array.isArray(data.images) && data.images.length){
-        uploadedImages = [null,null,null,null];
-        data.images.slice(0,4).forEach((url, idx)=>{
-          uploadedImages[idx] = url;
-          refreshThumb(idx, url);
-          setHint(idx, '이미 업로드됨');
-        });
+      let data=null;
+      if(draftId) data=await fetchServerDraft(draftId);
+      if(!data) data=getLocalTempDraft();
+      const local=getLocalTempDraft()||{};
+      data={...(data||{}),...(local||{})};
+      if(Array.isArray(data.images)&&data.images.length){
+        uploadedImages=[null,null,null,null];
+        data.images.slice(0,4).forEach((url,idx)=>{ uploadedImages[idx]=url; refreshThumb(idx,url); setHint(idx,'이미 업로드됨'); });
       }
-
-      applyPreview({
-        emotion_type: data?.emotion_type,
-        expression_type: data?.expression_type,
-        img: data?.img,
-        content: data?.content
-      });
-
+      applyPreview({ emotion_type:data?.emotion_type, expression_type:data?.expression_type, img:data?.img, content:data?.content });
       bindFileInputs();
 
-      // 이전
-      prevBtn.addEventListener('click', (e)=>{
+      prevBtn.addEventListener('click',(e)=>{
         e.preventDefault();
-        const from = localStorage.getItem('recordDraft.fromPage') || '/emotion_select_02.html';
-        let back = from;
-        if (draftId) {
-          const u = new URL(back, location.origin);
-          u.searchParams.set('draftId', draftId);
-          back = u.pathname + u.search;
-        }
+        const from=localStorage.getItem('recordDraft.fromPage')||'/emotion_select_02.html';
+        let back=from;
+        if(draftId){ const u=new URL(back,location.origin); u.searchParams.set('draftId',draftId); back=u.pathname+u.search; }
         go(back);
       });
 
-      // 다음 (이모지/텍스트/이미지 상태 함께 유지)
-      nextBtn.addEventListener('click', async (e)=>{
+      nextBtn.addEventListener('click',async(e)=>{
         e.preventDefault();
-
-        const cur = getLocalTempDraft() || {};
-        const representative = uploadedImages.find(Boolean) || cur.img || null;
-
-        const payload = {
+        const cur=getLocalTempDraft()||{};
+        const representative=uploadedImages.find(Boolean)||cur.img||null;
+        const payload={
           content: contentEl.value || '',
           emotion_type: cur.emotion_type || data?.emotion_type || null,
           expression_type: cur.expression_type || data?.expression_type || null,
           img: representative,
           images: uploadedImages.filter(Boolean)
         };
+        let ok=false;
+        if(draftId) ok = await patchServerDraft(draftId,payload);
+        if(!ok) saveLocalTemp(payload);
 
-        let ok = false;
-        if (draftId) ok = await patchServerDraft(draftId, payload);
-        if (!ok) saveLocalTemp(payload);
-
-        let url = '/emotion_location.html';
-        if (draftId) url += `?draftId=${encodeURIComponent(draftId)}`;
+        let url='/emotion_location.html';
+        if(draftId) url+=`?draftId=${encodeURIComponent(draftId)}`;
         go(url);
       });
     }

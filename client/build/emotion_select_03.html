@@ -1,150 +1,337 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">  
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- 파비콘 이미지 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=1"></script>
+  <style>
+    .is-hidden{display:none!important}
+    .btn[disabled]{opacity:.5; pointer-events:none}
+    #nickname { font-family: inherit; font-weight: inherit; }
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li class="active"><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section class="py-lg-0">
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="circle-box cate-01">
-					<div class="circle-inner">
-						<div class="circle-head">
-							<div class="step-box step-02">
-								<div class="bar"></div>
-							</div>
-						</div>
-						<div class="circle-body">
-							<div class="circle-title">
-								<div class="inner">
-									<div class="emotion-result-box">
-										<div class="result"><img src="./asset/images/icon_sad_01.png"/></div>
-									</div>
-									<h2>오늘 감정을 표현하는 <br class="is-m"/>이모지를 선택해주세요</h2>
-								</div>
-							</div>
-							<div class="face-check-box emotion">
-								<ul>
-									<li class="emotion01">
-										<input type="radio" name="radio" id="radio01" data-img="./asset/images/icon_sad_02.png"/>
-										<label for="radio01">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-									<li class="emotion02">
-										<input type="radio" name="radio" id="radio02" data-img="./asset/images/icon_sad_03.png"/>
-										<label for="radio02">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-									<li class="emotion03">
-										<input type="radio" name="radio" id="radio03" data-img="./asset/images/icon_sad_04.png"/>
-										<label for="radio03">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-									<li class="emotion04">
-										<input type="radio" name="radio" id="radio04" data-img="./asset/images/icon_sad_05.png"/>
-										<label for="radio04">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-									<li class="emotion05">
-										<input type="radio" name="radio" id="radio05" data-img="./asset/images/icon_sad_06.png"/>
-										<label for="radio05">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-									<li class="emotion06">
-										<input type="radio" name="radio" id="radio06" data-img="./asset/images/icon_sad_07.png"/>
-										<label for="radio06">
-											<div class="spark square"><span class="face"></span></div>
-										</label>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="circle-foot">
-							<div class="button-box">
-								<a href="" class="btn btn-active-outline w100 flex-0 mr12 mr-lg-8">이전 단계</a>
-								<a href="" class="btn btn-active flex-1">다음</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_03.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_cate_03_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=12"></script>
+  <!-- 헤더 -->
+  <header>
+    <div class="container">
+      <div class="header-logo">
+        <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+      </div>
+      <div class="header-cate">
+        <ul>
+          <li class="active"><a href="#" data-nav="record">감정기록</a></li>
+          <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+          <li><a href="#" data-nav="around">내 주변 감정</a></li>
+          <li><a href="#" data-nav="map">감정지도</a></li>
+          <li><a href="#" data-nav="memory">감정회고</a></li>
+        </ul>
+      </div>
+      <div class="header-right">
+        <!-- 게스트용 -->
+        <div class="right-button header-guest">
+          <ul>
+            <li class="border"><a href="#" data-nav="login">로그인</a></li>
+            <li><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+        <!-- 로그인용 -->
+        <div class="right-button header-user is-hidden">
+          <ul>
+            <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li><a href="#" data-nav="logout">로그아웃</a></li>
+          </ul>
+        </div>
+        <div class="right-menu">
+          <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+          <div class="inner">
+            <ul>
+              <li><a href="#" data-nav="record">감정기록</a></li>
+              <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+              <li><a href="#" data-nav="around">내 주변 감정</a></li>
+              <li><a href="#" data-nav="map">감정지도</a></li>
+              <li><a href="#" data-nav="memory">감정회고</a></li>
+              <!-- 로그인 상태 -->
+              <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+              <!-- 게스트 상태 -->
+              <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+              <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 본문 -->
+  <section class="py-lg-0">
+    <div class="full-box">
+      <div class="full-inner full-height">
+        <div class="circle-box cate-01">
+          <div class="circle-inner">
+            <div class="circle-head">
+              <div class="step-box step-02">
+                <div class="bar"></div>
+              </div>
+            </div>
+            <div class="circle-body">
+              <div class="circle-title">
+                <div class="inner">
+                  <div class="emotion-result-box">
+                    <!-- 기본 프리뷰(슬픔 기본) → 선택 시 갱신 -->
+                    <div class="result"><img id="previewImg" src="./asset/images/icon_sad_01.png" alt="preview"/></div>
+                  </div>
+                  <h2>오늘 감정을 표현하는 <br class="is-m"/>이모지를 선택해주세요</h2>
+                </div>
+              </div>
+
+              <!-- 이모지 선택 -->
+              <div class="face-check-box emotion">
+                <ul id="emojiList">
+                  <li class="emotion01">
+                    <input type="radio" name="radio" id="radio01" data-img="./asset/images/icon_sad_02.png" data-exp="emoji01"/>
+                    <label for="radio01"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                  <li class="emotion02">
+                    <input type="radio" name="radio" id="radio02" data-img="./asset/images/icon_sad_03.png" data-exp="emoji02"/>
+                    <label for="radio02"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                  <li class="emotion03">
+                    <input type="radio" name="radio" id="radio03" data-img="./asset/images/icon_sad_04.png" data-exp="emoji03"/>
+                    <label for="radio03"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                  <li class="emotion04">
+                    <input type="radio" name="radio" id="radio04" data-img="./asset/images/icon_sad_05.png" data-exp="emoji04"/>
+                    <label for="radio04"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                  <li class="emotion05">
+                    <input type="radio" name="radio" id="radio05" data-img="./asset/images/icon_sad_06.png" data-exp="emoji05"/>
+                    <label for="radio05"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                  <li class="emotion06">
+                    <input type="radio" name="radio" id="radio06" data-img="./asset/images/icon_sad_07.png" data-exp="emoji06"/>
+                    <label for="radio06"><div class="spark square"><span class="face"></span></div></label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="circle-foot">
+              <div class="button-box">
+                <a id="prevBtn" href="#" class="btn btn-active-outline w100 flex-0 mr12 mr-lg-8">이전 단계</a>
+                <a id="nextBtn" href="#" class="btn btn-active flex-1" aria-disabled="true" disabled>다음</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bg-box">
+    <img src="./asset/images/bg_body_cate_03.png" class="is-pc" alt="">
+    <img src="./asset/images/bg_body_cate_03_m.png" class="is-m" alt="">
+  </div>
+
+  <script src="./asset/js/swiper.js?a=1"></script>
+  <script src="/asset/js/app.js?ver=12"></script>
+  <script>
+    /* ========= 공통 유틸 (토큰/헤더) ========= */
+    const getToken = () => localStorage.getItem('accessToken') || '';
+    const isLoggedIn = () => !!getToken();
+    const authHeader = () => {
+      const t = getToken();
+      if (!t) return '';
+      return t.startsWith('Bearer ') ? t : `Bearer ${t}`;
+    };
+    function renderHeaderByAuth(){
+      const on=isLoggedIn();
+      document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden',on));
+      document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden',!on));
+    }
+    async function hasBleConsent(){
+      const t=authHeader(); if(!t) return false;
+      try{
+        const r=await fetch('/api/bluetooth/consent',{headers:{'Authorization':t}});
+        if(!r.ok) return false;
+        const d=await r.json();
+        return !!(d&&(d.enabled===1||d.enabled===true));
+      }catch(e){return false}
+    }
+    const go=(url)=>window.location.href=url;
+
+    document.addEventListener('click', async (e)=>{
+      const a=e.target.closest('[data-nav]'); if(!a) return;
+      e.preventDefault();
+      const k=a.getAttribute('data-nav');
+      if(k==='login') return go('/login_01.html');
+      if(k==='register') return go('/register_01.html');
+      if(k==='logout'){ localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+      if(k==='mypage') return isLoggedIn()?go('/mypage_main.html'):go('/login_01.html');
+      if(!isLoggedIn()) return go('/login_01.html');
+      switch(k){
+        case 'record': return go('/emotion_select_01.html');
+        case 'calendar': return go('/emotion_calendar.html');
+        case 'map': return go('/emotion_map.html');
+        case 'memory': return go('/emotion_memory.html');
+        case 'around': { const ok=await hasBleConsent(); return go(ok?'/emotion_arround_check_01.html':'/emotion_arround_bluetooth.html'); }
+      }
+    });
+
+    /* ========= 드래프트 핸들링 ========= */
+    const qs = new URLSearchParams(location.search);
+    const draftId = qs.get('draftId') || null;
+
+    function getLocalTempDraft(){
+      try{ return JSON.parse(localStorage.getItem('recordDraft.temp')||'null'); }catch(e){ return null; }
+    }
+    function saveLocalTemp(updates){
+      const cur = getLocalTempDraft() || {};
+      localStorage.setItem('recordDraft.temp', JSON.stringify({ ...cur, ...updates, ts: Date.now() }));
+    }
+
+    async function fetchServerDraft(){
+      if(!isLoggedIn() || !draftId) return null;
+      try{
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
+          headers: { 'Authorization': authHeader() }
+        });
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){ return null; }
+    }
+
+    async function patchDraft(payload){
+      if(!isLoggedIn() || !draftId) return false;
+      try{
+        const res = await fetch(`/api/record-drafts/drafts/${encodeURIComponent(draftId)}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization': authHeader()
+          },
+          body: JSON.stringify(payload)
+        });
+        return res.ok;
+      }catch(e){ return false; }
+    }
+
+    /* ========= 이모지 선택 로직 ========= */
+    const previewImg = document.getElementById('previewImg');
+    const emojiList  = document.getElementById('emojiList');
+    const nextBtn    = document.getElementById('nextBtn');
+    const prevBtn    = document.getElementById('prevBtn');
+
+    // expression_type → 슬픔 이미지 매핑
+    const EXP_TO_IMG = {
+      emoji01: './asset/images/icon_sad_02.png',
+      emoji02: './asset/images/icon_sad_03.png',
+      emoji03: './asset/images/icon_sad_04.png',
+      emoji04: './asset/images/icon_sad_05.png',
+      emoji05: './asset/images/icon_sad_06.png',
+      emoji06: './asset/images/icon_sad_07.png',
+    };
+
+    let selectedExp = '';
+    let selectedImg = '';
+
+    emojiList.addEventListener('change', async (e)=>{
+      const input = e.target.closest('input[type="radio"][data-exp]');
+      if(!input) return;
+
+      selectedExp = input.getAttribute('data-exp');
+      selectedImg = input.getAttribute('data-img') || EXP_TO_IMG[selectedExp] || previewImg.src;
+
+      // 프리뷰 갱신
+      if (selectedImg) previewImg.src = selectedImg;
+
+      // 서버에는 expression_type만 저장
+      const ok = await patchDraft({ expression_type: selectedExp });
+      if(!ok){
+        // 서버 실패 시 로컬 임시저장
+        saveLocalTemp({ expression_type: selectedExp, img: selectedImg });
+      }else{
+        // 서버 성공이어도 로컬 프리뷰 복원을 위해 img 저장
+        saveLocalTemp({ img: selectedImg });
+      }
+
+      nextBtn.removeAttribute('disabled');
+      nextBtn.setAttribute('aria-disabled','false');
+    });
+
+    async function hydrate(){
+      // 1) 서버 우선
+      let data = await fetchServerDraft();
+      // 2) 서버 없으면 로컬 폴백
+      if(!data) data = getLocalTempDraft();
+      if(!data) return;
+
+      const exp = data.expression_type || '';
+      const img = data.img || EXP_TO_IMG[exp] || '';
+
+      if (img) {
+        previewImg.src = img;
+        selectedImg = img;
+      }
+      if (exp) {
+        selectedExp = exp;
+        // 라디오 체크
+        const radios = emojiList.querySelectorAll('input[data-exp]');
+        radios.forEach(r=>{
+          if (r.getAttribute('data-exp') === exp) r.checked = true;
+        });
+        nextBtn.removeAttribute('disabled');
+        nextBtn.setAttribute('aria-disabled','false');
+      }
+    }
+
+    /* ========= 네비게이션 ========= */
+    prevBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const url = draftId ? `/emotion_select_02.html?draftId=${encodeURIComponent(draftId)}` : '/emotion_select_02.html';
+      go(url);
+    });
+
+    nextBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      if(!selectedExp) return;
+      let url = '/emotion_text.html';
+      if(draftId) url += `?draftId=${encodeURIComponent(draftId)}`;
+      go(url);
+    });
+
+    /* ========= 초기화 ========= */
+    renderHeaderByAuth();
+    hydrate();
+    window.addEventListener('storage',(ev)=>{ if(ev.key==='accessToken'){ renderHeaderByAuth(); }});
+  </script>
 </body>
 </html>
