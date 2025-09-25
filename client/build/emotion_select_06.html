@@ -79,7 +79,7 @@
               <li><a href="#" data-nav="memory">감정회고</a></li>
               <!-- 로그인 상태 -->
               <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
-              <li class="header-user-item is-hidden"><a href="#" data-nav="logout">로그아웃</a></li>
+              <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
               <!-- 게스트 상태 -->
               <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
               <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
@@ -316,7 +316,7 @@
     /* ========= 네비게이션 ========= */
     prevBtn.addEventListener('click', (e)=>{
       e.preventDefault();
-      const url = draftId ? `/emotion_select_05.html?draftId=${encodeURIComponent(draftId)}` : '/emotion_select_05.html';
+      const url = draftId ? `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}` : '/emotion_select_01.html';
       go(url);
     });
 
