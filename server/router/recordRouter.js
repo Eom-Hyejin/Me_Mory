@@ -58,20 +58,45 @@ router.get('/calendar', verifyToken, async (req, res) => {
     if (!year || !month) {
       return res.status(400).json({ message: 'year, month 쿼리 파라미터가 필요합니다' });
     }
-
     const m = String(month).padStart(2, '0');
-    // MySQL에서 안전하게 월 범위를 계산
-    const [rows] = await db.query(
-      `SELECT date, emotion_type, expression_type
-         FROM EmotionCalendar
-        WHERE userId = ?
-          AND date >= STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d')
-          AND date <= LAST_DAY(STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d'))
-        ORDER BY date ASC`,
-      [userId, year, m, year, m]
+
+    // 해당 월 범위
+    const [[{ first_day }]] = await db.query(
+      `SELECT DATE(STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d')) AS first_day`,
+      [year, m]
+    );
+    const [[{ last_day }]] = await db.query(
+      `SELECT LAST_DAY(STR_TO_DATE(CONCAT(?, '-', ?, '-01'), '%Y-%m-%d')) AS last_day`,
+      [year, m]
     );
 
-    res.json(rows);
+    // 날짜별 최신 기록(동일 created_at이면 id가 큰 것 우선)
+    const [rows] = await db.query(
+      `
+      WITH ranked AS (
+        SELECT
+          DATE(created_at) AS date,
+          emotion_type,
+          expression_type,
+          created_at,
+          id,
+          ROW_NUMBER() OVER (
+            PARTITION BY DATE(created_at)
+            ORDER BY created_at DESC, id DESC
+          ) AS rn
+        FROM Records
+        WHERE userId = ?
+          AND created_at >= ? AND created_at <= ?
+      )
+      SELECT date, emotion_type, expression_type
+      FROM ranked
+      WHERE rn = 1
+      ORDER BY date ASC
+      `,
+      [userId, first_day, last_day]
+    );
+
+    return res.json(rows); // [{date:'YYYY-MM-DD', emotion_type, expression_type}]
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: '감정 캘린더 조회 실패', detail: err.message });

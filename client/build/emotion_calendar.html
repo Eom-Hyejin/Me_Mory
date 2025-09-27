@@ -1,530 +1,768 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- 파비콘 이미지 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <!-- CSS (헤더와 동일 버전) -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <!-- JS (헤더와 동일 버전) -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+
+  <style>
+    .is-hidden{display:none!important}
+    :root{ --accent:#7b61ff; }
+
+    /* 캘린더 테이블 안정화 */
+    .cal-left-body table{ table-layout:fixed; width:100%; }
+    .cal-left-body th, .cal-left-body td{ padding:0; vertical-align:top; }
+
+    /* 날짜 숫자 + 중앙 하이라이트(선택만 표시) */
+    .cal-left-body td[data-day] strong{
+      display:grid; place-items:center;
+      width:28px; height:28px; border-radius:50%;
+      margin:0 auto; font-weight:600;
+    }
+    .cal-left-body td.is-selected strong{
+      background: var(--accent);
+      color:#fff; font-weight:700;
+    }
+
+    /* 감정 구슬 */
+    .cal-left-body .emotion-thumb-box.sm{ width:32px; height:32px; margin:6px auto 0; }
+    .cal-left-body .emotion-thumb-box.sm img{
+      width:100%; height:100%; object-fit:contain; display:block;
+    }
+
+    /* ‘유효 날짜’에서만 노출되는 빈 구슬 */
+    .bubble-placeholder{
+      width:32px; height:32px; border-radius:50%;
+      margin:6px auto 0;
+      background: rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+    }
+    .has-emoji .bubble-placeholder{ display:none; }
+
+    /* 이번 달이 아닌 채움칸은 모든 원/아이콘 제거 */
+    .cal-left-body td.blank, .cal-left-body td.blank *{
+      background: transparent !important; box-shadow:none !important;
+    }
+    .cal-left-body td.blank .inner,
+    .cal-left-body td.blank .emotion-thumb-box,
+    .cal-left-body td.blank .bubble-placeholder{ display:none!important; }
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li class="active"><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="container container-xl">
-			<div class="title-box">
-				<h2>감정 캘린더</h2>
-			</div>
-			<div class="calendar-box">
-				<div class="cal-left">
-					<div class="cal-left-head">
-						<button type="button" class="prev"></button>
-						<select>
-							<option>2025년 09월</option>
-							<option>2025년 10월</option>
-							<option>2025년 11월</option>
-							<option>2025년 12월</option>
-						</select>
-						<button type="button" class="next"></button>
-					</div>
-					<div class="cal-left-body">
-						<table>
-							<thead>
-								<tr>
-									<th><b>일</b>요일</th>
-									<th><b>월</b>요일</th>
-									<th><b>화</b>요일</th>
-									<th><b>수</b>요일</th>
-									<th><b>목</b>요일</th>
-									<th><b>금</b>요일</th>
-									<th><b>토</b>요일</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td></td>
-									<td>
-										<div>
-											<strong>1</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_sad_07.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>2</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_envious_05.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>3</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_upset_05.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>4</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_happy_06.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>5</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_happy_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>6</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_happy_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td class="blank">
-										<div>
-											<strong>7</strong>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>8</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_angry_06.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>9</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_sad_05.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>10</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_envious_03.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>11</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_sad_07.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>12</strong>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>13</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_happy_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td class="blank">
-										<div>
-											<strong>14</strong>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>15</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_angry_07.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>16</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_angry_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>17</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_sad_05.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>18</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_envious_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>19</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_envious_03.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong>20</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_happy_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div>
-											<strong>21</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_uneasy_03.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div>
-											<strong class="today">22</strong>
-											<div class="inner">
-												<div class="emotion-thumb-box sm">
-													<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);"><img src="./asset/images/icon_envious_02.png"></a>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>23</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>24</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>25</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>26</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>27</strong>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td class="blank">
-										<div>
-											<strong>28</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>29</strong>
-										</div>
-									</td>
-									<td class="blank">
-										<div>
-											<strong>30</strong>
-										</div>
-									</td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<div class="cal-right">
-					<div class="cal-right-head">
-						<a href="">감정 타임캡슐 기록하기</a>
-					</div>
-					<div class="cal-right-body">
-						<ul>
-							<li>
-								<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-									<div class="list-head">
-										<div class="list-head-left">
-											<div class="emotion-thumb-box sm">
-												<img src="./asset/images/icon_happy_02.png">
-											</div>
-											<time>22일(월)</time>
-										</div>
-										<div class="list-head-right">
-											<strong>행복해요</strong>
-											<div>
-												<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-											</div>
-										</div>
-									</div>
-									<div class="list-body">
-										<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-										<div>
-											<p>서울시 강남구 서초동</p>
-											<span>공개</span>
-										</div>
-									</div>
-								</a>
-							</li>
-							<li>
-								<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-									<div class="list-head">
-										<div class="list-head-left">
-											<div class="emotion-thumb-box sm">
-												<img src="./asset/images/icon_sad_02.png">
-											</div>
-											<time>22일(월)</time>
-										</div>
-										<div class="list-head-right">
-											<strong>행복해요</strong>
-											<div>
-												<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-											</div>
-										</div>
-									</div>
-									<div class="list-body">
-										<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-										<div>
-											<p>서울시 강남구 서초동</p>
-											<span class="lock">비공개</span>
-										</div>
-									</div>
-								</a>
-							</li>
-							<li>
-								<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-									<div class="list-head">
-										<div class="list-head-left">
-											<div class="emotion-thumb-box sm">
-												<img src="./asset/images/icon_angry_02.png">
-											</div>
-											<time>22일(월)</time>
-										</div>
-										<div class="list-head-right">
-											<strong>행복해요</strong>
-											<div>
-												<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
-											</div>
-										</div>
-									</div>
-									<div class="list-body">
-										<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-										<div>
-											<p>서울시 강남구 서초동</p>
-											<span class="lock">비공개</span>
-										</div>
-									</div>
-								</a>
-							</li>
-							<li>
-								<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-									<div class="list-head">
-										<div class="list-head-left">
-											<div class="emotion-thumb-box sm">
-												<img src="./asset/images/icon_angry_02.png">
-											</div>
-											<time>22일(월)</time>
-										</div>
-										<div class="list-head-right">
-											<strong>행복해요</strong>
-											<div>
-												<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
-											</div>
-										</div>
-									</div>
-									<div class="list-body">
-										<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-										<div>
-											<p>서울시 강남구 서초동</p>
-											<span class="lock">비공개</span>
-										</div>
-									</div>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
-		<div class="box">
-			<div class="modal-head">
-				<h2>2025년 9월 22일(월) 감정기록</h2>
-				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-			</div>
-			<div class="modal-body">
-				<div class="emotion-view-box">
-					<div class="view-head">
-						<div class="view-head-left">
-							<div class="emotion-thumb-box md">
-								<img src="./asset/images/icon_happy_02.png">
-							</div>
-							<strong>행복해요</strong>
-						</div>
-						<div class="view-head-right">
-							<button type="button" class="delete">삭제</button>
-							<button type="button" class="update">수정</button>
-						</div>
-					</div>
-					<div class="view-body">
-						<p>
-							산책갔다가 커피 마시고 왔음 상쾌하다
-							산책갔다가 커피 마시고 왔음 상쾌하다
-						</p>
-						<ul class="image">
-							<li style="background-image:url('./asset/images/img_thumb_01.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_02.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_03.png');"></li>
-						</ul>
-					</div>
-					<div class="view-foot">
-						<p>서울시 강남구 서초동</p>
-						<span class="lock">비공개</span>
-					</div>
-				</div>
-			</div>
-			<div class="modal-foot">
-				<div class="button-box">
-					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-active btn-lg">확인</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_calendar.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_cate_calendar_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=5"></script>
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li class="active"><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <!-- 로그인 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+
+            <!-- 로그인 상태 -->
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+            <!-- 게스트 상태 -->
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container container-xl">
+    <div class="title-box"><h2>감정 캘린더</h2></div>
+
+    <div class="calendar-box">
+      <div class="cal-left">
+        <div class="cal-left-head">
+          <button type="button" class="prev" id="btnPrev" aria-label="이전 달"></button>
+          <select id="monthSelect" aria-label="연월 선택"></select>
+          <button type="button" class="next" id="btnNext" aria-label="다음 달"></button>
+        </div>
+        <div class="cal-left-body">
+          <table>
+            <thead>
+              <tr>
+                <th><b>일</b>요일</th>
+                <th><b>월</b>요일</th>
+                <th><b>화</b>요일</th>
+                <th><b>수</b>요일</th>
+                <th><b>목</b>요일</th>
+                <th><b>금</b>요일</th>
+                <th><b>토</b>요일</th>
+              </tr>
+            </thead>
+            <tbody id="calBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cal-right">
+        <div class="cal-right-head">
+          <a href="#" data-nav="record">감정 타임캡슐 기록하기</a>
+        </div>
+        <div class="cal-right-body">
+          <ul id="sideList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 모달 (지도 모달과 동일 패턴) -->
+<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-hidden="true" inert>
+  <div class="box">
+    <div class="modal-head">
+      <h2 id="modalTitle">감정기록</h2>
+      <a href="javascript:;" class="close" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}">닫기</a>
+    </div>
+    <div class="modal-body">
+      <div class="emotion-view-box"><!-- JS 렌더 --></div>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box">
+        <a href="javascript:;" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}" class="btn btn-active btn-lg">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_cate_calendar.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_cate_calendar_m.png" class="is-m" alt="">
+</div>
+
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=20"></script>
+
+<!-- 헤더 네비 -->
+<script>
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+  async function hasBleConsent() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    try {
+      const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return !!(data && (data.enabled === 1 || data.enabled === true));
+    } catch (e) { return false; }
+  }
+  const go = (url) => window.location.href = url;
+  function renderHeaderByAuth() {
+    const loggedIn = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', loggedIn));
+    document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !loggedIn));
+  }
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-nav]');
+    if (!a) return;
+    e.preventDefault();
+    const key = a.getAttribute('data-nav');
+    if (key === 'login')    return go('/login_01.html');
+    if (key === 'register') return go('/register_01.html');
+    if (key === 'logout')   { localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+    if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+    if (!isLoggedIn()) return go('/login_01.html');
+    switch (key) {
+      case 'record':   return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map':      return go('/emotion_map.html');
+      case 'memory':   return go('/emotion_memory.html');
+      case 'around': {
+        const ok = await hasBleConsent();
+        return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+      }
+    }
+  });
+  renderHeaderByAuth();
+  window.addEventListener('storage', (ev)=>{ if (ev.key === 'accessToken') renderHeaderByAuth(); });
+</script>
+
+<!-- 캘린더 로직 -->
+<script>
+  /* ====== 오늘(KST) ====== */
+  function todayKST(){
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset()*60000;
+    const kst = new Date(utcMs + 9*60*60000);
+    return {y:kst.getFullYear(), m:kst.getMonth()+1, d:kst.getDate()};
+  }
+  const KST = todayKST();
+
+  /* ===== 유틸 ===== */
+  const pad2 = n => String(n).padStart(2,'0');
+
+  // 요일/전체 날짜 한글 포맷
+  function dayKR(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getDate()}일(${w})`;
+  }
+  function fullDateKR(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일(${w})`;
+  }
+
+  /* === 감정 라벨 === */
+  const EMOJI_KO = {
+    joy: '행복해요',
+    sadness: '슬퍼요',
+    anger: '화나요',
+    worry: '불안해요',
+    proud: '뿌듯해요',
+    upset: '속상해요'
+  };
+  const EMOJI_LABEL = EMOJI_KO;
+
+  /* === 감정별 아이콘 세트(파일명 1:1) ===
+     ※ proud는 실제 파일명이 envious 이므로 envious 세트를 사용 */
+  const EMOJI_SET = {
+    joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+    sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+    anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+    worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+    proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+    upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+  };
+
+  /**
+   * DB의 expression_type(emoji01~emoji06 / '1'~'6' 등)을
+   * "표시용 +1 단계"로 맞춘 파일 인덱스(0~5)로 변환
+   * 규칙: emoji01 -> _02(0), emoji02 -> _03(1), ... emoji06 -> _07(5)
+   */
+  function parseExprIndex(expression_type){
+    const s = String(expression_type ?? '').toLowerCase().trim();
+    const m = s.match(/(\d+)/);
+    let n = m ? parseInt(m[1], 10) : 2;   // 기본값 2
+    if (!Number.isFinite(n)) n = 2;
+    n = Math.max(1, Math.min(6, n));      // 1~6 보정
+    return n - 1;                          // ★ +1 단계 표현(배열 인덱스)
+  }
+
+  /** 최종 아이콘 경로 */
+  function getEmojiSrc(emotion_type, expression_type){
+    const list = EMOJI_SET[String(emotion_type)] || EMOJI_SET.joy;
+    const idx = parseExprIndex(expression_type);
+    return `./asset/images/${list[idx]}`;
+  }
+
+  function toDateKeyLocal(v){
+    if (!v) return '';
+    if (v instanceof Date) return `${v.getFullYear()}-${pad2(v.getMonth()+1)}-${pad2(v.getDate())}`;
+    const s=String(v).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    if (/^\d{4}-\d{2}-\d{2}\s/.test(s)) return s.slice(0,10);
+    const d=new Date(s); if (isNaN(d)) return s.slice(0,10);
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  }
+  const authHeader = () => {
+    const t = localStorage.getItem('accessToken') || '';
+    return t ? { 'Authorization': t.startsWith('Bearer ') ? t : `Bearer ${t}` } : {};
+  };
+
+  // JWT에서 현재 사용자 id 추출 (base64url decode)
+  function getCurrentUserId(){
+    try{
+      const t = localStorage.getItem('accessToken'); if(!t) return null;
+      const payload = t.split('.')[1]; if(!payload) return null;
+      const b64 = payload.replace(/-/g,'+').replace(/_/g,'/');
+      const json = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      // 후보 키들: id, userId, sub
+      return json.userId || json.id || json.sub || null;
+    }catch(e){ return null; }
+  }
+  function isOwnerOf(rec){
+    if (rec && (rec.isOwner === true)) return true;
+    const me = getCurrentUserId();
+    if (!me) return false;
+    return [rec?.userId, rec?.user_id, rec?.ownerId, rec?.owner_id].some(v=> String(v)===String(me));
+  }
+
+  /* ===== 상태 (초기 선택: 오늘 KST) ===== */
+  let curYear  = KST.y;
+  let curMonth = KST.m;
+  let selectedDay = KST.d;
+
+  const monthSelect = document.getElementById('monthSelect');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const calBody  = document.getElementById('calBody');
+  const sideList = document.getElementById('sideList');
+
+  /* ===== 월 선택 ===== */
+  function buildMonthSelect(){
+    const base = KST.y;
+    const opts=[];
+    for(let y=base-2;y<=base+2;y++){
+      for(let m=1;m<=12;m++){
+        opts.push(`<option value="${y}-${pad2(m)}">${y}년 ${pad2(m)}월</option>`);
+      }
+    }
+    monthSelect.innerHTML = opts.join('');
+    monthSelect.value = `${curYear}-${pad2(curMonth)}`;
+  }
+  function setYMByIndex(delta){
+    const idx = monthSelect.selectedIndex;
+    const next = Math.max(0, Math.min(monthSelect.options.length-1, idx+delta));
+    monthSelect.selectedIndex = next;
+    const [y,m] = monthSelect.value.split('-').map(Number);
+    curYear=y; curMonth=m; selectedDay=null;
+    refreshCalendar();
+  }
+  btnPrev.addEventListener('click', ()=> setYMByIndex(-1));
+  btnNext.addEventListener('click', ()=> setYMByIndex(+1));
+  monthSelect.addEventListener('change', ()=>{
+    const [y,m] = monthSelect.value.split('-').map(Number);
+    curYear=y; curMonth=m; selectedDay=null;
+    refreshCalendar();
+  });
+
+  /* ===== API ===== */
+  async function fetchMonthSummary(y, m){
+    if (!localStorage.getItem('accessToken')){ alert('로그인이 필요합니다.'); go('/login_01.html'); return []; }
+    try{
+      const r = await fetch(`/api/record/calendar?year=${y}&month=${pad2(m)}`, { headers: authHeader() });
+      if (r.status===401 || r.status===403){ alert('로그인이 필요합니다.'); go('/login_01.html'); return []; }
+      if (!r.ok) return [];
+      const rows = await r.json();
+      return rows.map(x => ({...x, date: toDateKeyLocal(x.date)}));
+    }catch(e){ console.error(e); return []; }
+  }
+  async function fetchDayRecords(y, m, d){
+    if (!localStorage.getItem('accessToken')){ alert('로그인이 필요합니다.'); go('/login_01.html'); return {items:[]}; }
+    try{
+      const date = `${y}-${pad2(m)}-${pad2(d)}`;
+      const r = await fetch(`/api/record?from=${date}&to=${date}&pageSize=200`, { headers: authHeader() });
+      if (r.status===401 || r.status===403){ alert('로그인이 필요합니다.'); go('/login_01.html'); return {items:[]}; }
+      if (!r.ok) return {items:[]};
+      return await r.json();
+    }catch(e){ console.error(e); return {items:[]}; }
+  }
+  async function fetchRecordFull(id){
+    try{
+      const r = await fetch(`/api/record/${id}/full`, { headers: authHeader() });
+      if (!r.ok) return null;
+      return await r.json();
+    }catch(e){ return null; }
+  }
+
+  /* ===== 캘린더 그리드 ===== */
+  function buildEmptyGrid(y, m){
+    const first = new Date(y, m-1, 1);
+    const firstDow = first.getDay();
+    const lastDate = new Date(y, m, 0).getDate();
+
+    const rows = [];
+    let day = 1;
+    for (let r=0; r<6; r++){
+      const tds=[];
+      for (let c=0; c<7; c++){
+        const idx = r*7+c;
+        const inMonth = (idx >= firstDow) && (day <= lastDate);
+        if (!inMonth){
+          tds.push(`<td class="blank"><div><strong></strong></div></td>`);
+        } else {
+          tds.push(`
+            <td data-day="${day}">
+              <div>
+                <strong>${day}</strong>
+                <div class="inner">
+                  <div class="bubble-placeholder" aria-hidden="true"></div>
+                </div>
+              </div>
+            </td>`);
+          day++;
+        }
+      }
+      rows.push(`<tr>${tds.join('')}</tr>`);
+    }
+    calBody.innerHTML = rows.join('');
+
+    // 날짜 클릭 → 선택 배경 이동
+    calBody.querySelectorAll('td[data-day]').forEach(td=>{
+      td.addEventListener('click', ()=>{
+        calBody.querySelectorAll('td[data-day]').forEach(x=>x.classList.remove('is-selected'));
+        td.classList.add('is-selected');
+        selectedDay = Number(td.getAttribute('data-day'));
+        loadDayRecords(y, m, selectedDay);
+      });
+    });
+  }
+
+  /* ===== 월 아이콘 ===== */
+  function renderMonthIcons(y, m, rows){
+    const byDate = new Map();
+    rows.forEach(r=>{
+      const key = toDateKeyLocal(r.date);
+      if (!byDate.has(key)) byDate.set(key, []);
+      byDate.get(key).push(r);
+    });
+
+    calBody.querySelectorAll('td[data-day]').forEach(td=>{
+      const d = Number(td.getAttribute('data-day'));
+      const key = `${y}-${pad2(m)}-${pad2(d)}`;
+      const inner = td.querySelector('.inner');
+      const arr = byDate.get(key);
+      if (!inner) return;
+
+      if (arr && arr.length){
+        const rec = arr[0];
+        inner.classList.add('has-emoji');
+        inner.innerHTML = `
+          <div class="emotion-thumb-box sm">
+            <a href="javascript:;" data-day="${d}">
+              <img src="${getEmojiSrc(rec.emotion_type, rec.expression_type)}" alt="">
+            </a>
+          </div>`;
+        inner.querySelector('a').addEventListener('click', (ev)=>{
+          ev.preventDefault(); openDayAndMaybeModal(y,m,d);
+        });
+      }else{
+        inner.classList.remove('has-emoji');
+        if (!inner.querySelector('.bubble-placeholder')) {
+          inner.innerHTML = `<div class="bubble-placeholder" aria-hidden="true"></div>`;
+        }
+      }
+    });
+  }
+
+  /* ===== 우측 리스트 ===== */
+  function renderSideList(y, m, d, items){
+    const sorted=[...(items||[])].sort((a,b)=>{
+      const ta=a.created_at?new Date(a.created_at).getTime():0;
+      const tb=b.created_at?new Date(b.created_at).getTime():0;
+      if(tb!==ta) return tb-ta;
+      return (b.id||0)-(a.id||0);
+    });
+
+    const yo=['일','월','화','수','목','금','토'][new Date(`${y}-${pad2(m)}-${pad2(d)}`).getDay()];
+    const dateLabel=`${d}일(${yo})`;
+
+    const inner=calBody.querySelector(`td[data-day="${d}"] .inner`);
+
+    if (!sorted.length){
+      sideList.innerHTML = '';
+      if (inner){
+        inner.classList.remove('has-emoji');
+        if (!inner.querySelector('.bubble-placeholder'))
+          inner.innerHTML = `<div class="bubble-placeholder" aria-hidden="true"></div>`;
+      }
+      return;
+    }
+
+    sideList.innerHTML = sorted.map(it=>{
+      const emotionImg = getEmojiSrc(it.emotion_type, it.expression_type);
+      const label = EMOJI_LABEL[it.emotion_type] || '';
+      const thumb = it.img ? `style="background-image:url('${it.img}');"` : '';
+      const visible = it.visibility === 'public' ? '<span>공개</span>' : '<span class="lock">비공개</span>';
+      const contentLine = (it.content||'').replace(/\n+/g,' ').slice(0,80);
+      return `
+        <li>
+          <a href="javascript:;" class="inner" data-record-id="${it.id}" data-day="${d}">
+            <div class="list-head">
+              <div class="list-head-left">
+                <div class="emotion-thumb-box sm"><img src="${emotionImg}" alt=""></div>
+                <time>${dateLabel}</time>
+              </div>
+              <div class="list-head-right">
+                <strong>${label}</strong>
+                <div><div class="image-thumb-box" ${thumb}></div></div>
+              </div>
+            </div>
+            <div class="list-body">
+              <p>${contentLine}</p>
+              <div>
+                <p>${it.place||''}</p>
+                ${visible}
+              </div>
+            </div>
+          </a>
+        </li>`;
+    }).join('');
+
+    // 달력 셀 아이콘 최신값으로 동기화
+    const first = sorted[0];
+    if (inner && first){
+      inner.classList.add('has-emoji');
+      inner.innerHTML = `
+        <div class="emotion-thumb-box sm">
+          <a href="javascript:;" data-day="${d}">
+            <img src="${getEmojiSrc(first.emotion_type, first.expression_type)}" alt="">
+          </a>
+        </div>`;
+      inner.querySelector('a').addEventListener('click', async (ev)=>{
+        ev.preventDefault(); await openRecordModalById(first.id, y, m, d);
+      });
+    }
+  }
+
+  /* ===== 모달: map.html과 동일한 전략 ===== */
+  function showModal(){
+    const modal = document.getElementById('modal-view');
+    // 공통 스크립트 modalOpen 우선
+    try{
+      if (typeof window.modalOpen === 'function'){
+        const opener = document.createElement('a');
+        opener.setAttribute('href','javascript:;');
+        opener.setAttribute('aria-haspopup','dialog');
+        opener.setAttribute('aria-controls','modal-view');
+        opener.style.display='none';
+        document.body.appendChild(opener);
+        const ev = { preventDefault: ()=>{} };
+        window.modalOpen(ev, opener);
+        setTimeout(()=> opener.remove(), 0);
+        return;
+      }
+    }catch(e){
+      console.warn('[calendar.showModal] modalOpen failed; fallback', e);
+    }
+    // 폴백
+    if (modal){ modal.setAttribute('aria-hidden','false'); modal.removeAttribute('inert'); }
+  }
+  function hideModal(){
+    const m=document.getElementById('modal-view');
+    try{
+      if (typeof window.modalClose === 'function'){ window.modalClose(m); return; }
+    }catch(_){}
+    if (m){ m.setAttribute('aria-hidden','true'); m.setAttribute('inert',''); }
+  }
+
+  async function openRecordModalById(id,y,m,d){
+    const full=await fetchRecordFull(id);
+    if(!full){ console.warn('record fetch failed'); return; }
+    const rec=full.record || {};
+    const images = Array.isArray(full.images) ? [...full.images] : [];
+    if (rec.representative_img && !images.includes(rec.representative_img)) images.unshift(rec.representative_img);
+
+    // 제목(요일 포함): created_at 우선, 없으면 y/m/d
+    const titleISO = rec.created_at || `${y}-${pad2(m)}-${pad2(d)}`;
+    const titleText = `${fullDateKR(titleISO)} 감정기록`;
+    const titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.textContent = titleText;
+
+    // 본문(지도 모달과 동일 구조)
+    const box = document.querySelector('#modal-view .emotion-view-box');
+    const icon = getEmojiSrc(rec.emotion_type, rec.expression_type);
+    const imgLis = images.map(u=>`<li style="background-image:url('${u}');"></li>`).join('');
+    const owner = isOwnerOf(rec);
+    const recordId = rec.recordId || rec.id || id;
+
+    box.innerHTML = `
+      <div class="view-head">
+        <div class="view-head-left">
+          <div class="emotion-thumb-box md"><img src="${icon}" alt=""></div>
+          <strong>${rec.title || (EMOJI_LABEL[rec.emotion_type] || '감정기록')}</strong>
+        </div>
+        <div class="view-head-right">
+          ${owner ? `
+            <button type="button" class="delete" data-record-id="${recordId}">삭제</button>
+            <button type="button" class="update" data-record-id="${recordId}">수정</button>
+          ` : ``}
+        </div>
+      </div>
+      <div class="view-body">
+        <p>${(rec.content || '').replace(/\n/g,'<br>')}</p>
+        ${images.length ? `<ul class="image">${imgLis}</ul>` : ``}
+      </div>
+      <div class="view-foot">
+        <p>${rec.place || ''}</p>
+        ${(rec.visibility==='private') ? '<span class="lock">비공개</span>' : '<span>공개</span>'}
+      </div>
+    `;
+
+    const delBtn = box.querySelector('button.delete');
+    const editBtn = box.querySelector('button.update');
+    if (delBtn) delBtn.onclick = ()=> handleDelete(recordId);
+    if (editBtn) editBtn.onclick = ()=> handleEdit(recordId);
+
+    showModal();
+  }
+
+  // 삭제/수정 동작 (지도와 동일)
+  async function handleDelete(recordId){
+    if(!confirm('이 감정 기록을 삭제할까요?')) return;
+    const res = await fetch(`/api/record/${encodeURIComponent(recordId)}`, {
+      method: 'DELETE',
+      headers: authHeader()
+    });
+    if (res.status === 204 || res.ok){
+      hideModal();
+      // 현재 선택된 날짜 데이터/아이콘 갱신
+      if (selectedDay) {
+        await loadDayRecords(curYear, curMonth, selectedDay);
+        const summary = await fetchMonthSummary(curYear, curMonth);
+        renderMonthIcons(curYear, curMonth, summary);
+      }
+    } else {
+      const msg = await res.text().catch(()=> '');
+      alert('삭제에 실패했어요.\n' + msg);
+    }
+  }
+
+  async function handleEdit(recordId){
+    // 1차: /record-drafts/from-record/:id
+    try{
+      let res = await fetch(`/api/record-drafts/from-record/${encodeURIComponent(recordId)}`, {
+        method:'POST', headers: authHeader()
+      });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){ /* fallthrough */ }
+
+    // 2차: body로 전달
+    try{
+      let res = await fetch(`/api/record-drafts/from-record`, {
+        method:'POST',
+        headers: { ...authHeader(), 'Content-Type':'application/json' },
+        body: JSON.stringify({ recordId })
+      });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){ /* fallthrough */ }
+
+    // 폴백
+    location.href = `/emotion_select_01.html?recordId=${encodeURIComponent(recordId)}`;
+  }
+
+  // 날짜 또는 아이콘 클릭 시
+  async function openDayAndMaybeModal(y,m,d){
+    calBody.querySelectorAll('td[data-day]').forEach(x=>x.classList.remove('is-selected'));
+    const td=calBody.querySelector(`td[data-day="${d}"]`); if (td) td.classList.add('is-selected');
+    selectedDay = d;
+
+    const res=await fetchDayRecords(y,m,d);
+    const items=Array.isArray(res.items)? res.items : [];
+    renderSideList(y,m,d,items);
+    if (items.length===1) await openRecordModalById(items[0].id, y, m, d);
+  }
+
+  /* ===== 레거시 인라인 핸들러 호환 ===== */
+  window.modalOpen = window.modalOpen || function(ev){
+    const m=document.getElementById('modal-view');
+    if (ev && ev.preventDefault) ev.preventDefault();
+    m && (m.setAttribute('aria-hidden','false'), m.removeAttribute('inert'));
+  };
+  window.modalClose = window.modalClose || function(){
+    const m=document.getElementById('modal-view');
+    m && (m.setAttribute('aria-hidden','true'), m.setAttribute('inert',''));
+  };
+
+  /* ===== 전역 이벤트 위임: 리스트 항목 클릭 → 모달 ===== */
+  document.addEventListener('click', async (e)=>{
+    const a = e.target.closest('a[data-record-id]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.dataset.recordId;
+    const d  = Number(a.dataset.day) || selectedDay || KST.d;
+    await openRecordModalById(id, curYear, curMonth, d);
+  });
+
+  /* ===== 로딩 ===== */
+  async function loadDayRecords(y, m, d){
+    const res = await fetchDayRecords(y, m, d);
+    renderSideList(y, m, d, Array.isArray(res.items)? res.items : []);
+  }
+  async function refreshCalendar(){
+    buildEmptyGrid(curYear, curMonth);
+    const summary = await fetchMonthSummary(curYear, curMonth);
+    renderMonthIcons(curYear, curMonth, summary);
+
+    // 초기 기본 선택: 현재 달이면 오늘(KST), 아니면 첫 기록 날짜 또는 1일
+    const inThisMonth = (KST.y===curYear) && (KST.m===curMonth);
+    selectedDay = inThisMonth ? KST.d
+                  : (summary.length ? Number(toDateKeyLocal(summary[0].date).slice(-2)) : 1);
+
+    const selTd = calBody.querySelector(`td[data-day="${selectedDay}"]`);
+    if (selTd) selTd.classList.add('is-selected');
+
+    loadDayRecords(curYear, curMonth, selectedDay);
+    monthSelect.value = `${curYear}-${pad2(curMonth)}`;
+  }
+
+  (function init(){
+    buildMonthSelect();
+    refreshCalendar();
+  })();
+</script>
 </body>
 </html>

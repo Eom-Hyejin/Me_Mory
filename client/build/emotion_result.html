@@ -29,20 +29,18 @@
     .err{color:#c9302c}
     .ok{color:#2a7c2a;font-weight:700}
 
-    /* 수정된 부분 */
+    /* 가운데 정렬 */
     .emotion-thumb-box {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
     }
-
     .is-pc .emotion-thumb-box {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       width: 100%;
     }
-
     .is-m .emotion-thumb-box {
       display: flex;
       justify-content: center;
@@ -85,7 +83,6 @@
         </div>
 
         <div class="right-menu">
-          <!-- activeParent가 외부 파일에 없을 때 에러 방지 -->
           <button type="button" class="menu" onclick="window.activeParent ? activeParent(this, 'right-menu') : void 0;">메뉴바</button>
           <div class="inner">
             <ul>
@@ -169,6 +166,9 @@
   <script src="./asset/js/swiper.js?a=1"></script>
 
   <script>
+    /* ========= 기본 설정 ========= */
+    const SHOW_STATUS = false; // 상태 문구 숨김
+
     /* ========= 인증/네비 ========= */
     const getToken = () => localStorage.getItem('accessToken') || '';
     const authHeader = () => {
@@ -264,11 +264,11 @@
     const saveMsg = document.getElementById('saveMsg');
     const saveMsgM = document.getElementById('saveMsgM');
 
-    function setStatusMsg(html, ok=false){
-      const cls = ok ? 'ok' : 'err';
-      const h = `<span class="${cls}">${html}</span>`;
-      if (saveMsg) saveMsg.innerHTML = '';
-      if (saveMsgM) saveMsgM.innerHTML = '';
+    function setStatusMsg(text, ok=false){
+      if (!SHOW_STATUS) return; // 표시 끔
+      const html = `<span class="${ok ? 'ok':'err'}">${text}</span>`;
+      if (saveMsg) saveMsg.innerHTML = html;
+      if (saveMsgM) saveMsgM.innerHTML = html;
     }
 
     function renderPreview(data){
@@ -286,6 +286,50 @@
       if (emotionTextBottom) emotionTextBottom.textContent = txt;
     }
 
+    /* ========= 완료 버튼에서만 저장 ========= */
+    async function handleDoneClick(e){
+      e.preventDefault();
+      if (!isLoggedIn()){
+        alert('로그인이 필요합니다.');
+        return go('/login_01.html');
+      }
+      if (!draftId){
+        // draftId 없으면 서버가 무엇을 확정해야 할지 모름
+        alert('임시 기록(draftId)을 찾지 못했어요. 기록 작성 화면으로 돌아갑니다.');
+        return go('/emotion_select_01.html');
+      }
+
+      try{
+        doneBtn.setAttribute('disabled', 'disabled');
+        doneBtn.textContent = '저장 중…';
+
+        const r = await confirmServerDraft(draftId);
+        if (r.status === 401 || r.status === 403){
+          alert('로그인 세션이 만료되었어요. 다시 로그인해 주세요.');
+          return go('/login_01.html');
+        }
+        if (!r.ok){
+          let msg = `저장 실패 (HTTP ${r.status})`;
+          try{
+            const t = await r.json();
+            if (t && t.message) msg = t.message;
+          }catch(_){}
+          alert(msg);
+          doneBtn.removeAttribute('disabled');
+          doneBtn.textContent = '완료';
+          return;
+        }
+
+        // 성공 → 캘린더 이동
+        go('/emotion_calendar.html');
+      }catch(err){
+        alert('네트워크 오류로 저장하지 못했어요. 다시 시도해 주세요.');
+        doneBtn.removeAttribute('disabled');
+        doneBtn.textContent = '완료';
+      }
+    }
+
+    /* ========= 초기화 ========= */
     async function init(){
       renderHeaderByAuth();
 
@@ -295,6 +339,7 @@
         return;
       }
 
+      // 미리보기용 데이터 불러오기 (저장은 하지 않음)
       let data = null;
       if(draftId){
         data = await fetchServerDraft(draftId);
@@ -306,42 +351,12 @@
       }
       if(!data || typeof data !== 'object') data = {};
       if(!data.emotion_type) data.emotion_type = 'joy';
-
       renderPreview(data);
 
-      doneBtn?.addEventListener('click', async (e)=> {
-        e.preventDefault();
-        if(!draftId){
-          alert('임시 초안 ID가 없어 확정할 수 없습니다. 캘린더로 이동합니다.');
-          go('/emotion_calendar.html');
-          return;
-        }
-        if(doneBtn.dataset.loading === '1') return;
-        doneBtn.dataset.loading = '1';
-        doneBtn.setAttribute('disabled','disabled');
-        setStatusMsg('기록을 확정 처리 중...', true);
+      // 완료 버튼에서만 확정 저장
+      doneBtn?.addEventListener('click', handleDoneClick);
 
-        try{
-          const r = await confirmServerDraft(draftId);
-          if(r.ok){
-            setStatusMsg('기록 확정 완료! 캘린더로 이동합니다.', true);
-            go('/emotion_calendar.html');
-          }else{
-            let msg = `확정 실패 (HTTP ${r.status})`;
-            try{
-              const t = await r.json();
-              if (t && t.message) msg = t.message;
-            }catch(_){}
-            setStatusMsg(msg, false);
-          }
-        }catch(err){
-          setStatusMsg('네트워크 오류로 확정에 실패했습니다.', false);
-        }finally{
-          doneBtn.dataset.loading = '0';
-          doneBtn.removeAttribute('disabled');
-        }
-      });
-
+      // 토큰 변경 시 헤더 갱신
       window.addEventListener('storage', (ev)=> {
         if(ev.key === 'accessToken'){ renderHeaderByAuth(); }
       });

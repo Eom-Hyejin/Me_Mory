@@ -1,414 +1,617 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- 파비콘 이미지 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <!-- CSS (헤더와 동일 버전) -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <!-- JS (헤더와 동일 버전) -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+  <style>.is-hidden{display:none!important}</style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li class="active"><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section class="py0">
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="map-box">
-					<div class="title-box">
-						<h2>감정지도</h2>
-					</div>
-					<div class="map-left">
-						<div class="left-head">
-							<ul>
-								<li class="active"><a href="">오늘</a></li>
-								<li><a href="">이번주</a></li>
-							</ul>
-						</div>
-						<div class="left-body">
-							<ul>
-								<li>
-									<p>서울 강남구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_happy_02.png">
-									</div>
-								</li>
-								<li>
-									<p>서울 광진구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_sad_01.png">
-									</div>
-								</li>
-								<li>
-									<p>인천 중구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_angry_05.png">
-									</div>
-								</li>
-								<li>
-									<p>인천 동구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_uneasy_07.png">
-									</div>
-								</li>
-								<li>
-									<p>성남시 수정구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_envious_02.png">
-									</div>
-								</li>
-								<li>
-									<p>용인시 처인구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_upset_04.png">
-									</div>
-								</li>
-								<li>
-									<p>남양주시</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_happy_02.png">
-									</div>
-								</li>
-								<li>
-									<p>김포시</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_sad_03.png">
-									</div>
-								</li>
-								<li>
-									<p>서울 광진구</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_happy_02.png">
-									</div>
-								</li>
-								<li>
-									<p>강릉시</p>
-									<div class="emotion-thumb-box xs">
-										<img src="./asset/images/icon_envious_05.png">
-									</div>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="map-center">
-						<div class="center-bg">
-							<img src="./asset/images/img_map.png">
-						</div>
-						<div class="center-list">
-							<ul>
-								<li style="left:35%; top:25%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_happy_02.png">
-										</div>
-									</a>
-								</li>
-								<li style="left:39%; top:23%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_upset_03.png">
-										</div>
-									</a>
-								</li>
-								<li style="left:29%; top:22%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_sad_03.png">
-										</div>
-									</a>
-								</li>
-								<li style="left:33%; top:22%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_angry_03.png">
-										</div>
-									</a>
-								</li>
-								<li style="left:32%; top:24%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_uneasy_05.png">
-										</div>
-									</a>
-								</li>
-								<li style="left:30%; top:28%;">
-									<a href="javascript:;">
-										<div class="emotion-thumb-box xs">
-											<img src="./asset/images/icon_envious_07.png">
-										</div>
-									</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="map-right">
-						<div class="box">
-							<div class="right-head">
-								<h2>이 장소의 감정</h2>
-								<a href="javascript:;" class="close">닫기</a>
-							</div>
-							<div class="right-body">
-								<div class="right-inner">
-									<h3>이 장소의 내 감정</h3>
-									<div class="calendar-box auto">
-										<div class="cal-right">
-											<div class="cal-right-body">
-												<ul>
-													<li>
-														<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-															<div class="list-head">
-																<div class="list-head-left">
-																	<div class="emotion-thumb-box sm">
-																		<img src="./asset/images/icon_happy_02.png">
-																	</div>
-																	<time>22일(월)</time>
-																</div>
-																<div class="list-head-right">
-																	<strong>행복해요</strong>
-																	<div>
-																		<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-																	</div>
-																</div>
-															</div>
-															<div class="list-body">
-																<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-																<div>
-																	<p>서울시 강남구 서초동</p>
-																	<span>공개</span>
-																</div>
-															</div>
-														</a>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="right-inner">
-									<h3>이 장소의 다른 사람들의 감정 <a href="">가까운순</a></h3>
-									<div class="calendar-box">
-										<div class="cal-right">
-											<div class="cal-right-body">
-												<ul>
-													<li>
-														<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-															<div class="list-head">
-																<div class="list-head-left">
-																	<div class="emotion-thumb-box sm">
-																		<img src="./asset/images/icon_happy_02.png">
-																	</div>
-																	<time>22일(월)</time>
-																</div>
-																<div class="list-head-right">
-																	<strong>행복해요</strong>
-																	<div>
-																		<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-																	</div>
-																</div>
-															</div>
-															<div class="list-body">
-																<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-																<div>
-																	<p>서울시 강남구 서초동</p>
-																	<span>공개</span>
-																</div>
-															</div>
-														</a>
-													</li>
-													<li>
-														<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-															<div class="list-head">
-																<div class="list-head-left">
-																	<div class="emotion-thumb-box sm">
-																		<img src="./asset/images/icon_sad_02.png">
-																	</div>
-																	<time>22일(월)</time>
-																</div>
-																<div class="list-head-right">
-																	<strong>행복해요</strong>
-																	<div>
-																		<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-																	</div>
-																</div>
-															</div>
-															<div class="list-body">
-																<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-																<div>
-																	<p>서울시 강남구 서초동</p>
-																	<span class="lock">비공개</span>
-																</div>
-															</div>
-														</a>
-													</li>
-													<li>
-														<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-															<div class="list-head">
-																<div class="list-head-left">
-																	<div class="emotion-thumb-box sm">
-																		<img src="./asset/images/icon_angry_02.png">
-																	</div>
-																	<time>22일(월)</time>
-																</div>
-																<div class="list-head-right">
-																	<strong>행복해요</strong>
-																	<div>
-																		<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
-																	</div>
-																</div>
-															</div>
-															<div class="list-body">
-																<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-																<div>
-																	<p>서울시 강남구 서초동</p>
-																	<span class="lock">비공개</span>
-																</div>
-															</div>
-														</a>
-													</li>
-													<li>
-														<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="inner">
-															<div class="list-head">
-																<div class="list-head-left">
-																	<div class="emotion-thumb-box sm">
-																		<img src="./asset/images/icon_angry_02.png">
-																	</div>
-																	<time>22일(월)</time>
-																</div>
-																<div class="list-head-right">
-																	<strong>행복해요</strong>
-																	<div>
-																		<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
-																	</div>
-																</div>
-															</div>
-															<div class="list-body">
-																<p>산책갔다가 커피를 마셨다 상쾌하다</p>
-																<div>
-																	<p>서울시 강남구 서초동</p>
-																	<span class="lock">비공개</span>
-																</div>
-															</div>
-														</a>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_map.png" class="is-pc">
-		<img src="./asset/images/bg_body_cate_map_m.png" class="is-m">
-	</div>
-	<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert="">
-		<div class="box">
-			<div class="modal-head">
-				<h2>2025년 9월 22일(월) 감정기록</h2>
-				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-			</div>
-			<div class="modal-body">
-				<div class="emotion-view-box">
-					<div class="view-head">
-						<div class="view-head-left">
-							<div class="emotion-thumb-box md">
-								<img src="./asset/images/icon_happy_02.png">
-							</div>
-							<strong>행복해요</strong>
-						</div>
-						<div class="view-head-right">
-							<button type="button" class="delete">삭제</button>
-							<button type="button" class="update">수정</button>
-						</div>
-					</div>
-					<div class="view-body">
-						<p>
-							산책갔다가 커피 마시고 왔음 상쾌하다
-							산책갔다가 커피 마시고 왔음 상쾌하다
-						</p>
-						<ul class="image">
-							<li style="background-image:url('./asset/images/img_thumb_01.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_02.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_03.png');"></li>
-						</ul>
-					</div>
-					<div class="view-foot">
-						<p>서울시 강남구 서초동</p>
-						<span class="lock">비공개</span>
-					</div>
-				</div>
-			</div>
-			<div class="modal-foot">
-				<div class="button-box">
-					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-active btn-lg">확인</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=7"></script>
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li class="active"><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <!-- 로그인 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+
+            <!-- 로그인 상태 -->
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+            <!-- 게스트 상태 -->
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="py0">
+  <div class="full-box">
+    <div class="full-inner full-height">
+      <div class="map-box">
+        <div class="title-box"><h2>감정지도</h2></div>
+
+        <!-- 좌측 -->
+        <div class="map-left">
+          <div class="left-head">
+            <ul id="rangeTabs">
+              <li class="active"><a href="#" data-range="today">오늘</a></li>
+              <li><a href="#" data-range="week">이번주</a></li>
+            </ul>
+          </div>
+          <div class="left-body">
+            <ul id="listArea"><!-- JS --></ul>
+          </div>
+        </div>
+
+        <!-- 중앙 지도 -->
+        <div class="map-center">
+          <div class="center-bg"><img src="./asset/images/img_map.png"></div>
+          <div class="center-list"><ul id="pinArea"><!-- JS --></ul></div>
+        </div>
+
+        <!-- 우측 패널 -->
+        <div class="map-right">
+          <div class="box">
+            <div class="right-head">
+              <h2>이 장소의 감정</h2>
+              <a href="javascript:;" class="close">닫기</a>
+            </div>
+            <div class="right-body">
+              <div class="right-inner">
+                <h3>이 장소의 내 감정</h3>
+                <div class="calendar-box auto">
+                  <div class="cal-right"><div class="cal-right-body">
+                    <ul id="myList"><!-- JS --></ul>
+                  </div></div>
+                </div>
+              </div>
+              <div class="right-inner">
+                <h3>이 장소의 다른 사람들의 감정 <a href="javascript:;" id="sortNearby">가까운순</a></h3>
+                <div class="calendar-box">
+                  <div class="cal-right"><div class="cal-right-body">
+                    <ul id="othersList"><!-- JS --></ul>
+                  </div></div>
+                </div>
+              </div>
+              <div class="right-inner" id="emptyHint" style="display:none;">
+                <p style="color:#bbb">지도의 핀을 클릭하면 오른쪽에 감정 기록이 표시됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /map-box -->
+    </div>
+  </div>
+</section>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_cate_map.png" class="is-pc">
+  <img src="./asset/images/bg_body_cate_map_m.png" class="is-m">
+</div>
+
+<!-- 모달 -->
+<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert="">
+  <div class="box">
+    <div class="modal-head">
+      <h2>감정기록</h2>
+      <a href="javascript:;" class="close" onclick="try{modalClose(this)}catch(e){hideModal()}">닫기</a>
+    </div>
+    <div class="modal-body">
+      <div class="emotion-view-box"><!-- JS 렌더 --></div>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box">
+        <a href="javascript:;" onclick="try{modalClose(this)}catch(e){hideModal()}" class="btn btn-active btn-lg">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 프로젝트 스크립트 -->
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=7"></script>
+
+<!-- 헤더 네비 -->
+<script>
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+  async function hasBleConsent() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    try {
+      const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return !!(data && (data.enabled === 1 || data.enabled === true));
+    } catch (e) { return false; }
+  }
+  const go = (url) => window.location.href = url;
+  function renderHeaderByAuth() {
+    const loggedIn = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', loggedIn));
+    document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !loggedIn));
+  }
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-nav]');
+    if (!a) return;
+    e.preventDefault();
+    const key = a.getAttribute('data-nav');
+    if (key === 'login')    return go('/login_01.html');
+    if (key === 'register') return go('/register_01.html');
+    if (key === 'logout')   { localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+    if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+    if (!isLoggedIn()) return go('/login_01.html');
+    switch (key) {
+      case 'record':   return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map':      return go('/emotion_map.html');
+      case 'memory':   return go('/emotion_memory.html');
+      case 'around': {
+        const ok = await hasBleConsent();
+        return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+      }
+    }
+  });
+  renderHeaderByAuth();
+  window.addEventListener('storage', (ev)=>{ if (ev.key === 'accessToken') renderHeaderByAuth(); });
+</script>
+
+<!-- 페이지 전용 스크립트 -->
+<script>
+  /* === 감정 라벨 === */
+  const EMOJI_KO = {
+    joy: '행복해요',
+    sadness: '슬퍼요',
+    anger: '화나요',
+    worry: '불안해요',
+    proud: '뿌듯해요',
+    upset: '속상해요'
+  };
+  const EMOJI_LABEL = EMOJI_KO;
+
+  /* === 감정별 아이콘 세트(파일명 1:1) ===
+     ※ proud는 실제 파일명이 envious 이므로 envious 세트를 사용 */
+  const EMOJI_SET = {
+    joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+    sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+    anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+    worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+    proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+    upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+  };
+
+  /**
+   * DB의 expression_type(emoji01~emoji06 / '1'~'6' 등)을
+   * "표시용 +1 단계"로 맞춘 파일 인덱스(0~5)로 변환
+   * 규칙: emoji01 -> _02(0), emoji02 -> _03(1), ... emoji06 -> _07(5)
+   */
+  function parseExprIndex(expression_type){
+    const s = String(expression_type ?? '').toLowerCase().trim();
+    const m = s.match(/(\d+)/);
+    let n = m ? parseInt(m[1], 10) : 2;   // 기본값 2
+    if (!Number.isFinite(n)) n = 2;
+    n = Math.max(1, Math.min(6, n));      // 1~6 보정
+    return n - 1;                          // ★ +1 단계 표현(배열 인덱스)
+  }
+
+  /** 최종 아이콘 경로 */
+  function getEmojiSrc(emotion_type, expression_type){
+    const list = EMOJI_SET[String(emotion_type)] || EMOJI_SET.joy;
+    const idx = parseExprIndex(expression_type);
+    return `./asset/images/${list[idx]}`;
+  }
+
+  /* ---------- 공통 유틸 ---------- */
+  const pad2 = (n) => String(n).padStart(2,'0');
+
+  function toDateKeyLocal(v){
+    if (!v) return '';
+    if (v instanceof Date) return `${v.getFullYear()}-${pad2(v.getMonth()+1)}-${pad2(v.getDate())}`;
+    const s=String(v).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    if (/^\d{4}-\d{2}-\d{2}\s/.test(s)) return s.slice(0,10);
+    const d=new Date(s); if (isNaN(d)) return s.slice(0,10);
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  }
+
+  const authHeader = () => {
+    const t = localStorage.getItem('accessToken') || '';
+    return t ? { 'Authorization': t.startsWith('Bearer ') ? t : `Bearer ${t}` } : {};
+  };
+
+  /* ---------- API 헬퍼 ---------- */
+  const API_PREFIX = '/api';
+  async function fetchWithAuth(url, opt){
+    return fetch(url, { ...(opt||{}), headers:{...((opt&&opt.headers)||{}), ...authHeader()} });
+  }
+
+  /* ---------- 좌표 -> 이미지 좌표 ---------- */
+  const KOREA_BOUNDS = { 
+  minLat: 32.5, 
+  maxLat: 38.8, 
+  minLng: 125.0, 
+  maxLng: 131.0 
+};
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  function latLngToPercent(lat,lng){
+    const x=(lng-KOREA_BOUNDS.minLng)/(KOREA_BOUNDS.maxLng-KOREA_BOUNDS.minLng);
+    const y=1-(lat-KOREA_BOUNDS.minLat)/(KOREA_BOUNDS.maxLat-KOREA_BOUNDS.minLat);
+    return { left: clamp(x*100,0,100), top: clamp(y*100,0,100) };
+  }
+
+  /* ---------- 날짜/텍스트 ---------- */
+  const ymd=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  const todayYMD=()=>ymd(new Date());
+  function weekStartYMD(){ const now=new Date(); const day=now.getDay(); const diff=(day===0?-6:1-day); const mon=new Date(now.getFullYear(), now.getMonth(), now.getDate()+diff); return ymd(mon); }
+  function weekEndYMD(){ const s=new Date(weekStartYMD()); const e=new Date(s.getFullYear(), s.getMonth(), s.getDate()+6); return ymd(e); }
+  function labelKo(e){ return EMOJI_LABEL[e] || '감정'; }
+  function dayKR(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getDate()}일(${w})`;
+  }
+  function fullDateKR(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일(${w})`;
+  }
+
+  /* ---------- 상태 ---------- */
+  let currentRange='today';
+  let lastCenter = null; // 마지막으로 클릭한 좌표 저장(삭제 후 갱신용)
+
+  /* ---------- 데이터 로드 ---------- */
+  async function loadToday(){
+    const r = await fetchWithAuth(`${API_PREFIX}/map/me/today`);
+    if(!r.ok){ if(r.status===401||r.status===403) return location.href='/login_01.html'; throw new Error('today load fail'); }
+    const rows=(await r.json()).map(x=>({...x, latitude:+x.latitude, longitude:+x.longitude}));
+    renderList(rows); renderPins(rows);
+  }
+  async function loadWeek(){
+    const start=weekStartYMD();
+    const r=await fetchWithAuth(`${API_PREFIX}/map/me/week?start=${encodeURIComponent(start)}`);
+    if(!r.ok){ if(r.status===401||r.status===403) return location.href='/login_01.html'; throw new Error('week load fail'); }
+    const rows=(await r.json()).map(x=>({...x, latitude:+x.latitude, longitude:+x.longitude}));
+    renderList(rows); renderPins(rows);
+  }
+
+  function renderList(records){
+    const ul=document.getElementById('listArea'); ul.innerHTML='';
+    if(!records.length){ ul.innerHTML='<li><p>표시할 기록이 없습니다.</p></li>'; return; }
+    for(const r of records){
+      const li=document.createElement('li');
+      const p=document.createElement('p'); p.textContent=r.place || r.title || '(제목/주소 없음)';
+      const box=document.createElement('div'); box.className='emotion-thumb-box xs';
+      const img=document.createElement('img'); img.src=getEmojiSrc(r.emotion_type, r.expression_type); box.appendChild(img);
+      li.appendChild(p); li.appendChild(box); ul.appendChild(li);
+    }
+  }
+
+  function renderPins(records){
+    const ul=document.getElementById('pinArea'); ul.innerHTML='';
+    for(const r of records){
+      const lat=+r.latitude, lng=+r.longitude;
+      if(!Number.isFinite(lat)||!Number.isFinite(lng)) continue;
+      const {left, top}=latLngToPercent(lat,lng);
+      const li=document.createElement('li'); li.style.left=left.toFixed(2)+'%'; li.style.top=top.toFixed(2)+'%';
+      const a=document.createElement('a'); a.href='javascript:;';
+      const box=document.createElement('div'); box.className='emotion-thumb-box xs';
+      const img=document.createElement('img'); img.src=getEmojiSrc(r.emotion_type, r.expression_type); box.appendChild(img);
+      a.appendChild(box); li.appendChild(a); ul.appendChild(li);
+      a.addEventListener('click', ()=> openPlacePanel(lat, lng));
+    }
+  }
+
+  /* ---------- 우측 패널 렌더 ---------- */
+  function itemTpl(r, isMine){
+    const vis = r.visibility==='private' ? '<span class="lock">비공개</span>' : '<span>공개</span>';
+    const thumb = r.img ? `<div class="image-thumb-box" style="background-image:url('${r.img}');"></div>` : '';
+    const icon = getEmojiSrc(r.emotion_type, r.expression_type);
+    return `
+      <li>
+        <a href="javascript:;" class="inner" data-record-id="${r.recordId}">
+          <div class="list-head">
+            <div class="list-head-left">
+              <div class="emotion-thumb-box sm">
+                <img src="${icon}" alt="">
+              </div>
+              <time>${dayKR(r.created_at)}</time>
+            </div>
+            <div class="list-head-right">
+              <strong>${r.title || labelKo(r.emotion_type) || (isMine?'내 감정':'감정기록')}</strong>
+              <div>${thumb}</div>
+            </div>
+          </div>
+          <div class="list-body">
+            <p>${r.content || ''}</p>
+            <div>
+              <p>${r.place || ''}</p>
+              ${isMine ? vis : '<span>공개</span>'}
+            </div>
+          </div>
+        </a>
+      </li>
+    `;
+  }
+
+  function bindItemClicks(container){
+    container.querySelectorAll('a.inner[data-record-id]').forEach(a=>{
+      a.addEventListener('click', async (ev)=>{
+        ev.preventDefault();
+        const id = a.getAttribute('data-record-id');
+        await openRecordModal(id);
+      });
+    });
+  }
+
+  function renderRightPanel(payload){
+    const myList = document.getElementById('myList');
+    const othersList = document.getElementById('othersList');
+    const emptyHint = document.getElementById('emptyHint');
+
+    const my = Array.isArray(payload?.my)?payload.my:[];
+    const others = Array.isArray(payload?.others)?payload.others:[];
+
+    myList.innerHTML = my.length
+      ? my.map(r=>itemTpl(r,true)).join('')
+      : '<li class="empty"><div class="inner"><p class="empty-text">내 기록이 없습니다.</p></div></li>';
+
+    othersList.innerHTML = others.length
+      ? others.map(r=>itemTpl(r,false)).join('')
+      : '<li class="empty"><div class="inner"><p class="empty-text">표시할 공개 기록이 없습니다.</p></div></li>';
+
+    bindItemClicks(myList);
+    bindItemClicks(othersList);
+    emptyHint.style.display = (my.length||others.length) ? 'none' : '';
+  }
+
+  async function openPlacePanel(lat, lng){
+    lastCenter = {lat, lng}; // 삭제 후 패널 갱신용
+    const qs=new URLSearchParams({ lat:String(lat), lng:String(lng) });
+    if(currentRange==='today'){ const t=todayYMD(); qs.set('from',t); qs.set('to',t); }
+    if(currentRange==='week'){ qs.set('from',weekStartYMD()); qs.set('to',weekEndYMD()); }
+
+    const res=await fetchWithAuth(`${API_PREFIX}/map/place-click?${qs.toString()}`);
+    if(!res.ok){ if(res.status===401||res.status===403) return location.href='/login_01.html'; alert('장소 상세 조회 실패'); return; }
+    const data=await res.json();
+    renderRightPanel(data);
+  }
+
+  /* ---------- 모달: 상세/삭제/수정 ---------- */
+  async function openRecordModal(recordId){
+    const res = await fetchWithAuth(`${API_PREFIX}/record/${encodeURIComponent(recordId)}/full`);
+    if(!res.ok){ alert('기록 상세 조회 실패'); return; }
+    const { record, images } = await res.json();
+    renderModal(record, images || []);
+    showModal();
+  }
+
+  function showModal(){
+    const modal = document.getElementById('modal-view');
+    try {
+      if (typeof window.modalOpen === 'function') {
+        const opener = document.createElement('a');
+        opener.setAttribute('href', 'javascript:;');
+        opener.setAttribute('aria-haspopup', 'dialog');
+        opener.setAttribute('aria-controls', 'modal-view');
+        opener.style.display = 'none';
+        document.body.appendChild(opener);
+        const ev = { preventDefault: ()=>{} };
+        window.modalOpen(ev, opener);
+        setTimeout(()=> opener.remove(), 0);
+        return;
+      }
+    } catch(e){
+      console.warn('[showModal] modalOpen failed; fallback', e);
+    }
+    if (modal){ modal.setAttribute('aria-hidden','false'); modal.removeAttribute('inert'); }
+  }
+  function hideModal(){
+    const m=document.getElementById('modal-view');
+    try{ if(typeof window.modalClose==='function'){ window.modalClose(m); return; } }catch(_){}
+    if (m){ m.setAttribute('aria-hidden','true'); m.setAttribute('inert',''); }
+  }
+
+  async function handleDelete(recordId){
+    if(!confirm('이 감정 기록을 삭제할까요?')) return;
+    const res = await fetchWithAuth(`${API_PREFIX}/record/${encodeURIComponent(recordId)}`, {
+      method: 'DELETE'
+    });
+    if (res.status === 204 || res.ok){
+      hideModal();
+      // 현재 범위/좌표로 패널 갱신
+      if (lastCenter){
+        await openPlacePanel(lastCenter.lat, lastCenter.lng);
+      } else {
+        (currentRange==='today'?loadToday():loadWeek()).catch(console.error);
+      }
+    } else {
+      const msg = await res.text().catch(()=> '');
+      alert('삭제에 실패했어요.\n' + msg);
+    }
+  }
+
+  async function handleEdit(recordId){
+    // 1차: POST /record-drafts/from-record/:id
+    try{
+      let res = await fetchWithAuth(`${API_PREFIX}/record-drafts/from-record/${encodeURIComponent(recordId)}`, { method:'POST' });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){ /* fall through */ }
+
+    // 2차: POST /record-drafts/from-record  {recordId}
+    try{
+      let res = await fetchWithAuth(`${API_PREFIX}/record-drafts/from-record`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ recordId })
+      });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){ /* fall through */ }
+
+    // 폴백: recordId로 넘기고, 대상 페이지에서 드래프트 생성 처리
+    location.href = `/emotion_select_01.html?recordId=${encodeURIComponent(recordId)}`;
+  }
+
+  function renderModal(rec, images){
+    const modal = document.getElementById('modal-view');
+    const titleEl = modal.querySelector('.modal-head h2');
+    const box = modal.querySelector('.emotion-view-box');
+
+    if (titleEl) titleEl.textContent = `${fullDateKR(rec.created_at)} 감정기록`;
+
+    const imgs = Array.isArray(images) ? [...images] : [];
+    if (rec.representative_img && !imgs.includes(rec.representative_img)) {
+      imgs.unshift(rec.representative_img);
+    }
+    const imgLis = imgs.map(u=>`<li style="background-image:url('${u}');"></li>`).join('');
+    const icon = getEmojiSrc(rec.emotion_type, rec.expression_type);
+
+    box.innerHTML = `
+      <div class="view-head">
+        <div class="view-head-left">
+          <div class="emotion-thumb-box md">
+            <img src="${icon}">
+          </div>
+          <strong>${rec.title || labelKo(rec.emotion_type)}</strong>
+        </div>
+        <div class="view-head-right">
+          ${rec.isOwner ? `
+            <button type="button" class="delete" data-record-id="${rec.recordId}">삭제</button>
+            <button type="button" class="update" data-record-id="${rec.recordId}">수정</button>
+          ` : ''}
+        </div>
+      </div>
+      <div class="view-body">
+        <p>${(rec.content||'').replace(/\n/g,'<br>')}</p>
+        ${imgs.length ? `<ul class="image">${imgLis}</ul>` : ''}
+      </div>
+      <div class="view-foot">
+        <p>${rec.place || ''}</p>
+        ${rec.visibility==='private' ? '<span class="lock">비공개</span>' : '<span>공개</span>'}
+      </div>
+    `;
+
+    const delBtn = box.querySelector('button.delete');
+    const editBtn = box.querySelector('button.update');
+    if (delBtn) delBtn.onclick = ()=> handleDelete(rec.recordId);
+    if (editBtn) editBtn.onclick = ()=> handleEdit(rec.recordId);
+  }
+
+  /* ---------- 탭 ---------- */
+  document.getElementById('rangeTabs').addEventListener('click', (e)=>{
+    const a=e.target.closest('a[data-range]'); if(!a) return; e.preventDefault();
+    document.querySelectorAll('#rangeTabs li').forEach(li=>li.classList.remove('active'));
+    a.parentElement.classList.add('active');
+    currentRange=a.getAttribute('data-range');
+    (currentRange==='today'?loadToday():loadWeek()).catch(console.error);
+  });
+
+  /* ---------- 초기 로드 ---------- */
+  (function init(){
+    if(!localStorage.getItem('accessToken')){ location.href='/login_01.html'; return; }
+    document.getElementById('emptyHint').style.display='';
+    loadToday().catch(console.error);
+  })();
+</script>
+
+<!-- 보강 CSS -->
+<style>
+  .map-left .left-body li{border:0!important}
+  .map-left .left-body li::after{display:none!important}
+
+  .cal-right-body ul{list-style:none; margin:0; padding:0}
+  .cal-right-body li{border-bottom:1px solid rgba(255,255,255,.08)}
+  .cal-right-body li:last-child{border-bottom:0}
+
+  .cal-right .image-thumb-box{
+    width:56px; height:56px; border-radius:10px;
+    background-size:cover; background-position:center; background-repeat:no-repeat;
+  }
+  .cal-right-body li.empty{border:0}
+  .cal-right-body li.empty .inner{padding:10px 12px}
+  .empty-text{font:inherit; color:var(--text-weak, rgba(255,255,255,.75)); letter-spacing:inherit}
+</style>
 </body>
 </html>

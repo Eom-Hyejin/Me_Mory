@@ -4,32 +4,31 @@ const router = express.Router();
 const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
 
-/** 공통 필드 (팝업/리스트에 title/place가 필요) */
+/** 공통 필드: 리스트/패널/모달 용 */
 const MAP_FIELDS = `
   r.id AS recordId,
   r.userId,
   r.latitude, r.longitude,
   r.emotion_type, r.expression_type,
   r.title, r.place, r.visibility,
+  r.content, r.img,
   r.created_at
 `;
 
-/** 유틸: 형식/좌표 검증 */
+/** 유틸 */
 const isValidDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(String(s || ''));
-const isFiniteNum = (x) => Number.isFinite(Number(x));
 function assertLatLng(lat, lng) {
   const L = Number(lat), G = Number(lng);
   return Number.isFinite(L) && Number.isFinite(G) && L >= -90 && L <= 90 && G >= -180 && G <= 180;
 }
 
 /** ================================
- *  (1) 오늘: 내 기록 전부 (공개/비공개 포함)
+ *  (1) 오늘: 내 기록(공개/비공개)
  *  GET /map/me/today
  *  ================================ */
 router.get('/me/today', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
-
     const [rows] = await db.query(`
       SELECT ${MAP_FIELDS}
       FROM Records r
@@ -38,7 +37,6 @@ router.get('/me/today', verifyToken, async (req, res) => {
         AND DATE(r.created_at) = CURDATE()
       ORDER BY r.created_at DESC
     `, [userId]);
-
     res.status(200).json(rows);
   } catch (err) {
     console.error('[GET /map/me/today]', err);
@@ -47,7 +45,7 @@ router.get('/me/today', verifyToken, async (req, res) => {
 });
 
 /** =========================================
- *  (2) 주간: 내 기록 전부 (공개/비공개 포함)
+ *  (2) 주간: 내 기록(공개/비공개)
  *  GET /map/me/week?start=YYYY-MM-DD
  *  ========================================= */
 router.get('/me/week', verifyToken, async (req, res) => {
@@ -76,12 +74,9 @@ router.get('/me/week', verifyToken, async (req, res) => {
 
 /** ==========================================================
  *  (3) 클릭 지점 기준:
- *   - my: 클릭 지점 "정확 동일 좌표"의 내 기록(공개/비공개 모두)
- *   - others: 클릭 지점 반경 500m 이내의 타인 공개 기록만
+ *   - my: 클릭 지점 "정확 동일 좌표"의 내 기록(공개/비공개)
+ *   - others: 클릭 지점 반경 400m 이내의 타인 공개 기록
  *  GET /map/place-click?lat=&lng=&from=&to=&self_decimals=
- *    - lat,lng: 필수
- *    - from,to: YYYY-MM-DD (선택)
- *    - self_decimals: 내 정확 좌표 매칭 반올림 자릿수(기본 6; 6≈0.11m)
  * ========================================================== */
 router.get('/place-click', verifyToken, async (req, res) => {
   try {
@@ -99,8 +94,8 @@ router.get('/place-click', verifyToken, async (req, res) => {
       ? 6
       : Math.max(0, Math.min(10, parseInt(req.query.self_decimals, 10) || 6));
 
-    // 타인 공개 기록: 반경 500m
-    const othersRadiusKm = 0.5;
+    // 타인 공개 기록: 반경 400m
+    const othersRadiusKm = 0.4;
 
     // 날짜 범위 WHERE (선택)
     const dateWhere = [];
@@ -109,13 +104,14 @@ router.get('/place-click', verifyToken, async (req, res) => {
     if (to)   { dateWhere.push('DATE(r.created_at) <= ?'); dateVals.push(to); }
     const dateClause = dateWhere.length ? ` AND ${dateWhere.join(' AND ')}` : '';
 
-    // ===== 내 기록: 정확히 같은 좌표(반올림 비교)만 =====
+    // ===== 내 기록: 정확히 같은 좌표(반올림 비교) =====
     const [myRows] = await db.query(`
       SELECT
         r.id AS recordId, r.userId,
         r.latitude, r.longitude,
         r.emotion_type, r.expression_type,
         r.title, r.place, r.visibility,
+        r.content, r.img,
         r.created_at
       FROM Records r
       WHERE r.userId = ?
@@ -129,7 +125,7 @@ router.get('/place-click', verifyToken, async (req, res) => {
         selfDecimals, Number(lng), selfDecimals,
         ...dateVals]);
 
-    // ===== 타인 공개 기록: 반경 500m =====
+    // ===== 타인 공개 기록: 반경 400m =====
     const [othersRows] = await db.query(`
       SELECT
         ${MAP_FIELDS},
@@ -152,7 +148,7 @@ router.get('/place-click', verifyToken, async (req, res) => {
     return res.status(200).json({
       center: { lat: Number(lat), lng: Number(lng) },
       my: myRows,         // 정확 좌표 일치 + 내 기록(공개/비공개)
-      others: othersRows, // 반경 500m + 타인 공개
+      others: othersRows, // 반경 400m + 타인 공개
     });
   } catch (err) {
     console.error('[GET /map/place-click]', err);
