@@ -42,6 +42,24 @@
     .modal #modalMyLocBtn{background:transparent!important;border:0!important;box-shadow:none!important;color:#3b5bff!important;padding:8px 10px;cursor:pointer}
     .modal .modal-footer .btn:hover,.modal #modalMyLocBtn:hover{text-decoration:underline}
     .modal .modal-footer .btn:focus-visible,.modal #modalMyLocBtn:focus-visible{outline:2px solid rgba(59,91,255,.35);outline-offset:2px;border-radius:8px}
+
+    /* 공통 로그아웃 버튼 스타일 */
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"] {
+      background-color: #ffcc00 !important;
+      color: #fff !important;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      text-align: center;
+    }
+    header a[data-nav="logout"]:hover,
+    header a[data-nav="logout"]:focus {
+      filter: brightness(0.9);
+    }
   </style>
 </head>
 <body>

@@ -3,26 +3,7 @@
 <head>
   <title>Memory</title>
   <meta charset="UTF-8">
-  <meta name="keywords" content="">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta name="generator" content="">
-  <meta name="robots" content="">
-  <meta property="og:type" content="">
-  <meta property="og:title" content="">
-  <meta property="og:url" content="">
-  <meta property="og:description" content="">
-  <!--모바일크롬 툴바 컬러-->
-  <meta name="theme-color" content="#162060" />
-  <!-- 공유 이미지 -->
-  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-  <!-- 파비콘 이미지 -->
-  <link href="" rel="icon" type="image/jpg">
-  <link href="" rel="shortcut icon" type="image/jpg">
-  <link href="" rel="apple-touch-icon" type="image/jpg">
   <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
   <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
   <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
@@ -31,7 +12,31 @@
   <script src="./asset/js/jquery-3.3.1.js"></script>
   <script src="./asset/js/swiper.min.js"></script>
   <script src="./asset/js/common.js?a=2"></script>
-  <style>.is-hidden{display:none!important}</style>
+
+  <!-- 보강 스타일 -->
+  <style>
+    .is-hidden { display:none!important }
+
+    /* 공통 로그아웃 버튼 스타일 */
+    header .right-button .header-user a[data-nav="logout"],
+    header .right-menu .inner ul li a[data-nav="logout"] {
+      background-color: #ffcc00 !important; /* 노란 배경 */
+      color: #fff !important;               /* 흰 글자 */
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: block;          /* block으로 바꿔줘야 margin-left: auto 가능 */
+      width: fit-content;      /* 글자 크기만큼만 */
+      margin-left: auto;       /* 오른쪽 정렬 */
+      text-align: center;
+    }
+
+    /* hover/focus 상태 */
+    header a[data-nav="logout"]:hover,
+    header a[data-nav="logout"]:focus {
+      filter: brightness(0.9);
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -51,7 +56,7 @@
     </div>
 
     <div class="header-right">
-      <!-- 게스트용 -->
+      <!-- 게스트 -->
       <div class="right-button header-guest">
         <ul>
           <li class="border"><a href="#" data-nav="login">로그인</a></li>
@@ -59,7 +64,7 @@
         </ul>
       </div>
 
-      <!-- 로그인용 -->
+      <!-- 로그인 -->
       <div class="right-button header-user is-hidden">
         <ul>
           <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
@@ -112,13 +117,9 @@
   <img src="./asset/images/bg_body_login_m.png" class="is-m" alt="">
 </div>
 
-<script src="./asset/js/swiper.js?a=1"></script>
-<script src="/asset/js/app.js?ver=20"></script>
 <script>
-  // 로그인 여부
   const isLoggedIn = () => !!localStorage.getItem('accessToken');
 
-  // BLE 동의 조회
   async function hasBleConsent() {
     const token = localStorage.getItem('accessToken');
     if (!token) return false;
@@ -132,7 +133,6 @@
 
   const go = (url) => window.location.href = url;
 
-  // 헤더 토글
   function renderHeaderByAuth() {
     const loggedIn = isLoggedIn();
     document.querySelectorAll('.header-guest, .header-guest-item')
@@ -141,7 +141,6 @@
       .forEach(el => el.classList.toggle('is-hidden', !loggedIn));
   }
 
-  // 네비 처리
   document.addEventListener('click', async (e) => {
     const a = e.target.closest('[data-nav]');
     if (!a) return;
@@ -150,7 +149,7 @@
 
     if (key === 'login')    return go('/login_01.html');
     if (key === 'register') return go('/register_01.html');
-    if (key === 'logout')   {
+    if (key === 'logout') {
       localStorage.removeItem('accessToken');
       renderHeaderByAuth();
       return go('/');

@@ -37,6 +37,24 @@
     .face-check-box li.selected label .spark{transform:scale(1.05)}
     /* 닉네임을 주변 텍스트와 동일한 폰트/굵기로 */
     #nickname { font-family: inherit; font-weight: inherit; }
+
+    /* 공통 로그아웃 버튼 스타일 */
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"] {
+      background-color: #ffcc00 !important;
+      color: #fff !important;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      text-align: center;
+    }
+    header a[data-nav="logout"]:hover,
+    header a[data-nav="logout"]:focus {
+      filter: brightness(0.9);
+    }
   </style>
 </head>
 <body>
