@@ -4,7 +4,7 @@ const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
 
 /**
- * 미회고 목록 (reveal_at <= 오늘, 아직 Users_Rec에 없는 것)
+ * 전체 목록 
  * GET /recall/pending
  * response: [{recordId, title, emotion_type, expression_type, reveal_at, created_at}]
  */
@@ -14,11 +14,10 @@ router.get('/pending', verifyToken, async (req, res) => {
 
     const [rows] = await db.query(
       `
-      SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.reveal_at, r.created_at
+      SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.reveal_at, r.created_at
       FROM Records r
       LEFT JOIN Users_Rec ur ON ur.recId = r.id AND ur.userId = ?
       WHERE r.userId = ?
-        AND r.reveal_at <= NOW()
         AND ur.id IS NULL
       ORDER BY r.reveal_at DESC, r.id DESC
       `,
@@ -45,16 +44,24 @@ router.get('/ago', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'months는 6 또는 12여야 합니다' });
     }
 
-    // KST 기준 오늘-개월수 의 “같은 월/일”
     const [rows] = await db.query(
       `
-      SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.created_at, r.reveal_at
+      SELECT
+        r.id AS recordId,
+        r.title,
+        r.emotion_type,
+        r.expression_type,
+        r.img,
+        r.created_at,
+        r.reveal_at
       FROM Records r
       WHERE r.userId = ?
-        AND DATE(r.created_at) = DATE(DATE_SUB(CURDATE(), INTERVAL ? MONTH))
-      ORDER BY r.created_at DESC, r.id DESC
+        AND DATE(r.reveal_at) BETWEEN
+              DATE(DATE_SUB(CURDATE(), INTERVAL ? MONTH) - INTERVAL 3 DAY)
+          AND DATE(DATE_SUB(CURDATE(), INTERVAL ? MONTH) + INTERVAL 3 DAY)
+      ORDER BY r.reveal_at DESC, r.id DESC
       `,
-      [userId, months]
+      [userId, months, months]
     );
 
     res.status(200).json({ months, items: rows });
@@ -76,7 +83,7 @@ router.get('/today', verifyToken, async (req, res) => {
     const [[six], [one]] = await Promise.all([
       db.query(
         `
-        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.created_at, r.reveal_at
+        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.created_at, r.reveal_at
         FROM Records r
         WHERE r.userId = ?
           AND DATE(r.created_at) = DATE(DATE_SUB(CURDATE(), INTERVAL 6 MONTH))
@@ -86,7 +93,7 @@ router.get('/today', verifyToken, async (req, res) => {
       ),
       db.query(
         `
-        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.created_at, r.reveal_at
+        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.created_at, r.reveal_at
         FROM Records r
         WHERE r.userId = ?
           AND DATE(r.created_at) = DATE(DATE_SUB(CURDATE(), INTERVAL 12 MONTH))
