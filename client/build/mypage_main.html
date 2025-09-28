@@ -1,243 +1,542 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="theme-color" content="#162060" />
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+  <style>
+    .is-hidden{display:none!important}
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"]{
+      background:#ffcc00!important;color:#fff!important;padding:8px 14px;border-radius:6px;font-weight:bold;display:block;width:fit-content;margin-left:auto;text-align:center}
+    header a[data-nav="logout"]:hover, header a[data-nav="logout"]:focus{filter:brightness(.9)}
+    #profile-img{object-fit:cover;border-radius:50%}
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="container container-xl">
-			<div class="title-box">
-				<h2>마이페이지</h2>
-			</div>
-			<div class="mypage-top-box">
-				<div class="top-left">
-					<div class="left-text">
-						<h2><b>메모리</b>님, <br/>오늘은 어떤 하루인가요?</h2>
-						<div class="button-box">
-							<a href="" class="btn btn-active btn-lg">감정 기록하러 가기</a>
-						</div>
-					</div>
-					<div class="left-thumb">
-						<div class="emotion-result-box arround lg">
-							<div class="image">
-								<img src="./asset/images/img_arround_thumb_02.png">
-								<label for="file">
-									<input type="file" name="file" id="file"/>
-								</label>
-							</div>
-							<div class="result"><img src="./asset/images/icon_angry_02.png"></div>
-						</div>
-					</div>
-				</div>
-				<div class="top-right">
-					<div class="right-head">
-						<a href="">
-							<h2>감정회고 알림</h2>
-						</a>
-						<a href="">
-							<h2>공지사항</h2>
-						</a>
-					</div>
-					<div class="right-body">
-						<ul>
-							<li>
-								<a href="" class="inner">
-									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>6개월 전 오늘, 회고할 감정들이 있어요!</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="mypage-bottom-box">
-				<div class="bottom-left">
-					<div class="left-inner">
-						<div class="emotion-year-box">
-							<h2>2025년 8월의 내 감정은?</h2>
-							<div class="image">
-								<ul>
-									<li><img src="./asset/images/icon_happy_01.png"></li>
-									<li><img src="./asset/images/icon_happy_01.png"></li>
-									<li><img src="./asset/images/icon_happy_01.png"></li>
-									<li><img src="./asset/images/icon_happy_01.png"></li>
-									<li><img src="./asset/images/icon_uneasy_01.png"></li>
-									<li><img src="./asset/images/icon_uneasy_01.png"></li>
-									<li><img src="./asset/images/icon_sad_01.png"></li>
-									<li><img src="./asset/images/icon_angry_01.png"></li>
-									<li><img src="./asset/images/icon_envious_01.png"></li>
-									<li><img src="./asset/images/icon_upset_01.png"></li>
-								</ul>
-							</div>
-							<div class="text">
-								<ul>
-									<li>행복해요 40%</li>
-									<li>불안해요 20%</li>
-									<li>슬퍼요 10%</li>
-									<li>화나요 5%</li>
-									<li>부러워요 5%</li>
-									<li>속상해요 5%</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="left-link">
-						<a href="">
-							<h2>내 정보 수정하기</h2>
-						</a>
-					</div>
-					<div class="left-link">
-						<a href="">
-							<h2>앱 설정</h2>
-						</a>
-					</div>
-					<div class="left-link">
-						<a href="">
-							<h2>고객센터</h2>
-						</a>
-					</div>
-				</div>
-				<div class="bottom-right">
-					<div class="notice-list-box">
-						<h2>공지사항</h2>
-						<ul>
-							<li>
-								<a href="" class="inner">
-									<p>📣 공지 / 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>🔧 업데이트 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>✍️ 댓글 작성 이벤트 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>📣 공지 / 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>📣 공지 / 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-							<li>
-								<a href="" class="inner">
-									<p>📣 공지 / 안내</p>
-									<time>2025-08-01</time>
-								</a>
-							</li>
-						</ul>
-						<p>최근 30일간 알림을 표시해요</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_mypage.png" class="is-pc">
-		<img src="./asset/images/bg_body_cate_mypage_m.png" class="is-m">
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=24"></script>
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li class="active"><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container container-xl">
+    <div class="title-box">
+      <h2>마이페이지</h2>
+    </div>
+
+    <div class="mypage-top-box">
+      <div class="top-left">
+        <div class="left-text">
+          <h2><b id="nickname">메모리</b>님, <br/>오늘은 어떤 하루인가요?</h2>
+          <div class="button-box">
+            <a href="#" class="btn btn-active btn-lg" data-nav="record">감정 기록하러 가기</a>
+          </div>
+        </div>
+        <div class="left-thumb">
+          <div class="emotion-result-box arround lg">
+            <div class="image">
+              <img id="profile-img" src="./asset/images/img_arround_thumb_02.png" alt="프로필 이미지">
+            </div>
+            <!-- 오늘 감정 아이콘: 감정 있을 때만 .result 전체를 보이게 -->
+            <div class="result"><img id="today-emotion" alt="오늘의 감정"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <div class="right-head">
+          <a href="#" data-nav="alert"><h2>감정회고 알림</h2></a>
+          <a href="#" data-nav="notice-list"><h2>공지사항</h2></a>
+        </div>
+        <div class="right-body">
+          <ul>
+            <li><a href="#" class="inner" data-nav="alert"><p>6개월 전 오늘, 회고할 감정들이 있어요!</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="alert"><p>6개월 전 오늘, 회고할 감정들이 있어요!</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="alert"><p>6개월 전 오늘, 회고할 감정들이 있어요!</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="alert"><p>6개월 전 오늘, 회고할 감정들이 있어요!</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="alert"><p>6개월 전 오늘, 회고할 감정들이 있어요!</p><time>2025-08-01</time></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mypage-bottom-box">
+      <div class="bottom-left">
+        <div class="left-inner">
+          <div class="emotion-year-box">
+            <h2>2025년 8월의 내 감정은?</h2>
+            <div class="image">
+              <ul></ul>
+            </div>
+            <div class="text">
+              <ul></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="left-link"><a href="#" data-nav="mypage-update"><h2>내 정보 수정하기</h2></a></div>
+        <div class="left-link"><a href="#"><h2>앱 설정</h2></a></div>
+        <div class="left-link"><a href="#"><h2>고객센터</h2></a></div>
+      </div>
+
+      <div class="bottom-right">
+        <div class="notice-list-box">
+          <h2>공지사항</h2>
+          <ul>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>📣 공지 / 안내</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>🔧 업데이트 안내</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>✍️ 댓글 작성 이벤트 안내</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>📣 공지 / 안내</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>📣 공지 / 안내</p><time>2025-08-01</time></a></li>
+            <li><a href="#" class="inner" data-nav="notice-list"><p>📣 공지 / 안내</p><time>2025-08-01</time></a></li>
+          </ul>
+          <p>최근 30일간 알림을 표시해요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_cate_mypage.png" class="is-pc">
+  <img src="./asset/images/bg_body_cate_mypage_m.png" class="is-m">
+</div>
+
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=24"></script>
+<script>
+  /* ===== 공통 유틸 & 인증 fetch ===== */
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+  const go = (url) => (window.location.href = url);
+
+  function authHeaders(){
+    const t = localStorage.getItem('accessToken');
+    // ⚠️ 서버가 'Bearer ' 없이 토큰만 받도록 구현되어 있음
+    return t ? { 'Authorization': t } : {};
+  }
+  function redirectToLogin(){
+    const back = encodeURIComponent(location.pathname + location.search);
+    window.location.href = `/login_01.html?next=${back}`;
+  }
+  async function fetchWithAuth(input, init = {}){
+    const headers = { ...(init.headers || {}), ...authHeaders() };
+    const res = await fetch(input, { ...init, headers });
+    if (res.status === 401 || res.status === 403){
+      localStorage.removeItem('accessToken');
+      redirectToLogin();
+      throw new Error('Unauthorized');
+    }
+    return res;
+  }
+
+  /* ===== BLE 동의 ===== */
+  async function hasBleConsent() {
+    if (!isLoggedIn()) return false;
+    try {
+      const res = await fetchWithAuth('/api/bluetooth/consent');
+      if (!res.ok) return false;
+      const data = await res.json();
+      return !!(data && (data.enabled === 1 || data.enabled === true));
+    } catch { return false; }
+  }
+
+  /* ===== 헤더 토글 ===== */
+  function renderHeaderByAuth() {
+    const loggedIn = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item').forEach(el => el.classList.toggle('is-hidden', loggedIn));
+    document.querySelectorAll('.header-user, .header-user-item').forEach(el => el.classList.toggle('is-hidden', !loggedIn));
+  }
+
+  /* ===== 네비 처리 ===== */
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-nav]'); if (!a) return;
+    e.preventDefault();
+    const key = a.getAttribute('data-nav');
+
+    if (key === 'login')    return go('/login_01.html');
+    if (key === 'register') return go('/register_01.html');
+    if (key === 'logout')   {
+      localStorage.removeItem('accessToken'); meCache = null;
+      renderHeaderByAuth(); renderNickname(); renderProfile(); renderTodayEmotion(); renderMonthTitleAndStats();
+      return go('/');
+    }
+    if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+    if (!isLoggedIn()) return go('/login_01.html');
+
+    switch (key) {
+      case 'record':   return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map':      return go('/emotion_map.html');
+      case 'memory':   return go('/emotion_memory.html');
+      case 'around': {
+        const ok = await hasBleConsent();
+        return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+      }
+      case 'notice-list':   return go('/mypage_notice_list.html');
+      case 'alert':         return go('/mypage_alert.html');
+      case 'mypage-update': return go('/mypage_update.html');
+    }
+  });
+
+  /* ===== me 캐시 ===== */
+  let meCache = null;
+  async function getMe() {
+    if (!isLoggedIn()) return null;
+    if (meCache) return meCache;
+    try {
+      const res = await fetchWithAuth('/api/auth/me');
+      if (!res.ok) return null;
+      meCache = await res.json(); // { name, img, ... }
+      return meCache;
+    } catch { return null; }
+  }
+
+  /* ===== 감정 아이콘 매핑 ===== */
+  const EMOJI_KO = { joy:'행복해요', sadness:'슬퍼요', anger:'화나요', worry:'불안해요', proud:'뿌듯해요', upset:'속상해요' };
+  const EMOJI_SET = {
+    joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+    sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+    anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+    worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+    proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+    upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+  };
+  function parseExprIndex(expression_type){
+    const s = String(expression_type ?? '').toLowerCase().trim();
+    const m = s.match(/(\d+)/);
+    let n = m ? parseInt(m[1], 10) : 2;
+    if (!Number.isFinite(n)) n = 2;
+    n = Math.max(1, Math.min(6, n));
+    return n - 1;
+  }
+  function getEmojiSrc(emotion_type, expression_type){
+    const list = EMOJI_SET[String(emotion_type)] || EMOJI_SET.joy;
+    const idx = parseExprIndex(expression_type);
+    return `./asset/images/${list[idx]}`;
+  }
+
+  /* ===== 닉네임/프로필 ===== */
+  async function renderNickname(){
+    const el = document.querySelector('#nickname'); if (!el) return;
+    let name = '메모리'; const me = await getMe();
+    if (me?.name) name = me.name;
+    el.textContent = name;
+  }
+  const DEFAULT_PROFILE = './asset/images/img_arround_thumb_02.png';
+  async function renderProfile(){
+    const img = document.querySelector('#profile-img'); if (!img) return;
+    let url = DEFAULT_PROFILE; const me = await getMe();
+    if (me?.img && typeof me.img === 'string') url = me.img;
+    img.onerror = () => { img.onerror = null; img.src = DEFAULT_PROFILE; };
+    img.src = url;
+  }
+
+  /* ===== 오늘 최신 감정 ===== */
+  async function renderTodayEmotion(){
+    const resultWrap = document.querySelector('.emotion-result-box .result');
+    if (!resultWrap) return;
+    // 기본: 숨김 (감정 있으면 보여줌)
+    resultWrap.style.display = 'none';
+
+    let imgEl = document.querySelector('#today-emotion');
+    if (!imgEl) { imgEl = document.createElement('img'); imgEl.id = 'today-emotion'; imgEl.alt = '오늘의 감정'; resultWrap.appendChild(imgEl); }
+
+    if (!isLoggedIn()) return;
+
+    try {
+      const res = await fetchWithAuth('/api/record/today/latest');
+      if (res.status === 204) return;
+      if (!res.ok) return;
+
+      const data = await res.json();
+      const emo  = String(data?.emotion_type || '').trim();
+      const expr = data?.expression_type;
+      if (!emo || !EMOJI_SET[emo]) return;
+
+      imgEl.alt = EMOJI_KO[emo] || '오늘의 감정';
+      imgEl.title = imgEl.alt;
+      imgEl.onerror = () => { imgEl.onerror = null; resultWrap.style.display = 'none'; };
+      imgEl.src = getEmojiSrc(emo, expr);
+
+      // 감정 있을 때만 말풍선/아이콘 표시
+      resultWrap.style.display = '';
+    } catch {
+      resultWrap.style.display = 'none';
+    }
+  }
+
+  /* ===== 월별 제목 + 통계 ===== */
+  async function renderMonthTitleAndStats(){
+  if (!isLoggedIn()) return;
+  try{
+    const res = await fetchWithAuth('/api/record/month/stats?caps=10');
+    if (!res.ok) return;
+    const data = await res.json(); // { year, month, total, items[...] }
+
+    // 제목
+    const h2 = document.querySelector('.emotion-year-box h2');
+    if (h2) h2.textContent = `${data.year}년 ${data.month}월의 내 감정은?`;
+
+    // 감정 라벨 & 아이콘 매핑
+    const label = {
+      joy:'행복해요', worry:'불안해요', sadness:'슬퍼요',
+      anger:'화나요', proud:'부러워요', upset:'속상해요'
+    };
+    const iconByEmotion = {
+      joy:'icon_happy_01.png', worry:'icon_uneasy_01.png',
+      sadness:'icon_sad_01.png', anger:'icon_angry_01.png',
+      proud:'icon_envious_01.png', upset:'icon_upset_01.png'
+    };
+
+    // 6개 감정 기본값(0%) 포함해서 병합
+    const merged = Object.keys(label).map(em=>{
+      const found = data.items.find(x=>x.emotion===em);
+      return {
+        emotion: em,
+        percent: found ? found.percent : 0,
+        caps: found ? found.caps : 0
+      };
+    });
+
+    // 내림차순 정렬
+    merged.sort((a,b)=> b.percent - a.percent);
+
+    // 퍼센트 텍스트 렌더
+    const textUl = document.querySelector('.emotion-year-box .text ul');
+    if (textUl){
+      textUl.innerHTML = merged
+        .map(it => `<li>${label[it.emotion]} ${it.percent}%</li>`)
+        .join('');
+    }
+
+    // 아이콘 렌더
+    const imgUl = document.querySelector('.emotion-year-box .image ul');
+    if (imgUl){
+      const parts = [];
+      merged.forEach(it=>{
+        for (let i=0;i<it.caps;i++){
+          parts.push(`<li><img src="./asset/images/${iconByEmotion[it.emotion]}"></li>`);
+        }
+      });
+      imgUl.innerHTML = parts.join('');
+    }
+  }catch(e){
+    console.error('renderMonthTitleAndStats 실패', e);
+  }
+}
+
+/* ================= 공지사항 렌더 ================= */
+function fmtYYYYMMDD(s){
+  // publish_at 같은 문자열을 'YYYY-MM-DD' 로
+  try{
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return '';
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }catch{ return ''; }
+}
+
+async function renderNotices(){
+  const box = document.querySelector('.notice-list-box');
+  if (!box) return;
+  const ul = box.querySelector('ul');
+  if (!ul) return;
+
+  // 기본 비워두기
+  ul.innerHTML = '';
+
+  // 비로그인 처리
+  if (!isLoggedIn()){
+    ul.innerHTML = `<li class="empty"><div class="inner"><p class="empty-text">로그인이 필요합니다.</p></div></li>`;
+    return;
+  }
+
+  try{
+    // 최근 6건만 노출(원하면 숫자 조절)
+    const res = await fetchWithAuth('/api/notices?page=1&pageSize=6');
+    if (res.status === 204){
+      ul.innerHTML = `<li class="empty"><div class="inner"><p class="empty-text">표시할 공지사항이 없습니다.</p></div></li>`;
+      return;
+    }
+    if (!res.ok){
+      ul.innerHTML = `<li class="empty"><div class="inner"><p class="empty-text">공지 불러오기에 실패했어요.</p></div></li>`;
+      return;
+    }
+
+    const data = await res.json(); // { page, pageSize, total, items: [...] }
+    const items = Array.isArray(data.items) ? data.items : [];
+
+    if (!items.length){
+      ul.innerHTML = `<li class="empty"><div class="inner"><p class="empty-text">표시할 공지사항이 없습니다.</p></div></li>`;
+      return;
+    }
+
+    // li 템플릿
+    ul.innerHTML = items.map(n => {
+      const dateStr = fmtYYYYMMDD(n.publish_at || n.created_at);
+      const title = (n.pinned ? '📌 ' : '') + (n.title || '(제목 없음)');
+      // 상세 페이지가 있다면 data-id 달아두고 라우팅에 활용
+      return `
+        <li>
+          <a href="#" class="inner" data-nav="notice-list" data-notice-id="${n.id}">
+            <p>${title}</p>
+            <time>${dateStr}</time>
+          </a>
+        </li>
+      `;
+    }).join('');
+
+    // 클릭 시 공지 목록/상세로 이동 (여기선 목록으로 이동)
+    ul.querySelectorAll('a.inner[data-notice-id]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        // 상세 페이지가 있다면: go('/mypage_notice_view.html?id=' + a.dataset.noticeId);
+        go('/mypage_notice_list.html');
+      });
+    });
+  }catch(e){
+    console.error('renderNotices error', e);
+    ul.innerHTML = `<li class="empty"><div class="inner"><p class="empty-text">공지 불러오기에 실패했어요.</p></div></li>`;
+  }
+}
+
+async function renderRecallToday() {
+  if (!isLoggedIn()) return;
+
+  const listBox = document.querySelector('.right-body ul');
+  if (!listBox) return;
+
+  try {
+    const res = await fetchWithAuth('/api/recall/today');
+    if (!res.ok) return;
+
+    const data = await res.json();
+    listBox.innerHTML = ''; // 초기화
+
+    // 6개월 전 기록
+    if (Array.isArray(data.sixMonths) && data.sixMonths.length > 0) {
+  data.sixMonths.forEach(item => {
+    const li = document.createElement('li');
+    const titlePart = item.title ? ` (${item.title})` : ''; // 제목 있을 때만 표시
+    li.innerHTML = `
+      <a href="#" class="inner" data-rec-id="${item.recordId}">
+        <p>6개월 전 오늘, 회고할 감정이 있어요!${titlePart}</p>
+        <time>${new Date(item.reveal_at).toISOString().slice(0,10)}</time>
+      </a>`;
+    listBox.appendChild(li);
+  });
+}
+
+    // 12개월 전 기록
+    if (Array.isArray(data.oneYear) && data.oneYear.length > 0) {
+  data.oneYear.forEach(item => {
+    const li = document.createElement('li');
+    const titlePart = item.title ? ` (${item.title})` : ''; // 제목 있을 때만 표시
+    li.innerHTML = `
+      <a href="#" class="inner" data-rec-id="${item.recordId}">
+        <p>1년 전 오늘, 회고할 감정이 있어요!${titlePart}</p>
+        <time>${new Date(item.reveal_at).toISOString().slice(0,10)}</time>
+      </a>`;
+    listBox.appendChild(li);
+  });
+}
+
+    // 아무 것도 없으면 안내 메시지
+    if ((!data.sixMonths || data.sixMonths.length === 0) &&
+        (!data.oneYear || data.oneYear.length === 0)) {
+      listBox.innerHTML = `<li><div class="inner"><p>회고할 감정이 없어요</p></div></li>`;
+    }
+
+  } catch (e) {
+    console.error('[renderRecallToday]', e);
+  }
+}
+
+
+  /* ===== 초기화 & 스토리지 이벤트 ===== */
+  (function init(){
+    if (!isLoggedIn()) { go('/login_01.html'); return; }
+    renderHeaderByAuth();
+    renderNickname();
+    renderProfile();
+    renderTodayEmotion();
+    renderMonthTitleAndStats();
+        renderNotices();
+        renderRecallToday();
+  })();
+
+  window.addEventListener('storage', (ev)=>{
+    if (ev.key === 'accessToken'){
+      meCache = null;
+      renderHeaderByAuth();
+      renderNickname();
+      renderProfile();
+      renderTodayEmotion();
+      renderMonthTitleAndStats();
+          renderNotices();
+          renderRecallToday();
+    }
+  });
+</script>
 </body>
 </html>

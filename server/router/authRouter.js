@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const { s3 } = require('../util/s3')
 const { generateToken, verifyToken } = require('../util/jwt'); // alias로 Access 발급
 const { randomToken, storeRefreshToken, findActiveRefreshToken, revokeRefreshToken, revokeAllTokensForUser } = require('../util/refresh');
+const crypto = require('crypto');
 
 const CURRENT_TOS_VERSION = process.env.TOS_VERSION || '1.0.0';
 const CURRENT_PRIVACY_VERSION = process.env.PRIVACY_VERSION || '1.0.0';
@@ -446,13 +447,49 @@ router.put('/img', verifyToken, async (req, res) => {
 /* ====== (I) 회원 탈퇴 ====== */
 router.delete('/', verifyToken, async (req, res) => {
   const userId = req.user.userId;
+
+  const conn = await db.getConnection();
   try {
-    // Refresh 토큰 일괄 폐기(선택)
-    await db.query('UPDATE RefreshTokens SET revoked_at = UTC_TIMESTAMP() WHERE user_id = ?', [userId]);
-    await db.query('DELETE FROM Users WHERE id = ?', [userId]);
+    await conn.beginTransaction();
+
+    // 1) 토큰 무효화/삭제
+    await conn.query(
+      'UPDATE RefreshTokens SET revoked_at = UTC_TIMESTAMP() WHERE user_id = ?',
+      [userId]
+    );
+    await conn.query(
+      'DELETE FROM RefreshTokens WHERE user_id = ?',
+      [userId]
+    );
+
+    // 2) 감정 기록 관련(이미지가 Records에 FK로 묶여있다면 먼저 삭제)
+    // RecordImages(recordId) -> Records(id, userId)
+    await conn.query(
+      `DELETE ri FROM RecordImages ri
+        JOIN Records r ON r.id = ri.recordId
+       WHERE r.userId = ?`,
+      [userId]
+    );
+    await conn.query('DELETE FROM Records WHERE userId = ?', [userId]);
+
+    // 3) 달력/통계(서비스에 따라 테이블명 다르면 맞춰 변경)
+    await conn.query('DELETE FROM EmotionCalendar WHERE userId = ?', [userId]);
+    await conn.query('DELETE FROM Emotion_Stats   WHERE userId = ?', [userId]);
+
+    // 4) 동의 이력
+    await conn.query('DELETE FROM UserConsents WHERE user_id = ?', [userId]);
+
+    // 5) 마지막으로 사용자 삭제
+    await conn.query('DELETE FROM Users WHERE id = ?', [userId]);
+
+    await conn.commit();
     return res.status(204).send();
   } catch (err) {
-    return fail(res, 500, '회원탈퇴 실패', err.message);
+    await conn.rollback();
+    console.error('[DELETE /api/auth] ERROR:', err.code, err.sqlMessage || err.message);
+    return res.status(500).json({ message: '회원탈퇴 실패', detail: err.sqlMessage || err.message });
+  } finally {
+    conn.release();
   }
 });
 
@@ -586,6 +623,66 @@ router.post('/find-pw', async (req, res) => {
     return res.status(200).json({ tempPassword: tempPw });
   } catch (err) {
     return fail(res, 500, '비밀번호 찾기 실패', err.message);
+  }
+});
+
+/* ====== (H-1) 프로필 이미지 업로드용 Presign (PUT) ====== */
+// POST /api/auth/img/presign   body: { contentType, ext?, filename? }
+// 응답: { uploadUrl, objectUrl, publicUrl, key }
+router.post('/img/presign', verifyToken, async (req, res) => {
+  try {
+    // ===== 환경 변수 =====
+    const BUCKET    = process.env.AWS_S3_BUCKET_NAME;
+    const REGION    = process.env.AWS_REGION || process.env.S3_REGION;
+    const EXPIRES   = parseInt(process.env.S3_PRESIGN_EXPIRES || '300', 10); // 5분
+    const PREFIX    = String(process.env.PROFILE_IMAGE_ALLOWED_PREFIX || 'profile/'); // 기존 /auth/img 와 동일
+    const CDN_BASE  = (process.env.CDN_BASE || '').replace(/\/+$/, '');
+
+    // ===== 입력 =====
+    const { contentType, ext, filename } = req.body || {};
+    if (!contentType) return res.status(400).json({ message: 'contentType가 필요합니다' });
+
+    // 허용 타입 (authRouter /img 와 맞춤)
+    const ALLOWED_CT = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!ALLOWED_CT.includes(String(contentType).toLowerCase())) {
+      return res.status(400).json({ message: '허용되지 않은 콘텐츠 타입입니다' });
+    }
+
+    // 확장자 매핑
+    const ct = contentType.toLowerCase();
+    let _ext = ext;
+    if (!_ext) {
+      if (ct === 'image/jpeg') _ext = 'jpg';
+      else if (ct === 'image/png') _ext = 'png';
+      else if (ct === 'image/webp') _ext = 'webp';
+      else _ext = 'bin';
+    }
+    _ext = _ext.replace(/^\./, '');
+
+    // 키 생성(유저별/날짜폴더/랜덤)
+    const uid = req.user.userId;
+    const stamp = new Date().toISOString().replace(/[:.TZ-]/g, '').slice(0,14);
+    const rand = crypto.randomBytes(8).toString('hex');
+    const safeName = (filename || '').replace(/[^\w.-]/g, '').slice(0,60) || `profile_${stamp}`;
+    const key = `${PREFIX}${uid}/${stamp}_${rand}_${safeName}.${_ext}`;
+
+    // presign (PUT)
+    const params = {
+      Bucket: BUCKET,
+      Key: key,
+      ContentType: contentType,
+      Expires: EXPIRES,
+    };
+    const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
+
+    // 업로드 후 접근 가능한 URL들
+    const objectUrl = `https://${BUCKET}.s3.${REGION}.amazonaws.com/${encodeURIComponent(key)}`;
+    const publicUrl = CDN_BASE ? `${CDN_BASE}/${key}` : objectUrl;
+
+    return res.json({ uploadUrl, objectUrl, publicUrl, key });
+  } catch (err) {
+    console.error('[IMG PRESIGN ERROR]', err);
+    return res.status(500).json({ message: '업로드 주소 발급 실패', detail: err.message });
   }
 });
 

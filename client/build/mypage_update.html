@@ -1,183 +1,477 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="generator" content="">
+  <meta name="robots" content="">
+  <meta property="og:type" content="">
+  <meta property="og:title" content="">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="">
+  <!--모바일크롬 툴바 컬러-->
+  <meta name="theme-color" content="#162060" />
+  <!-- 공유 이미지 -->
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <!-- 파비콘 이미지 -->
+  <link href="" rel="icon" type="image/jpg">
+  <link href="" rel="shortcut icon" type="image/jpg">
+  <link href="" rel="apple-touch-icon" type="image/jpg">
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+  <!-- JS -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+  <style>
+    .is-hidden{display:none!important}
+    #profile-img{object-fit:cover;border-radius:50%}
+
+    /* 공통 로그아웃 버튼 스타일 */
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"] {
+      background-color: #ffcc00 !important;
+      color: #fff !important;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      text-align: center;
+    }
+    header a[data-nav="logout"]:hover,
+    header a[data-nav="logout"]:focus { filter: brightness(0.9); }
+
+    /* 안내문구 색 */
+    .message-box p.ft-red{color:#ff6b6b}
+    .message-box p.ft-green{color:#36d399}
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="container container-sm">
-			<div class="title-box">
-				<h2>내 정보 수정하기</h2>
-			</div>
-			<div class="update-box">
-				<div class="thumb-box">
-					<img src="./asset/images/img_arround_thumb_02.png">
-					<label for="file">
-						<input type="file" name="file" id="file"/>
-					</label>
-				</div>
-				<ul>
-					<li>
-						<h3>계정정보</h3>
-						<div class="write-box">
-							<ul>
-								<li>
-									<strong class="">아이디</strong>
-									<div>
-										<p>Me:mory00</p>
-									</div>
-								</li>
-								<li class="full">
-									<strong class="">변경 비밀번호</strong>
-									<div>
-										<div class="input-box input-lg">
-											<input type="password" placeholder="비밀번호 변경을 원하실 경우만 입력해주세요">
-											<button type="button" class="password">비밀번호 보임 및 숨김 처리</button>
-										</div>
-										<div class="message-box">
-											<p class="ft-red">비밀번호 형식을 확인해주세요.</p>
-											<p>8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해주세요.</p>
-										</div>
-									</div>
-								</li>
-								<li class="full">
-									<strong class="">비밀번호 재입력</strong>
-									<div>
-										<div class="input-box input-lg">
-											<input type="password" placeholder="변경 비밀번호를 재입력해주세요">
-											<button type="button" class="password">비밀번호 보임 및 숨김 처리</button>
-										</div>
-										<div class="message-box">
-											<p class="ft-red">비밀번호가 일치하지 않습니다.</p>
-										</div>
-									</div>
-								</li>
-							</ul>
-						</div>
-					</li>
-					<li>
-						<h3>회원정보</h3>
-						<div class="write-box">
-							<ul>
-								<li>
-									<strong class="">이름</strong>
-									<div>
-										<p>홍길동</p>
-									</div>
-								</li>
-								<li>
-									<strong class="">이메일</strong>
-									<div>
-										<p>Me:mory@gmail.com</p>
-									</div>
-								</li>
-							</ul>
-						</div>
-					</li>
-					<li>
-						<h3>회원탈퇴</h3>
-						<div class="button-box w100">
-							<a href="" class="btn btn-active btn-lg">회원탈퇴</a>
-						</div>
-					</li>
-				</ul>
-				<div class="button-box mt48 mt-lg-32">
-					<div class="w200 flex-lg-1 mr12 mr-lg-8">
-						<a href="" class="btn btn-gray-outline btn-lg">홈으로</a>
-					</div>
-					<div class="w200 flex-lg-1">
-						<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-update" onclick="modalOpen(event, this);" class="btn btn-active btn-lg">수정하기</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_update.png" class="is-pc">
-		<img src="./asset/images/bg_body_cate_update_m.png" class="is-m">
-	</div>
-	<div class="modal-box modal-sm" id="modal-update" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert="">
-		<div class="box">
-			<div class="modal-head">
-				<h2>수정하기</h2>
-				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-			</div>
-			<div class="modal-body">
-				<p>내 정보 수정이 완료되었습니다.</p>
-			</div>
-			<div class="modal-foot">
-				<div class="button-box">
-					<a href="" onclick="" class="btn btn-active btn-lg flex-lg-1">확인</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=26"></script>
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li class="active"><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <!-- 로그인 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+
+            <!-- 로그인 상태 -->
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+            <!-- 게스트 상태 -->
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container container-sm">
+    <div class="title-box">
+      <h2>내 정보 수정하기</h2>
+    </div>
+
+    <div class="update-box">
+      <!-- 프로필 -->
+      <div class="thumb-box">
+        <img id="profile-img" src="./asset/images/img_arround_thumb_02.png" alt="프로필">
+        <label for="file">
+          <input type="file" name="file" id="file" accept="image/jpeg,image/png,image/webp"/>
+        </label>
+      </div>
+
+      <ul>
+        <li>
+          <h3>계정정보</h3>
+          <div class="write-box">
+            <ul>
+              <li>
+                <strong>아이디</strong>
+                <div><p id="view-username">-</p></div>
+              </li>
+              <li>
+                <strong>이메일</strong>
+                <div><p id="view-email">-</p></div>
+              </li>
+              <li>
+                <strong>닉네임</strong>
+                <div><p id="view-nickname">-</p></div>
+              </li>
+
+              <!-- 비밀번호 변경 -->
+              <li class="full">
+                <strong>변경 비밀번호</strong>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="newPw" type="password" placeholder="비밀번호 변경을 원하실 경우만 입력해주세요" autocomplete="new-password">
+                    <button type="button" class="password" id="toggleNewPw">비밀번호 보임 및 숨김 처리</button>
+                  </div>
+                  <div class="message-box">
+                    <p id="msgPw" class=""></p>
+                    <p>8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해주세요.</p>
+                  </div>
+                </div>
+              </li>
+              <li class="full">
+                <strong>비밀번호 재입력</strong>
+                <div>
+                  <div class="input-box input-lg">
+                    <input id="newPw2" type="password" placeholder="변경 비밀번호를 재입력해주세요" autocomplete="new-password">
+                    <button type="button" class="password" id="toggleNewPw2">비밀번호 보임 및 숨김 처리</button>
+                  </div>
+                  <div class="message-box">
+                    <p id="msgPw2" class=""></p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <h3>회원탈퇴</h3>
+          <div class="button-box w100">
+            <a href="#" id="btnLeave" class="btn btn-active btn-lg">회원탈퇴</a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="button-box mt48 mt-lg-32">
+        <div class="w200 flex-lg-1 mr12 mr-lg-8">
+          <a href="/index.html" class="btn btn-gray-outline btn-lg">홈으로</a>
+        </div>
+        <div class="w200 flex-lg-1">
+          <a href="javascript:;" id="btnSave" class="btn btn-active btn-lg">수정하기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_cate_update.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_cate_update_m.png" class="is-m" alt="">
+</div>
+
+<!-- 공용 모달 -->
+<div class="modal-box modal-sm" id="modal-update" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
+  <div class="box">
+    <div class="modal-head">
+      <h2 id="modalTitle">알림</h2>
+      <a href="javascript:;" class="close" onclick="try{modalClose(this)}catch(_){hideModal()}">닫기</a>
+    </div>
+    <div class="modal-body">
+      <p id="modalMsg">처리가 완료되었습니다.</p>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box" id="modalButtons">
+        <a href="javascript:;" class="btn btn-active btn-lg flex-lg-1" id="modalOk">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=27"></script>
+
+<script>
+/* ===== 공통 유틸/인증 ===== */
+const isLoggedIn = () => !!localStorage.getItem('accessToken');
+const go = (url) => window.location.href = url;
+const bearer = () => {
+  const t = localStorage.getItem('accessToken') || '';
+  return t.startsWith('Bearer ') ? t : (t ? `Bearer ${t}` : '');
+};
+const authHeader = () => (bearer() ? { 'Authorization': bearer() } : {});
+
+/* 헤더 상태 토글 */
+function renderHeaderByAuth(){
+  const loggedIn = isLoggedIn();
+  document.querySelectorAll('.header-guest, .header-guest-item')
+    .forEach(el=>el.classList.toggle('is-hidden', loggedIn));
+  document.querySelectorAll('.header-user, .header-user-item')
+    .forEach(el=>el.classList.toggle('is-hidden', !loggedIn));
+}
+document.addEventListener('click', async (e) => {
+  const a = e.target.closest('[data-nav]'); if (!a) return;
+  e.preventDefault();
+  const key = a.getAttribute('data-nav');
+  if (key === 'login')    return go('/login_01.html');
+  if (key === 'register') return go('/register_01.html');
+  if (key === 'logout')   { localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+  if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+  if (!isLoggedIn()) return go('/login_01.html');
+
+  switch (key) {
+    case 'record':   return go('/emotion_select_01.html');
+    case 'calendar': return go('/emotion_calendar.html');
+    case 'map':      return go('/emotion_map.html');
+    case 'memory':   return go('/emotion_memory.html');
+    case 'around':   return go('/emotion_arround_check_01.html');
+  }
+});
+renderHeaderByAuth();
+
+/* ===== 모달 폴백 ===== */
+function showModal(msg, title='알림', buttons){
+  const m = document.getElementById('modal-update');
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg || '';
+  const btnWrap = document.getElementById('modalButtons');
+  if (buttons){
+    btnWrap.innerHTML = '';
+    buttons.forEach(b=>{
+      const a = document.createElement('a');
+      a.href = 'javascript:;';
+      a.className = 'btn ' + (b.className || 'btn-active') + ' btn-lg flex-lg-1';
+      a.textContent = b.text || '확인';
+      a.addEventListener('click', ()=>{ if (b.onClick) b.onClick(); });
+      btnWrap.appendChild(a);
+    });
+  } else {
+    btnWrap.innerHTML = '<a href="javascript:;" class="btn btn-active btn-lg flex-lg-1" id="modalOk">확인</a>';
+    btnWrap.querySelector('#modalOk').onclick = hideModal;
+  }
+
+  try {
+    if (typeof window.modalOpen === 'function') {
+      const opener = document.createElement('a');
+      opener.href = 'javascript:;'; opener.setAttribute('aria-haspopup','dialog');
+      opener.setAttribute('aria-controls','modal-update'); opener.style.display='none';
+      document.body.appendChild(opener);
+      window.modalOpen({preventDefault:()=>{}}, opener);
+      setTimeout(()=> opener.remove(), 0);
+      return;
+    }
+  } catch(_) {}
+  m.setAttribute('aria-hidden','false'); m.removeAttribute('inert');
+}
+function hideModal(){
+  const m = document.getElementById('modal-update');
+  try {
+    if (typeof window.modalClose === 'function'){ window.modalClose(m); return; }
+  } catch(_) {}
+  m.setAttribute('aria-hidden','true'); m.setAttribute('inert','');
+}
+
+/* ===== 화면 요소 ===== */
+const imgEl  = document.getElementById('profile-img');
+const vNick  = document.getElementById('view-nickname');
+const vId    = document.getElementById('view-username');
+const vEmail = document.getElementById('view-email');
+
+const ipNew  = document.getElementById('newPw');
+const ipNew2 = document.getElementById('newPw2');
+const msgPw  = document.getElementById('msgPw');
+const msgPw2 = document.getElementById('msgPw2');
+
+/* ===== 비밀번호 규칙 (회원가입과 동일) ===== */
+const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\w\s]).{8,16}$/;
+function setMsg(el, text, ok){
+  el.textContent = text || '';
+  el.className = text ? (ok ? 'ft-green' : 'ft-red') : '';
+}
+function validatePw(){
+  const v = ipNew.value;
+  if (!v){ setMsg(msgPw,'',false); return false; }
+  if (!pwRegex.test(v)){ setMsg(msgPw,'비밀번호 형식을 확인해주세요.', false); return false; }
+  setMsg(msgPw,'사용가능한 비밀번호입니다.', true); return true;
+}
+function validatePw2(){
+  const ok = ipNew.value && ipNew.value === ipNew2.value;
+  setMsg(msgPw2, ok ? '비밀번호가 일치합니다.' : (ipNew2.value ? '비밀번호가 일치하지 않습니다.' : ''), ok);
+  return ok;
+}
+ipNew.addEventListener('input', ()=>{ validatePw(); validatePw2(); });
+ipNew2.addEventListener('input', validatePw2);
+document.getElementById('toggleNewPw').onclick  = ()=> ipNew.type  = (ipNew.type==='password' ? 'text' : 'password');
+document.getElementById('toggleNewPw2').onclick = ()=> ipNew2.type = (ipNew2.type==='password'? 'text' : 'password');
+
+/* ===== 내 정보 불러오기 ===== */
+async function fetchMe(){
+  if (!isLoggedIn()){ go('/login_01.html'); return; }
+  try{
+    const res = await fetch('/api/auth/me', { headers: authHeader() });
+    if (res.status===401 || res.status===403){ localStorage.removeItem('accessToken'); go('/login_01.html'); return; }
+    if (!res.ok) throw new Error('me 실패');
+    const me = await res.json();
+    vNick.textContent  = me.name || '-';
+    vId.textContent    = me.username || '-';
+    vEmail.textContent = me.email || '-';
+    imgEl.onerror = ()=>{ imgEl.onerror=null; imgEl.src = './asset/images/img_arround_thumb_02.png'; };
+    imgEl.src = (me.img && typeof me.img === 'string') ? me.img : './asset/images/img_arround_thumb_02.png';
+  }catch(e){
+    console.error(e);
+    showModal('세션이 만료되었어요. 다시 로그인해 주세요.', '알림', [
+      { text:'확인', onClick: ()=> go('/login_01.html') }
+    ]);
+  }
+}
+
+/* ===== 프로필 이미지 업로드: presign → S3 PUT → /api/auth/img ===== */
+document.getElementById('file').addEventListener('change', async (e)=>{
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  // 클라이언트 검증
+  if (!/image\/(jpeg|png|webp)/i.test(file.type)) { showModal('JPG/PNG/WebP만 업로드 가능해요.'); e.target.value=''; return; }
+  if (file.size > 5*1024*1024) { showModal('최대 5MB까지 업로드할 수 있어요.'); e.target.value=''; return; }
+
+  try{
+    // 1) presign
+    const pres = await fetch('/api/auth/img/presign', {
+      method:'POST',
+      headers: { ...authHeader(), 'Content-Type':'application/json' },
+      body: JSON.stringify({ contentType: file.type, filename: file.name })
+    });
+    if (!pres.ok){ const j=await pres.json().catch(()=>({})); throw new Error(j.message || '업로드 주소 발급 실패'); }
+    const { uploadUrl, publicUrl, objectUrl } = await pres.json();
+
+    // 2) S3 업로드
+    const put = await fetch(uploadUrl, { method:'PUT', headers:{ 'Content-Type': file.type }, body: file });
+    if (!put.ok) throw new Error('이미지 업로드 실패');
+
+    // 3) DB 반영
+    const finalUrl = objectUrl;
+    const up = await fetch('/api/auth/img', {
+      method:'PUT',
+      headers: { ...authHeader(), 'Content-Type':'application/json' },
+      body: JSON.stringify({ img: finalUrl })
+    });
+    if (!up.ok){ const j=await up.json().catch(()=>({})); throw new Error(j.message || '프로필 저장 실패'); }
+
+    // 4) 미리보기 갱신
+    imgEl.src = finalUrl;
+    showModal('프로필 이미지가 업데이트되었습니다.', '완료');
+  }catch(err){
+    console.error('[profile upload]', err);
+    showModal(err.message || '업로드 중 오류가 발생했어요.');
+  }finally{
+    e.target.value = '';
+  }
+});
+
+/* ===== 저장(비밀번호 변경만 처리) ===== */
+document.getElementById('btnSave').addEventListener('click', async ()=>{
+  const wantChangePw = ipNew.value || ipNew2.value;
+
+  if (!wantChangePw){
+    showModal('변경할 항목이 없습니다.');
+    return;
+  }
+
+  if (!validatePw() || !validatePw2()){
+    showModal('비밀번호 입력을 다시 확인해 주세요.');
+    return;
+  }
+
+  const current = prompt('현재 비밀번호를 입력해 주세요');
+  if (current === null) return; // 취소
+  try{
+    const res = await fetch('/api/auth/password', {
+      method:'PUT',
+      headers: { ...authHeader(), 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        currentPassword: current,
+        newPassword: ipNew.value,
+        newPasswordConfirm: ipNew2.value
+      })
+    });
+    if (!res.ok){
+      const j = await res.json().catch(()=>({ message:'비밀번호 변경 실패' }));
+      showModal(j.message || '비밀번호 변경 실패');
+      return;
+    }
+    // 성공: 토큰 회수되므로 재로그인 유도
+    ipNew.value = ''; ipNew2.value = ''; setMsg(msgPw,'',false); setMsg(msgPw2,'',false);
+    showModal('내 정보 수정이 완료되었습니다. 다시 로그인해 주세요.', '수정하기', [
+      { text:'확인', onClick: ()=> { localStorage.removeItem('accessToken'); go('/login_01.html'); } }
+    ]);
+  }catch(e){
+    showModal('네트워크 오류로 실패했습니다.');
+  }
+});
+
+/* ===== 회원탈퇴 ===== */
+document.getElementById('btnLeave').addEventListener('click', ()=>{
+  showModal('회원 탈퇴를 진행하시겠습니까?', '회원탈퇴', [
+    { text:'취소', className:'btn-gray-outline', onClick: hideModal },
+    { text:'확인', className:'btn-active', onClick: async ()=>{
+        try{
+          const res = await fetch('/api/auth', { method:'DELETE', headers: authHeader() });
+          if (res.status===204 || res.ok){
+            hideModal();
+            localStorage.removeItem('accessToken');
+            showModal('탈퇴가 완료되었습니다.', '완료', [
+              { text:'확인', onClick: ()=> go('/index.html') }
+            ]);
+          }else{
+            const j = await res.json().catch(()=>({message:'회원탈퇴 실패'}));
+            showModal(j.message || '회원탈퇴 실패');
+          }
+        }catch(_){
+          showModal('네트워크 오류로 실패했습니다.');
+        }
+      }
+    }
+  ]);
+});
+
+/* ===== Init ===== */
+(function init(){
+  if (!isLoggedIn()){ go('/login_01.html'); return; }
+  fetchMe();
+})();
+</script>
 </body>
 </html>

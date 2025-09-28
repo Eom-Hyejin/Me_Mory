@@ -1,252 +1,510 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="theme-color" content="#162060" />
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+
+  <!-- CSS (헤더와 동일 버전) -->
+  <link rel="stylesheet" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" href="./asset/css/base.css">
+  <link rel="stylesheet" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" href="./asset/css/layout.css">
+
+  <!-- JS (헤더와 동일 버전) -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+
+  <style>
+    .is-hidden{display:none!important}
+    :root{ --accent:#7b61ff; }
+
+    /* 리스트 비어있을 때 */
+    .comment-box ul li.empty .inner{padding:28px 16px; text-align:center; opacity:.85}
+    /* 이전 알림 비어있을 때 문구 흰색 */
+    #historyList .empty-text{ color:#fff; }
+
+    /* 썸네일 정사각 */
+    .image-thumb-box{width:56px; height:56px; background-size:cover; background-position:center; border-radius:8px}
+
+    /* 모바일 보조 텍스트 숨김 (필요 페이지에서만) */
+    .list-head-mobile{display:none}
+
+    /* 공통 로그아웃 버튼 강조 (모바일 메뉴 포함) */
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"] {
+      background-color: #ffcc00 !important;
+      color: #fff !important;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      text-align: center;
+    }
+    header a[data-nav="logout"]:hover,
+    header a[data-nav="logout"]:focus { filter: brightness(0.9); }
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section>
-		<div class="container container-xxl">
-			<div class="title-box flex flex-vc">
-				<a href="" class="back">이전</a>
-				<h2 class="f32 f-lg-18">감정회고 알림</h2>
-			</div>
-			<div>
-				<div class="title-box sm">
-					<h3>오늘 받은 알림(1)</h3>
-				</div>
-				<div class="comment-box">
-					<ul>
-						<li>
-							<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="list-head">
-								<div class="list-head-left">
-									<div class="emotion-thumb-box sm">
-										<img src="./asset/images/icon_happy_02.png">
-									</div>
-									<time>22일(월)</time>
-								</div>
-								<div class="list-head-right">
-									<div class="right-text">
-										<strong>행복해요</strong>
-										<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-										<p class="location">서울시 강남구 서초동</p>
-									</div>
-									<div class="right-more">
-										<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-									</div>
-								</div>
-								<div class="list-head-mobile">
-									<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-									<p class="location">서울시 강남구 서초동</p>
-								</div>
-							</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="mt48 mt-lg-32">
-				<div class="title-box sm">
-					<h3>이전 알림</h3>
-				</div>
-				<div class="category-box active">
-					<ul>
-						<li class="active"><a href="">전체</a></li>
-						<li><a href="">6개월 전</a></li>
-						<li><a href="">1년 전</a></li>
-					</ul>
-				</div>
-				<div class="comment-box">
-					<ul>
-						<li>
-							<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="list-head">
-								<div class="list-head-left">
-									<div class="emotion-thumb-box sm">
-										<img src="./asset/images/icon_happy_02.png">
-									</div>
-									<time>22일(월)</time>
-								</div>
-								<div class="list-head-right">
-									<div class="right-text">
-										<strong>행복해요</strong>
-										<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-										<p class="location">서울시 강남구 서초동</p>
-									</div>
-									<div class="right-more">
-										<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_01.png');"></div>
-									</div>
-								</div>
-								<div class="list-head-mobile">
-									<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-									<p class="location">서울시 강남구 서초동</p>
-								</div>
-							</a>
-						</li>
-						<li>
-							<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="list-head">
-								<div class="list-head-left">
-									<div class="emotion-thumb-box sm">
-										<img src="./asset/images/icon_happy_03.png">
-									</div>
-									<time>22일(월)</time>
-								</div>
-								<div class="list-head-right">
-									<div class="right-text">
-										<strong>행복해요</strong>
-										<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-										<p class="location">서울시 강남구 서초동</p>
-									</div>
-									<div class="right-more">
-										<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_02.png');"></div>
-									</div>
-								</div>
-								<div class="list-head-mobile">
-									<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-									<p class="location">서울시 강남구 서초동</p>
-								</div>
-							</a>
-						</li>
-						<li>
-							<a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" onclick="modalOpen(event, this);" class="list-head">
-								<div class="list-head-left">
-									<div class="emotion-thumb-box sm">
-										<img src="./asset/images/icon_happy_04.png">
-									</div>
-									<time>22일(월)</time>
-								</div>
-								<div class="list-head-right">
-									<div class="right-text">
-										<strong>행복해요</strong>
-										<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-										<p class="location">서울시 강남구 서초동</p>
-									</div>
-									<div class="right-more">
-										<div class="image-thumb-box" style="background-image:url('./asset/images/img_thumb_03.png');"></div>
-									</div>
-								</div>
-								<div class="list-head-mobile">
-									<p class="subject">산책갔다가 커피를 마셨다 상쾌하다</p>
-									<p class="location">서울시 강남구 서초동</p>
-								</div>
-							</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-labelledby="modal-xs-title" aria-hidden="true" inert>
-		<div class="box">
-			<div class="modal-head">
-				<h2>2025년 9월 22일(월) 감정기록</h2>
-				<a href="javascript:;" class="close" onclick="modalClose(this);">닫기</a>
-			</div>
-			<div class="modal-body">
-				<div class="emotion-view-box">
-					<div class="view-head">
-						<div class="view-head-left">
-							<div class="emotion-thumb-box md">
-								<img src="./asset/images/icon_happy_02.png">
-							</div>
-							<strong>행복해요</strong>
-						</div>
-						<div class="view-head-right">
-							<button type="button" class="delete">삭제</button>
-							<button type="button" class="update">수정</button>
-						</div>
-					</div>
-					<div class="view-body">
-						<p>
-							산책갔다가 커피 마시고 왔음 상쾌하다
-							산책갔다가 커피 마시고 왔음 상쾌하다
-						</p>
-						<ul class="image">
-							<li style="background-image:url('./asset/images/img_thumb_01.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_02.png');"></li>
-							<li style="background-image:url('./asset/images/img_thumb_03.png');"></li>
-						</ul>
-					</div>
-					<div class="view-foot">
-						<p>서울시 강남구 서초동</p>
-						<span class="lock">비공개</span>
-					</div>
-				</div>
-			</div>
-			<div class="modal-foot">
-				<div class="button-box">
-					<a href="javascript:;" onclick="modalClose(this);" class="btn btn-active btn-lg">확인</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_cate_alert.png" class="is-pc">
-		<img src="./asset/images/bg_body_cate_alert_m.png" class="is-m">
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=23"></script>
+<!-- ===== 헤더 (캘린더 페이지와 동일 구조/네비) ===== -->
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li class="active"><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <!-- 로그인 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+
+            <!-- 로그인 상태 -->
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+
+            <!-- 게스트 상태 -->
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container container-xxl">
+    <div class="title-box flex flex-vc">
+      <a href="javascript:history.back();" class="back">이전</a>
+      <h2 class="f32 f-lg-18">감정회고 알림</h2>
+    </div>
+
+    <!-- 오늘 받은 알림 -->
+    <div>
+      <div class="title-box sm">
+        <h3 id="todayTitle">오늘 받은 알림(0)</h3>
+      </div>
+      <div class="comment-box">
+        <ul id="todayList"></ul>
+      </div>
+    </div>
+
+    <!-- 이전 알림(회고 완료) -->
+    <div class="mt48 mt-lg-32">
+      <div class="title-box sm">
+        <h3>이전 알림</h3>
+      </div>
+      <div class="comment-box">
+        <ul id="historyList"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 모달 (캘린더/지도와 동일 패턴) ===== -->
+<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-hidden="true" inert>
+  <div class="box">
+    <div class="modal-head">
+      <h2 id="modalTitle">감정기록</h2>
+      <a href="javascript:;" class="close" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}">닫기</a>
+    </div>
+    <div class="modal-body">
+      <div class="emotion-view-box"><!-- JS 렌더 --></div>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box">
+        <a href="javascript:;" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}" class="btn btn-active btn-lg">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 배경 이미지는 기존 알림 페이지 자산 유지 -->
+<div class="bg-box">
+  <img src="./asset/images/bg_body_cate_alert.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_cate_alert_m.png" class="is-m" alt="">
+</div>
+
+<script src="./asset/js/swiper.js?a=1"></script>
+<script src="/asset/js/app.js?ver=23"></script>
+
+<script>
+  /* ===== 인증/헤더 네비 (캘린더 동일) ===== */
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+  const go = (url) => window.location.href = url;
+
+  async function hasBleConsent() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    try {
+      const res = await fetch('/api/bluetooth/consent', { headers: { 'Authorization': token } });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return !!(data && (data.enabled === 1 || data.enabled === true));
+    } catch (e) { return false; }
+  }
+
+  function renderHeaderByAuth() {
+    const loggedIn = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', loggedIn));
+    document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !loggedIn));
+  }
+
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-nav]');
+    if (!a) return;
+    e.preventDefault();
+    const key = a.getAttribute('data-nav');
+    if (key === 'login')    return go('/login_01.html');
+    if (key === 'register') return go('/register_01.html');
+    if (key === 'logout')   { localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+    if (key === 'mypage')   return isLoggedIn() ? go('/mypage_main.html') : go('/login_01.html');
+    if (!isLoggedIn()) return go('/login_01.html');
+    switch (key) {
+      case 'record':   return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map':      return go('/emotion_map.html');
+      case 'memory':   return go('/emotion_memory.html');
+      case 'around': {
+        const ok = await hasBleConsent();
+        return go(ok ? '/emotion_arround_check_01.html' : '/emotion_arround_bluetooth.html');
+      }
+    }
+  });
+  renderHeaderByAuth();
+  window.addEventListener('storage', (ev)=>{ if (ev.key === 'accessToken') renderHeaderByAuth(); });
+
+  /* ===== 공통 인증 헤더/가드 ===== */
+  const authHeader = () => {
+    const t = localStorage.getItem('accessToken') || '';
+    return t ? { 'Authorization': t.startsWith('Bearer ') ? t : `Bearer ${t}` } : {};
+  };
+  async function fetchWithAuth(url, init={}) {
+    const r = await fetch(url, { ...init, headers: { ...(init.headers||{}), ...authHeader() } });
+    if (r.status === 401 || r.status === 403){
+      localStorage.removeItem('accessToken');
+      location.href='/login_01.html';
+      throw new Error('Unauthorized');
+    }
+    return r;
+  }
+
+  // JWT → 현재 사용자 id
+  function getCurrentUserId(){
+    try{
+      const t = localStorage.getItem('accessToken'); if(!t) return null;
+      const payload = t.split('.')[1]; if(!payload) return null;
+      const b64 = payload.replace(/-/g,'+').replace(/_/g,'/');
+      const json = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      return json.userId || json.id || json.sub || null;
+    }catch(e){ return null; }
+  }
+  function isOwnerOf(rec){
+    if (rec && (rec.isOwner === true)) return true;
+    const me = getCurrentUserId();
+    if (!me) return false;
+    return [rec?.userId, rec?.user_id, rec?.ownerId, rec?.owner_id].some(v=> String(v)===String(me));
+  }
+
+  /* ===== 날짜 포맷 ===== */
+  function dayKRShort(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getDate()}일(${w})`;
+  }
+  function fullDateKR(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const w='일월화수목금토'[d.getDay()];
+    return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일(${w})`;
+  }
+  const pad2 = n => String(n).padStart(2,'0');
+
+  /* ===== 감정 라벨 & 아이콘 매핑 (캘린더 동일) ===== */
+  const EMOJI_LABEL = {
+    joy:'행복해요', sadness:'슬퍼요', anger:'화나요', worry:'불안해요', proud:'부러워요', upset:'속상해요'
+  };
+  const EMOJI_SET = {
+    joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+    sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+    anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+    worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+    proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+    upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+  };
+  function parseExprIndex(expression_type){
+    const s = String(expression_type ?? '').toLowerCase().trim();
+    const m = s.match(/(\d+)/);
+    let n = m ? parseInt(m[1], 10) : 2;
+    if (!Number.isFinite(n)) n = 2;
+    n = Math.max(1, Math.min(6, n));
+    return n - 1;
+  }
+  function getEmojiSrc(emotion_type, expression_type){
+    const list = EMOJI_SET[String(emotion_type)] || EMOJI_SET.joy;
+    const idx = parseExprIndex(expression_type);
+    return `./asset/images/${list[idx]}`;
+  }
+
+  /* ===== 리스트 템플릿 ===== */
+  function itemTpl(it, opts={ showDesc:false }){
+    const imgSrc = getEmojiSrc(it.emotion_type, it.expression_type);
+    const label  = EMOJI_LABEL[it.emotion_type] || '감정';
+    const dateForLeft = dayKRShort(it.reveal_at || it.created_at);
+    const titleHtml = (it.title && it.title.trim()) ? `<p class="subject">${it.title}</p>` : '';
+    const descHtml  = (opts.showDesc && it.content) ? `<p class="subject">${String(it.content).trim()}</p>` : '';
+    const placeHtml = (opts.showDesc && it.place)   ? `<p class="location">${it.place}</p>` : '';
+    const rightThumb = it.img ? `<div class="right-more"><div class="image-thumb-box" style="background-image:url('${it.img}');"></div></div>` : '';
+
+    return `
+      <li>
+        <a href="javascript:;" aria-haspopup="dialog" aria-controls="modal-view" class="list-head" data-record-id="${it.recordId}">
+          <div class="list-head-left">
+            <div class="emotion-thumb-box sm"><img src="${imgSrc}" alt=""></div>
+            <time>${dateForLeft}</time>
+          </div>
+          <div class="list-head-right">
+            <div class="right-text">
+              <strong>${label}</strong>
+              ${titleHtml}
+              ${descHtml}
+              ${placeHtml}
+            </div>
+            ${rightThumb}
+          </div>
+          <div class="list-head-mobile">
+            ${titleHtml || descHtml || ''} ${placeHtml || ''}
+          </div>
+        </a>
+      </li>`;
+  }
+  function emptyTpl(text){ return `<li class="empty"><div class="inner"><p class="empty-text">${text}</p></div></li>`; }
+
+  /* ===== 데이터 로드: 기존 엔드포인트 유지 ===== */
+  async function loadToday(){
+    const ul = document.getElementById('todayList');
+    ul.innerHTML = '';
+    const res = await fetchWithAuth('/api/recall/today');
+    if (!res.ok){ ul.innerHTML = emptyTpl('오늘 받은 알림이 없어요'); return; }
+    const { sixMonths = [], oneYear = [] } = await res.json();
+    const items = [...sixMonths, ...oneYear];
+    document.getElementById('todayTitle').textContent = `오늘 받은 알림(${items.length})`;
+    if (!items.length){ ul.innerHTML = emptyTpl('오늘 받은 알림이 없어요'); return; }
+    // 오늘 받은 알림은 내용/장소도 노출
+    ul.innerHTML = items.map(it => itemTpl(it, { showDesc:true })).join('');
+  }
+
+  async function loadHistory(){
+    const ul = document.getElementById('historyList');
+    ul.innerHTML = '';
+    const res = await fetchWithAuth('/api/recall/history?page=1&pageSize=50');
+    if (!res.ok){ ul.innerHTML = emptyTpl('표시할 이전 알림이 없어요'); return; }
+    const data = await res.json();
+    if (!data.items || !data.items.length){ ul.innerHTML = emptyTpl('표시할 이전 알림이 없어요'); return; }
+    // 이전 알림에도 내용/장소 노출하도록 변경
+    ul.innerHTML = data.items.map(it => itemTpl(it, { showDesc:true })).join('');
+  }
+
+  /* ===== 레코드/모달 ===== */
+  async function fetchRecordFull(id){
+    try{
+      const r = await fetch(`/api/record/${encodeURIComponent(id)}/full`, { headers: authHeader() });
+      if (!r.ok) return null;
+      return await r.json();
+    }catch(e){ return null; }
+  }
+
+  function showModal(){
+    const modal = document.getElementById('modal-view');
+    try{
+      if (typeof window.modalOpen === 'function'){
+        const opener = document.createElement('a');
+        opener.setAttribute('href','javascript:;');
+        opener.setAttribute('aria-haspopup','dialog');
+        opener.setAttribute('aria-controls','modal-view');
+        opener.style.display='none';
+        document.body.appendChild(opener);
+        const ev = { preventDefault: ()=>{} };
+        window.modalOpen(ev, opener);
+        setTimeout(()=> opener.remove(), 0);
+        return;
+      }
+    }catch(e){
+      console.warn('[alert.showModal] modalOpen failed; fallback', e);
+    }
+    if (modal){ modal.setAttribute('aria-hidden','false'); modal.removeAttribute('inert'); }
+  }
+  function hideModal(){
+    const m=document.getElementById('modal-view');
+    try{
+      if (typeof window.modalClose === 'function'){ window.modalClose(m); return; }
+    }catch(_){}
+    if (m){ m.setAttribute('aria-hidden','true'); m.setAttribute('inert',''); }
+  }
+
+  async function openRecordModal(id){
+    const full = await fetchRecordFull(id);
+    if(!full){ console.warn('record fetch failed'); return; }
+
+    const rec = full.record || {};
+    const images = Array.isArray(full.images) ? [...full.images] : [];
+    if (rec.representative_img && !images.includes(rec.representative_img)) images.unshift(rec.representative_img);
+
+    const titleISO = rec.created_at || new Date().toISOString();
+    const titleText = `${fullDateKR(titleISO)} 감정기록`;
+    const titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.textContent = titleText;
+
+    const box = document.querySelector('#modal-view .emotion-view-box');
+    const icon = getEmojiSrc(rec.emotion_type, rec.expression_type);
+    const imgLis = images.map(u=>`<li style="background-image:url('${u}');"></li>`).join('');
+    const owner = isOwnerOf(rec);
+    const recordId = rec.recordId || rec.id || id;
+
+    box.innerHTML = `
+      <div class="view-head">
+        <div class="view-head-left">
+          <div class="emotion-thumb-box md"><img src="${icon}" alt=""></div>
+          <strong>${rec.title || (EMOJI_LABEL[rec.emotion_type] || '감정기록')}</strong>
+        </div>
+        <div class="view-head-right">
+          ${owner ? `
+            <button type="button" class="delete" data-record-id="${recordId}">삭제</button>
+            <button type="button" class="update" data-record-id="${recordId}">수정</button>
+          ` : ``}
+        </div>
+      </div>
+      <div class="view-body">
+        <p>${(rec.content || '').replace(/\n/g,'<br>')}</p>
+        ${images.length ? `<ul class="image">${imgLis}</ul>` : ``}
+      </div>
+      <div class="view-foot">
+        <p>${rec.place || ''}</p>
+        ${(rec.visibility==='private') ? '<span class="lock">비공개</span>' : '<span>공개</span>'}
+      </div>
+    `;
+
+    const delBtn = box.querySelector('button.delete');
+    const editBtn = box.querySelector('button.update');
+    if (delBtn) delBtn.onclick = ()=> handleDelete(recordId);
+    if (editBtn) editBtn.onclick = ()=> handleEdit(recordId);
+
+    showModal();
+  }
+
+  async function handleDelete(recordId){
+    if(!confirm('이 감정 기록을 삭제할까요?')) return;
+    const res = await fetch(`/api/record/${encodeURIComponent(recordId)}`, {
+      method: 'DELETE',
+      headers: authHeader()
+    });
+    if (res.status === 204 || res.ok){
+      hideModal();
+      await loadToday().catch(()=>{});
+      await loadHistory().catch(()=>{});
+    } else {
+      const msg = await res.text().catch(()=> '');
+      alert('삭제에 실패했어요.\n' + msg);
+    }
+  }
+
+  async function handleEdit(recordId){
+    try{
+      let res = await fetch(`/api/record-drafts/from-record/${encodeURIComponent(recordId)}`, {
+        method:'POST', headers: authHeader()
+      });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){}
+
+    try{
+      let res = await fetch(`/api/record-drafts/from-record`, {
+        method:'POST',
+        headers: { ...authHeader(), 'Content-Type':'application/json' },
+        body: JSON.stringify({ recordId })
+      });
+      if (res.ok){
+        const json = await res.json().catch(()=> ({}));
+        const draftId = json?.draftId || json?.id;
+        if (draftId){
+          location.href = `/emotion_select_01.html?draftId=${encodeURIComponent(draftId)}`;
+          return;
+        }
+      }
+    }catch(e){}
+
+    location.href = `/emotion_select_01.html?recordId=${encodeURIComponent(recordId)}`;
+  }
+
+  // 리스트 클릭 → 모달 열기
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('a.list-head[data-record-id]');
+    if (!a) return;
+    e.preventDefault();
+    openRecordModal(a.getAttribute('data-record-id'));
+  });
+
+  /* ===== 레거시 인라인 핸들러 호환 ===== */
+  window.modalOpen = window.modalOpen || function(ev){
+    const m=document.getElementById('modal-view');
+    if (ev && ev.preventDefault) ev.preventDefault();
+    m && (m.setAttribute('aria-hidden','false'), m.removeAttribute('inert'));
+  };
+  window.modalClose = window.modalClose || function(){
+    const m=document.getElementById('modal-view');
+    m && (m.setAttribute('aria-hidden','true'), m.setAttribute('inert',''));
+  };
+
+  /* ===== 초기화 ===== */
+  (function init(){
+    if (!isLoggedIn()){ location.href='/login_01.html'; return; }
+    loadToday().catch(console.error);
+    loadHistory().catch(console.error);
+  })();
+</script>
 </body>
 </html>

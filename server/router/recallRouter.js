@@ -4,9 +4,9 @@ const db = require('../data/db');
 const { verifyToken } = require('../util/jwt');
 
 /**
- * 전체 목록 
+ * 전체 목록(미회고)
  * GET /recall/pending
- * response: [{recordId, title, emotion_type, expression_type, reveal_at, created_at}]
+ * response: [{recordId, title, emotion_type, expression_type, img, reveal_at, created_at, content, place, latitude, longitude}]
  */
 router.get('/pending', verifyToken, async (req, res) => {
   try {
@@ -14,7 +14,18 @@ router.get('/pending', verifyToken, async (req, res) => {
 
     const [rows] = await db.query(
       `
-      SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.reveal_at, r.created_at
+      SELECT
+        r.id AS recordId,
+        r.title,
+        r.emotion_type,
+        r.expression_type,
+        r.img,
+        r.created_at,
+        r.reveal_at,
+        r.content,
+        r.place,
+        r.latitude,
+        r.longitude
       FROM Records r
       LEFT JOIN Users_Rec ur ON ur.recId = r.id AND ur.userId = ?
       WHERE r.userId = ?
@@ -32,9 +43,9 @@ router.get('/pending', verifyToken, async (req, res) => {
 });
 
 /**
- * 6개월/12개월 전 딱 오늘 날짜의 기록만 조회
+ * 특정 개월 전(±3일 버퍼)
  * GET /recall/ago?months=6|12
- *  - months가 6 또는 12만 허용
+ * response: { months, items: [...] }
  */
 router.get('/ago', verifyToken, async (req, res) => {
   try {
@@ -53,7 +64,11 @@ router.get('/ago', verifyToken, async (req, res) => {
         r.expression_type,
         r.img,
         r.created_at,
-        r.reveal_at
+        r.reveal_at,
+        r.content,
+        r.place,
+        r.latitude,
+        r.longitude
       FROM Records r
       WHERE r.userId = ?
         AND DATE(r.reveal_at) BETWEEN
@@ -72,7 +87,7 @@ router.get('/ago', verifyToken, async (req, res) => {
 });
 
 /**
- * 오늘 기준 회고 알림 뭉치 (6개월/1년)
+ * 오늘 받은 회고 알림(6개월/1년)
  * GET /recall/today
  * response: { sixMonths: [...], oneYear: [...] }
  */
@@ -80,42 +95,46 @@ router.get('/today', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const [[six], [one]] = await Promise.all([
-      db.query(
-        `
-        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.created_at, r.reveal_at
-        FROM Records r
-        WHERE r.userId = ?
-          AND DATE(r.created_at) = DATE(DATE_SUB(CURDATE(), INTERVAL 6 MONTH))
-        ORDER BY r.created_at DESC, r.id DESC
-        `,
-        [userId]
-      ),
-      db.query(
-        `
-        SELECT r.id AS recordId, r.title, r.emotion_type, r.expression_type, r.img, r.created_at, r.reveal_at
-        FROM Records r
-        WHERE r.userId = ?
-          AND DATE(r.created_at) = DATE(DATE_SUB(CURDATE(), INTERVAL 12 MONTH))
-        ORDER BY r.created_at DESC, r.id DESC
-        `,
-        [userId]
-      ),
-    ]);
+    // 필요시 서버가 UTC라면 CONVERT_TZ로 KST 기준으로 맞추세요.
+    // const dateExpr = `DATE(CONVERT_TZ(r.reveal_at,'UTC','Asia/Seoul')) = DATE(CONVERT_TZ(NOW(),'UTC','Asia/Seoul'))`;
+    const dateExpr = `DATE(r.reveal_at) = CURDATE()`; // 서버 TZ가 KST라면 이거로 충분
 
-    res.status(200).json({ sixMonths: six, oneYear: one });
+    const [rows] = await db.query(
+      `
+      SELECT
+        r.id AS recordId,
+        r.title,
+        r.emotion_type,
+        r.expression_type,
+        r.img,
+        r.created_at,
+        r.reveal_at,
+        r.content,
+        r.place,
+        r.latitude,
+        r.longitude
+      FROM Records r
+      LEFT JOIN Users_Rec ur ON ur.recId = r.id AND ur.userId = ?
+      WHERE r.userId = ?
+        AND ${dateExpr}
+        AND ur.id IS NULL               -- 회고 완료(ACK)한 건 제외
+      ORDER BY r.reveal_at DESC, r.id DESC
+      `,
+      [userId, userId]
+    );
+
+    // 프론트 하위호환: 기존 구조 {sixMonths, oneYear}를 기대한다면 sixMonths에 넣어줌
+    res.status(200).json({ sixMonths: rows, oneYear: [] });
+    // 프론트를 바꿀 수 있다면: res.json({ items: rows });
   } catch (err) {
     console.error('[GET /recall/today]', err);
-    res.status(500).json({ message: '오늘 회고 알림 조회 실패', detail: err.message });
+    res.status(500).json({ message: '오늘 알림 조회 실패', detail: err.message });
   }
 });
 
 /**
  * 회고 완료 ACK
  * POST /recall/:recordId/ack
- *  - 본인 레코드인지 확인
- *  - reveal_at <= NOW() 이어야 합당 (도래 전 ack 방지)
- *  - Users_Rec에 (userId, recId) INSERT IGNORE
  */
 router.post('/:recordId/ack', verifyToken, async (req, res) => {
   try {
@@ -132,7 +151,7 @@ router.post('/:recordId/ack', verifyToken, async (req, res) => {
     if (!rec) return res.status(404).json({ message: '기록을 찾을 수 없습니다' });
     if (rec.userId !== userId) return res.status(403).json({ message: '권한이 없습니다' });
 
-    // (선택) reveal_at 도래 전 ACK 방지
+    // 도래 전 ACK 방지(선택)
     const [[ok]] = await db.query(
       `SELECT CASE WHEN ? <= NOW() THEN 1 ELSE 0 END AS due`,
       [rec.reveal_at]
@@ -150,6 +169,52 @@ router.post('/:recordId/ack', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('[POST /recall/:recordId/ack]', err);
     res.status(500).json({ message: '회고 완료 처리 실패', detail: err.message });
+  }
+});
+
+
+/**
+ * 이전 알림: period가 있는 모든 내 기록
+ * GET /recall/history?page=1&pageSize=50
+ * - 회고 여부에 상관없이 포함
+ * - 내용/장소도 함께 반환
+ */
+router.get('/history', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 50;
+    const offset = (page - 1) * pageSize;
+
+    const [rows] = await db.query(
+      `
+      SELECT
+        r.id AS recordId,
+        r.title,
+        r.emotion_type,
+        r.expression_type,
+        r.img,
+        r.created_at,
+        r.reveal_at,
+        r.period,
+        r.content,
+        r.place,
+        r.latitude,
+        r.longitude
+      FROM Records r
+      WHERE r.userId = ?
+        AND r.period IS NOT NULL           -- period가 있는 모든 기록
+        AND r.period <> ''                 -- (문자 컬럼일 경우 안전장치)
+      ORDER BY COALESCE(r.reveal_at, r.created_at) DESC, r.id DESC
+      LIMIT ? OFFSET ?
+      `,
+      [userId, pageSize, offset]
+    );
+
+    res.status(200).json({ page, pageSize, items: rows });
+  } catch (err) {
+    console.error('[GET /recall/history]', err);
+    res.status(500).json({ message: '이전 알림 조회 실패', detail: err.message });
   }
 });
 

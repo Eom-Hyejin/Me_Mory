@@ -381,4 +381,31 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
+// ===== 오늘(세션 타임존=Asia/Seoul) 최신 감정 하나 반환 =====
+// GET /record/today/latest
+router.get('/today/latest', verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const [rows] = await db.query(
+      `
+      SELECT id AS recordId, emotion_type, expression_type, created_at
+        FROM Records
+       WHERE userId = ?
+         AND DATE(created_at) = CURDATE()   -- 세션 time_zone(Asia/Seoul) 기준의 "오늘"
+       ORDER BY created_at DESC, id DESC
+       LIMIT 1
+      `,
+      [userId]
+    );
+
+    if (!rows.length) return res.status(204).send(); // 오늘 기록 없음
+    return res.status(200).json(rows[0]);            // {recordId, emotion_type, expression_type, created_at}
+  } catch (err) {
+    console.error('[GET /record/today/latest]', err);
+    return res.status(500).json({ message: '오늘 최신 감정 조회 실패', detail: err.message });
+  }
+});
+
+
 module.exports = router;
