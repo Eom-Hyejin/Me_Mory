@@ -1,159 +1,738 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="theme-color" content="#162060" />
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+
+  <!-- JS -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+
+  <style>
+  /* ===== 공통 변수 (웹 기본) ===== */
+  :root{
+    --header-h: 88px;
+    --title-gap: 8px;
+    --title-h: 56px;
+
+    /* 아바타(프로필 사진) 기본 크기 */
+    --avatar: 68px;
+
+    /* 말풍선/구슬 비율(아바타 기준) - 더 작게 조정 */
+    --balloon-scale: 0.34;  /* 말풍선 지름 = avatar * 0.34 */
+    --icon-scale:    0.20;  /* 구슬(이모지) 지름 = avatar * 0.20 */
+    --tail-scale:    0.075; /* 꼬리 두께 */
+    --offset-scale: -0.18;  /* 말풍선 좌상단 오프셋 (음수: 바깥쪽) */
+  }
+
+  /* 모바일: 비율 더 살짝 줄여서 작게 보이도록 */
+  @media (max-width: 480px){
+    :root{
+      --header-h: 72px;
+      --title-gap: 6px;
+      --title-h: 48px;
+      --avatar: 56px;
+
+      --balloon-scale: 0.30;
+      --icon-scale:    0.18;
+      --offset-scale: -0.20;
+    }
+  }
+
+  .is-hidden{display:none!important}
+
+  /* ===== 스크롤 제거 + 100vh(iOS 대응) ===== */
+  html, body{
+    margin:0; padding:0;
+    height: calc(var(--vh, 1vh) * 100);
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* 배경 고정 */
+  .bg-box, .bg-overlay{ position: fixed; inset:0; pointer-events:none; }
+
+  /* 상단 여백 제거 */
+  section.py-lg-0,
+  .full-box, .full-inner, .space-box, .space-inner,
+  .title-box { margin:0 !important; padding:0 !important; }
+
+  /* 타이틀: 헤더 바로 아래 */
+  .title-box{
+    position:absolute; top:calc(var(--header-h) + var(--title-gap));
+    left:50%; transform:translateX(-50%);
+    width:100%; text-align:center; z-index:2; pointer-events:none;
+  }
+  .title-box h2{
+    display:inline-block; line-height:1.35; padding:6px 10px; color:#fff;
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    filter: none !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-weight:700; pointer-events:auto;
+  }
+
+  /* 아이콘 영역: 타이틀 아래부터 하단까지 */
+  .arround-box{
+    position:absolute; left:0; right:0;
+    top:calc(var(--header-h) + var(--title-gap) + var(--title-h));
+    bottom:0; overflow:hidden;
+  }
+  .arround-box ul{ position:relative; width:100%; height:100%; list-style:none; margin:0; padding:0; }
+  .arround-box li{ position:absolute; z-index:1; }
+
+  /* 중앙 프로필 위치 (아주 조금 아래로) */
+  .arround-box li.me{ left:50% !important; top:50% !important; transform:translate(-50%, -46%); z-index:3; }
+
+  /* 프로필 썸네일 */
+  .arround-box li > a.emotion-result-box.arround{ position:relative; display:block; text-align:center; }
+  .emotion-result-box .image{ position:relative; text-align:center; z-index:1; }
+  .emotion-result-box .image img{
+    position:relative; z-index:1;
+    width:var(--avatar) !important; height:var(--avatar) !important;
+    border-radius:50%; object-fit:cover; display:block; margin:0 auto;
+    box-shadow:0 0 0 2px #fff, 0 3px 10px rgba(0,0,0,.2);
+  }
+  .arround-box li.me .image img{
+    width: var(--avatar) !important;
+    height: var(--avatar) !important;
+    box-shadow:0 0 0 2px #fff, 0 5px 14px rgba(0,0,0,.24);
+  }
+  .emotion-result-box .image p{ margin-top:6px; font-weight:600; color:#fff; white-space:nowrap; }
+
+  /* ===== 말풍선(흰 원) + 구슬(이모지) ===== */
+  .arround-box li{ --avb: var(--avatar); }
+  .arround-box li.me{ --avb: var(--avatar); }
+
+  .arround-box li{
+    --balloon-size-local:  calc(var(--avb) * var(--balloon-scale));
+    --balloon-icon-local:  calc(var(--avb) * var(--icon-scale));
+    --balloon-tail-local:  clamp(3px, calc(var(--avb) * var(--tail-scale)), 10px);
+    --balloon-offset-local:calc(var(--avb) * var(--offset-scale));
+  }
+
+  .emotion-result-box .result{
+    position:absolute !important;
+    left: var(--balloon-offset-local) !important;
+    top:  var(--balloon-offset-local) !important;
+    width: var(--balloon-size-local) !important;
+    height: var(--balloon-size-local) !important;
+    border-radius:50%;
+    background:#fff !important;
+    border:2px solid rgba(255,255,255,.95) !important;
+    box-shadow:0 4px 12px rgba(0,0,0,.16);
+    display:flex; align-items:center; justify-content:center;
+    z-index:3; pointer-events:auto;
+  }
+  .emotion-result-box .result::after{
+    content:""; position:absolute;
+    left: calc(var(--balloon-size-local) * 0.16);
+    bottom: calc(var(--balloon-size-local) * -0.26);
+    width:0; height:0;
+    border: var(--balloon-tail-local) solid transparent;
+    border-top-color:#fff; border-right-color:#fff;
+    transform:rotate(-45deg);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.10));
+  }
+  .emotion-result-box .result img{
+    position:relative; z-index:4;
+    width: var(--balloon-icon-local) !important;
+    height: var(--balloon-icon-local) !important;
+    max-width: none !important; max-height: none !important;
+    display:block; border:none !important; box-shadow:none !important;
+    background: transparent !important;
+  }
+
+  /* 공통 유틸 */
+  header .header-right .header-user a[data-nav="logout"],
+  header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"]{
+    background:#ffcc00!important;color:#fff!important;padding:8px 14px;border-radius:6px;font-weight:bold;display:block;width:fit-content;margin-left:auto;text-align:center}
+  header a[data-nav="logout"]:hover, header a[data-nav="logout"]::focus{filter:brightness(.9)}
+  #profile-img{object-fit:cover;border-radius:50%}
+  .is-disabled{pointer-events:none;opacity:.6}
+  </style>
 </head>
-<body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li class="active"><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section class="py-lg-0">
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="space-box">
-					<div class="space-inner mb50">
-						<div class="title-box">
-							<h2 class="f24 f-lg-14">근처에 있는 오늘의 감정들을 확인하고<br/>감정을 눌러서 댓글을 달아보세요</h2>
-						</div>
-						<div class="arround-box">
-							<ul>
-								<li style="left:20%; top:20%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_01.png">
-											<p>홍길일</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_happy_01.png"></div>
-									</a>
-								</li>
-								<li style="left:55%; top:2%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_02.png">
-											<p>홍길이</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_angry_02.png"></div>
-									</a>
-								</li>
-								<li style="left:75%; top:40%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_03.png">
-											<p>홍길삼</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_sad_01.png"></div>
-									</a>
-								</li>
-								<li style="left:45%; top:80%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_01.png">
-											<p>홍길사</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_upset_03.png"></div>
-									</a>
-								</li>
-								<li style="left:15%; top:55%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_02.png">
-											<p>홍길오</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_envious_03.png"></div>
-									</a>
-								</li>
-								<li style="left:75%; top:75%;">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_03.png">
-											<p>홍길육</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
-									</a>
-								</li>
-								<li class="me">
-									<a href="" class="emotion-result-box arround">
-										<div class="image">
-											<img src="./asset/images/img_arround_thumb_03.png">
-											<p>나</p>
-										</div>
-										<div class="result"><img src="./asset/images/icon_uneasy_05.png"></div>
-									</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_around.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_around_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=3"></script>
+
+<body class="around-page">
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li class="active"><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <!-- 게스트 -->
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+
+      <!-- 로그인 -->
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="py-lg-0">
+  <div class="full-box">
+    <div class="full-inner full-height">
+      <div class="space-box">
+        <div class="space-inner">
+          <div class="title-box" id="pageTitle">
+            <h2 class="f24 f-lg-14">
+              근처에 있는 오늘의 감정들을 확인하고<br/>감정을 눌러서 댓글을 달아보세요
+            </h2>
+          </div>
+
+          <div class="arround-box">
+            <ul id="aroundList"><!-- JS 렌더 --></ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 모달 (알림/회고 페이지와 동일 패턴) ===== -->
+<div class="modal-box" id="modal-view" role="dialog" aria-modal="true" aria-hidden="true" inert>
+  <div class="box">
+    <div class="modal-head">
+      <h2 id="modalTitle">안내</h2>
+      <a href="javascript:;" class="close" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}">닫기</a>
+    </div>
+    <div class="modal-body">
+      <div class="emotion-view-box" id="modalContent"><!-- JS 렌더 --></div>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box">
+        <a href="javascript:;" onclick="try{window.modalClose && window.modalClose(this)}catch(_){hideModal()}" class="btn btn-active btn-lg">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 배경 -->
+<div class="bg-box">
+  <img src="./asset/images/bg_body_login.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_login_m.png" class="is-m" alt="">
+</div>
+<div class="bg-overlay" aria-hidden="true"></div>
+
+<script src="/asset/js/app.js?ver=35"></script>
+<script>
+  /* ===== 1) 뷰포트/헤더/타이틀 실제 높이를 변수에 반영 ===== */
+  function setVH(){
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  function setHeaderAndTitleVars(){
+    const header = document.querySelector('header');
+    if (header){
+      const h = header.getBoundingClientRect().height;
+      if (h) document.documentElement.style.setProperty('--header-h', `${Math.round(h)}px`);
+    }
+    const title = document.getElementById('pageTitle');
+    if (title){
+      const th = title.getBoundingClientRect().height;
+      if (th) document.documentElement.style.setProperty('--title-h', `${Math.round(th)}px`);
+    }
+  }
+  setVH(); setHeaderAndTitleVars();
+  window.addEventListener('resize', ()=>{ setVH(); setHeaderAndTitleVars(); });
+
+  /* ===== 인증/네비 공통 ===== */
+  const isLoggedIn = () => !!localStorage.getItem('accessToken');
+  const go = (url) => location.href = url;
+
+  function authHeader(){
+    const raw = localStorage.getItem('accessToken') || '';
+    const t = String(raw).trim();
+    if (!t) return {};
+    const hasBearer = /^Bearer\s/i.test(t);
+    return { Authorization: hasBearer ? t : `Bearer ${t}` };
+  }
+
+  // fetch 래퍼: 타임아웃 + 인증 + 401 가드
+  async function safeFetch(input, init={}, { timeoutMs=7000 } = {}){
+    const ctrl = new AbortController();
+    const to = setTimeout(()=>ctrl.abort(new Error('timeout')), timeoutMs);
+    try{
+      const res = await fetch(input, { ...init, headers: { ...(init.headers||{}), ...authHeader() }, signal: ctrl.signal });
+      if ([401,403,419].includes(res.status)) {
+        try{ localStorage.removeItem('accessToken'); }catch(_){}
+        location.href = '/login_01.html';
+        throw new Error('auth_required');
+      }
+      return res;
+    }finally{
+      clearTimeout(to);
+    }
+  }
+
+  function renderHeaderByAuth(){
+    const on = isLoggedIn();
+    document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', on));
+    document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !on));
+  }
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('[data-nav]'); if (!a) return;
+    e.preventDefault();
+    const key = a.getAttribute('data-nav');
+    if (key==='around'){ return go('/emotion_arround_bluetooth.html'); }
+    if (key==='login') return go('/login_01.html');
+    if (key==='register') return go('/register_01.html');
+    if (key==='logout'){ localStorage.removeItem('accessToken'); renderHeaderByAuth(); return go('/'); }
+    if (key==='mypage') return isLoggedIn()? go('/mypage_main.html') : go('/login_01.html');
+    if (!isLoggedIn()) return go('/login_01.html');
+    switch(key){
+      case 'record': return go('/emotion_select_01.html');
+      case 'calendar': return go('/emotion_calendar.html');
+      case 'map': return go('/emotion_map.html');
+      case 'memory': return go('/emotion_memory.html');
+    }
+  });
+  renderHeaderByAuth();
+  window.addEventListener('storage', (ev)=>{ if (ev.key==='accessToken') renderHeaderByAuth(); });
+
+  /* ===== 이모지 세트/유틸 ===== */
+  const EMOJI_SET = {
+    joy:     ['icon_happy_02.png','icon_happy_03.png','icon_happy_04.png','icon_happy_05.png','icon_happy_06.png','icon_happy_07.png'],
+    sadness: ['icon_sad_02.png','icon_sad_03.png','icon_sad_04.png','icon_sad_05.png','icon_sad_06.png','icon_sad_07.png'],
+    anger:   ['icon_angry_02.png','icon_angry_03.png','icon_angry_04.png','icon_angry_05.png','icon_angry_06.png','icon_angry_07.png'],
+    worry:   ['icon_uneasy_02.png','icon_uneasy_03.png','icon_uneasy_04.png','icon_uneasy_05.png','icon_uneasy_06.png','icon_uneasy_07.png'],
+    proud:   ['icon_envious_02.png','icon_envious_03.png','icon_envious_04.png','icon_envious_05.png','icon_envious_06.png','icon_envious_07.png'],
+    upset:   ['icon_upset_02.png','icon_upset_03.png','icon_upset_04.png','icon_upset_05.png','icon_upset_06.png','icon_upset_07.png'],
+  };
+  function parseExprIndex(expression_type){
+    const s = String(expression_type ?? '').toLowerCase().trim();
+    const m = s.match(/(\d+)/);
+    let n = m ? parseInt(m[1],10) : 2;
+    if (!Number.isFinite(n)) n = 2;
+    n = Math.max(1, Math.min(6, n));
+    return n - 1;
+  }
+  function getEmojiSrc(emotion_type, expression_type){
+    if (!emotion_type || !expression_type) return null;
+    const list = EMOJI_SET[String(emotion_type)];
+    if (!list) return null;
+    const idx = parseExprIndex(expression_type);
+    return `./asset/images/${list[idx]}`;
+  }
+
+  /* ===== 모달 유틸 (알림/회고와 동일) ===== */
+  function showModal(){
+    const modal = document.getElementById('modal-view');
+    try{
+      if (typeof window.modalOpen === 'function'){
+        const opener = document.createElement('a');
+        opener.setAttribute('href','javascript:;');
+        opener.setAttribute('aria-haspopup','dialog');
+        opener.setAttribute('aria-controls','modal-view');
+        opener.style.display='none';
+        document.body.appendChild(opener);
+        const ev = { preventDefault: ()=>{} };
+        window.modalOpen(ev, opener);
+        setTimeout(()=> opener.remove(), 0);
+        return;
+      }
+    }catch(e){}
+    if (modal){ modal.setAttribute('aria-hidden','false'); modal.removeAttribute('inert'); }
+  }
+  function hideModal(){
+    const m=document.getElementById('modal-view');
+    try{
+      if (typeof window.modalClose === 'function'){ window.modalClose(m); return; }
+    }catch(_){}
+    if (m){ m.setAttribute('aria-hidden','true'); m.setAttribute('inert',''); }
+  }
+  window.modalOpen = window.modalOpen || function(ev){
+    const m=document.getElementById('modal-view');
+    if (ev && ev.preventDefault) ev.preventDefault();
+    m && (m.setAttribute('aria-hidden','false'), m.removeAttribute('inert'));
+  };
+  window.modalClose = window.modalClose || function(){
+    const m=document.getElementById('modal-view');
+    m && (m.setAttribute('aria-hidden','true'), m.setAttribute('inert',''));
+  };
+
+  function showInfoModal(title, html){
+    const t = document.getElementById('modalTitle');
+    const c = document.getElementById('modalContent');
+    if (t) t.textContent = title || '안내';
+    if (c) c.innerHTML = html || '<p>안내 메시지</p>';
+    showModal();
+  }
+
+  /* ===== API ===== */
+  async function getMe(){ const r = await safeFetch('/api/auth/me'); if(!r.ok) throw new Error('me_failed'); return r.json(); }
+  async function getMyToday(userId){ const r = await safeFetch(`/api/bluetooth/person/${encodeURIComponent(userId)}/today`); return r.ok? r.json():null; }
+  async function getNearby(lat,lng,radiusKm=0.3,windowMin=5,limit=10,mask=true){
+    const q = new URLSearchParams({lat,lng,radiusKm,windowMin,limit,mask:mask?'1':'0'}).toString();
+    const r = await safeFetch(`/api/bluetooth/nearby?${q}`); return r.ok? r.json():{ myEmotion:null, users:[] };
+  }
+  async function getPersonToday(userId){ const r=await safeFetch(`/api/bluetooth/person/${encodeURIComponent(userId)}/today`); if(!r.ok) throw new Error('person_failed'); return r.json(); }
+  async function postTodayLocation(lat, lng){
+  try{
+    const r = await safeFetch('/api/bluetooth/today', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ latitude: lat, longitude: lng })
+    });
+    if (r.ok){
+      // ✅ 위치 업서트 직후 바로 주변 재조회
+      fetchAndRender(lat, lng);
+    }
+  }catch(_){}
+}
+
+
+  /* ===== 배치/렌더 ===== */
+  const aroundList = document.getElementById('aroundList');
+  function clampPct(v,min,max){ return Math.max(min, Math.min(max,v)); }
+  function calcLayout(container){
+    const rect = container.getBoundingClientRect();
+    const W=rect.width, H=rect.height;
+    const baseR=24, addR=28;
+    const scale = Math.min(1, Math.max(0.62, Math.sqrt((W*H)/(800*600))));
+    const Rmin = baseR*scale; const Radd = addR*scale;
+    const density = 9000*scale;
+    const maxVisible = Math.max(0, Math.floor((W*H)/density)-1);
+    return { Rmin, Radd, maxVisible };
+  }
+  function randomPos(Rmin,Radd){
+    const angle=Math.random()*Math.PI*2;
+    const R=Rmin+Math.random()*Radd;
+    const cx=50, cy=50;
+    const leftPct=cx+R*Math.cos(angle);
+    const topPct =cy+R*Math.sin(angle);
+    const left = clampPct(leftPct, 8, 92);
+    const top  = clampPct(topPct ,14, 90);
+    return { left: `${left}%`, top: `${top}%` };
+  }
+  function resultHtml(emojiSrc){ if(!emojiSrc) return ''; return `<div class="result"><img src="${emojiSrc}" alt=""></div>`; }
+  function liHtml({left, top, name, img, emojiSrc, isMe, userId}){
+    const nick = (isMe ? '나' : (name || '익명'));
+    return `
+      <li ${isMe?'class="me"':''} ${!isMe?`style="left:${left}; top:${top};"`:''}>
+        <a href="javascript:;" class="emotion-result-box arround" data-user-id="${userId||''}" data-is-me="${isMe?'1':'0'}">
+          <div class="image">
+            <img src="${img || './asset/images/img_arround_thumb_03.png'}" alt="">
+            ${resultHtml(emojiSrc)}
+            <p>${nick}</p>
+          </div>
+        </a>
+      </li>`;
+  }
+
+  let __STATE = { me:null, myToday:null, nearbyAll:[] };
+  function renderAround(){
+    const container = document.querySelector('.arround-box ul');
+    const { Rmin, Radd, maxVisible } = calcLayout(container);
+    const items = [];
+
+    // 내 프로필(구슬 DOM 생성 X)
+    items.push(liHtml({
+      isMe:true,
+      name: __STATE.me?.name || '나',
+      img: __STATE.me?.img || './asset/images/img_arround_thumb_03.png',
+      emojiSrc: null,
+      userId: __STATE.me?.userId
+    }));
+
+    const visible = __STATE.nearbyAll.slice(0, Math.max(0, maxVisible));
+    visible.forEach(u=>{
+      const pos = randomPos(Rmin, Radd);
+      const emoji = getEmojiSrc(u?.emotion_type, u?.expression_type);
+      items.push(liHtml({ ...pos, name:u?.name, img:u?.img, emojiSrc:emoji, isMe:false, userId: u?.userId || u?.id }));
+    });
+    aroundList.innerHTML = items.join('');
+    __POLL.lastRenderAt = Date.now();
+  }
+
+  /* ===== 폴링 안정화 ===== */
+  let __POLL = {
+    timer:null, inFlight:false, failCount:0, pollMs:5000, watchId:null, selfUpsertTimer:null,
+    lastCoords:null, lastRenderAt:0, watchdog:null
+  };
+
+  async function fetchAndRender(lat,lng){
+    if (__POLL.inFlight) return;
+    __POLL.inFlight = true;
+    try{
+      const near = await getNearby(lat,lng,0.3,5,10,true);
+      __STATE.nearbyAll = Array.isArray(near?.users) ? near.users : [];
+      renderAround();
+      // 성공 → 백오프 초기화/주기 원복
+      __POLL.failCount = 0;
+      if (__POLL.pollMs !== 5000){
+        __POLL.pollMs = 5000;
+        restartInterval();
+      }
+    }catch(_){
+      __POLL.failCount++;
+      // 1회 이상 실패 시 점진적 백오프 (5s → 8s → 13s)
+      const nextMs = __POLL.failCount===1 ? 8000 : 13000;
+      if (__POLL.pollMs !== nextMs){
+        __POLL.pollMs = nextMs;
+        restartInterval();
+      }
+    }finally{
+      __POLL.inFlight = false;
+    }
+  }
+
+  function startNearbyPolling(lat, lng){
+    __POLL.lastCoords = { lat, lng };
+    fetchAndRender(lat, lng);
+    restartInterval();
+
+    // 워치독: 30초 동안 렌더 갱신 없으면 강제 갱신
+    if (__POLL.watchdog) clearInterval(__POLL.watchdog);
+    __POLL.watchdog = setInterval(()=>{
+      const stale = Date.now() - (__POLL.lastRenderAt || 0);
+      if (stale > 30000){
+        const c = __POLL.lastCoords;
+        if (c) fetchAndRender(c.lat, c.lng);
+      }
+    }, 7000);
+  }
+
+  function restartInterval(){
+    if (__POLL.timer) clearInterval(__POLL.timer);
+    __POLL.timer = setInterval(()=>{
+      if (document.hidden) return; // 비가시 탭에서는 쉬기
+      const c = __POLL.lastCoords;
+      if (c) fetchAndRender(c.lat, c.lng);
+    }, __POLL.pollMs);
+  }
+
+  function stopNearbyPolling(){
+    if (__POLL.timer){ clearInterval(__POLL.timer); __POLL.timer = null; }
+    if (__POLL.selfUpsertTimer){ clearInterval(__POLL.selfUpsertTimer); __POLL.selfUpsertTimer = null; }
+    if (__POLL.watchdog){ clearInterval(__POLL.watchdog); __POLL.watchdog = null; }
+    if (__POLL.watchId && navigator.geolocation){
+      try{ navigator.geolocation.clearWatch(__POLL.watchId); }catch(_){}
+      __POLL.watchId = null;
+    }
+  }
+
+  document.addEventListener('visibilitychange', ()=>{
+    if (!__POLL.lastCoords) return;
+    if (document.hidden){
+      // 숨김: 폴링 주기만 늘리고 즉시 중단
+      if (__POLL.timer){ clearInterval(__POLL.timer); __POLL.timer = null; }
+    }else{
+      // 복귀: 즉시 1회 + 주기 재시작
+      fetchAndRender(__POLL.lastCoords.lat, __POLL.lastCoords.lng);
+      restartInterval();
+    }
+  });
+
+  function showGeoNotice(msg){ console.info('[GEO]', msg); }
+
+  async function initGeolocation(){
+    const FALLBACK = { lat: 37.5665, lng: 126.9780 }; // 서울시청
+
+    if (!isSecureContext){
+      showGeoNotice('HTTPS가 아니어서 위치 접근이 제한됩니다. 폴백 좌표로 조회합니다.');
+      startNearbyPolling(FALLBACK.lat, FALLBACK.lng);
+      return;
+    }
+    if (!('geolocation' in navigator)){
+      showGeoNotice('브라우저가 위치 기능을 지원하지 않습니다. 폴백 좌표를 사용합니다.');
+      startNearbyPolling(FALLBACK.lat, FALLBACK.lng);
+      return;
+    }
+
+    try{
+      let state = 'prompt';
+      if (navigator.permissions && navigator.permissions.query){
+        try{
+          const p = await navigator.permissions.query({ name: 'geolocation' });
+          state = p.state;
+          p.onchange = () => {
+            if (p.state === 'granted'){
+              navigator.geolocation.getCurrentPosition(
+                pos => {
+                  const { latitude, longitude } = pos.coords;
+                  postTodayLocation(latitude, longitude);
+                  startNearbyPolling(latitude, longitude);
+                },
+                _ => {},
+                { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+              );
+            }
+          };
+        }catch(_){}
+      }
+
+      const onSuccess = (pos) => {
+        const { latitude, longitude } = pos.coords;
+        postTodayLocation(latitude, longitude);
+        startNearbyPolling(latitude, longitude);
+
+        try{
+          __POLL.watchId = navigator.geolocation.watchPosition(
+            (p) => {
+              const lat = p.coords.latitude;
+              const lng = p.coords.longitude;
+              __POLL.lastCoords = { lat, lng };
+            },
+            (_)=>{},
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
+          );
+        }catch(_){}
+
+        if (!__POLL.selfUpsertTimer){
+          __POLL.selfUpsertTimer = setInterval(()=>{
+            const c = __POLL.lastCoords || { lat: latitude, lng: longitude };
+            postTodayLocation(c.lat, c.lng);
+          }, 30000);
+        }
+      };
+
+      const onError = (_err) => {
+        if (state === 'denied'){
+          showGeoNotice('위치 권한 거부됨 → 폴백 좌표로 조회합니다.');
+        }else{
+          showGeoNotice('위치를 가져올 수 없어 폴백 좌표를 사용합니다.');
+        }
+        startNearbyPolling(FALLBACK.lat, FALLBACK.lng);
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        onSuccess, onError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+      );
+    }catch(_){
+      showGeoNotice('예상치 못한 오류로 폴백 좌표를 사용합니다.');
+      startNearbyPolling(FALLBACK.lat, FALLBACK.lng);
+    }
+  }
+
+  let __rsTimer=null;
+  function onResize(){ clearTimeout(__rsTimer); __rsTimer=setTimeout(()=>{ setHeaderAndTitleVars(); renderAround(); },120); }
+  window.addEventListener('resize', onResize);
+
+  /* ===== 클릭 동작: 모달 안내로 변경 ===== */
+  document.addEventListener('click', async (e)=>{
+  const a = e.target.closest('.emotion-result-box.arround');
+  if(!a) return;
+  const uid = a.getAttribute('data-user-id');
+  if(!uid) return;
+  const isMe = a.getAttribute('data-is-me') === '1';
+  e.preventDefault();
+
+  // ✅ 내 프로필도 페이지 전환
+  if (isMe){
+    try {
+      const res = await safeFetch(`/api/bluetooth/person/${encodeURIComponent(uid)}/today`);
+      if (res.ok){
+        const data = await res.json();
+        const pub = data?.latestPublicRecord;
+        if (pub && pub.id){
+          // 내 공개 게시물 → 댓글 페이지
+          location.href = `/emotion_arround_comment.html?recordId=${encodeURIComponent(pub.id)}`;
+          return;
+        }
+      }
+    } catch(err){}
+    // fallback: 내 페이지로 이동
+    location.href = '/mypage_main.html';
+    return;
+  }
+
+  // ✅ 친구 프로필은 기존 로직
+  const FAIL_HTML = '<p>오늘의 감정 기록을 볼 수 없습니다.</p>';
+  try{
+    const res = await safeFetch(`/api/bluetooth/person/${encodeURIComponent(uid)}/today`);
+    if (!res.ok){
+      showInfoModal('안내', FAIL_HTML);
+      return;
+    }
+    const data = await res.json();
+    const pub = data?.latestPublicRecord;
+    const meta = data?.latestAnyRecord;
+    if (pub && pub.id){
+      location.href = `/emotion_arround_comment.html?recordId=${encodeURIComponent(pub.id)}`;
+      return;
+    }
+    if (meta && meta.visibility && meta.visibility !== 'public'){
+      showInfoModal('안내', '<p>비공개 게시물입니다.</p>');
+      return;
+    }
+    showInfoModal('안내', FAIL_HTML);
+  }catch(err){
+    showInfoModal('안내', FAIL_HTML);
+  }
+});
+
+
+  /* ===== 초기화 ===== */
+  (async function init(){
+    renderHeaderByAuth();
+    if (!isLoggedIn()){ location.href='/login_01.html'; return; }
+
+    const me = await getMe();
+    const myTodayData = await getMyToday(me.userId);
+    const myToday = myTodayData?.todayEmotion || null;
+    __STATE.me = me; __STATE.myToday = myToday;
+
+    await initGeolocation();
+
+    // 페이지 떠날 때 정리
+    window.addEventListener('pagehide', stopNearbyPolling);
+    window.addEventListener('beforeunload', stopNearbyPolling);
+  })();
+</script>
 </body>
 </html>

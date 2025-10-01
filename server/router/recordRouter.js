@@ -407,5 +407,63 @@ router.get('/today/latest', verifyToken, async (req, res) => {
   }
 });
 
+/* ===================================================== */
+/* ========== 8) 이번 달 감정 통계 (퍼센트/캡슐) ========= */
+/* ===================================================== */
+// GET /record/month/stats?year=2025&month=9&caps=10
+router.get('/month/stats', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const now = new Date();
+    const year  = parseInt(req.query.year  || now.getFullYear(), 10);
+    const month = parseInt(req.query.month || (now.getMonth()+1), 10);
+    const caps  = Math.max(1, Math.min(parseInt(req.query.caps || 10,10), 50)); // 안전한 상한
+
+    const ym = `${year}-${String(month).padStart(2,'0')}`;
+    const [[{ first_day }]] = await db.query(`SELECT DATE('${ym}-01') AS first_day`);
+    const [[{ last_day }]]  = await db.query(`SELECT LAST_DAY('${ym}-01') AS last_day`);
+
+    // 날짜 비교는 DATE(created_at)로 안전하게
+    const [rows] = await db.query(
+      `SELECT emotion_type AS emotion, COUNT(*) AS cnt
+         FROM Records
+        WHERE userId=? AND DATE(created_at) BETWEEN ? AND ?
+        GROUP BY emotion_type`,
+      [userId, first_day, last_day]
+    );
+
+    const counts = Object.fromEntries(EMOTIONS.map(e => [e, 0]));
+    rows.forEach(r => { if (counts[r.emotion] != null) counts[r.emotion] = r.cnt; });
+
+    const total = Object.values(counts).reduce((a,b)=>a+b, 0);
+
+    // 퍼센트/캡슐 반올림 후, 총합 보정(캡슐 수가 caps와 일치하도록)
+    const items = EMOTIONS.map(em => ({
+      emotion: em,
+      count: counts[em],
+      percent: total ? Math.round(counts[em] * 100 / total) : 0,
+      caps:    total ? Math.round(counts[em] * caps / total)  : 0
+    }));
+
+    // 캡슐 합 보정(라운딩 오차)
+    let diff = caps - items.reduce((a,b)=>a+b.caps, 0);
+    if (diff !== 0 && total > 0) {
+      // 큰 비중 순으로 남는/초과분 분배
+      const sorted = [...items].sort((a,b)=> b.count - a.count);
+      let i = 0;
+      while (diff !== 0 && sorted.length) {
+        if (diff > 0) { sorted[i%sorted.length].caps++; diff--; }
+        else { if (sorted[i%sorted.length].caps>0){sorted[i%sorted.length].caps--; diff++;} }
+        i++;
+      }
+    }
+
+    res.json({ year, month, total, items, totalCaps: caps });
+  } catch (err) {
+    console.error('[GET /record/month/stats]', err);
+    res.status(500).json({ message:'월별 감정 통계 실패', detail: err.message });
+  }
+});
+
 
 module.exports = router;

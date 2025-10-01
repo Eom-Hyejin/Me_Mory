@@ -1,16 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../data/db');
-const verifyToken = require('../middleware/auth'); // 프로젝트에 맞게 경로 조정
-const bt = require('../services/bluetooth'); // { tokenService, settingsService, proximityService, privacyGuard }
+const verifyToken = require('../util/jwt').verifyToken;
 
-// ✅ privacyGuard.apply가 없으면 그냥 통과시키는 미들웨어 사용
-const applyPrivacy =
-  (bt && bt.privacyGuard && typeof bt.privacyGuard.apply === 'function')
-    ? bt.privacyGuard.apply
-    : (req, res, next) => next();
-
-/** 내 '오늘' 지배적 감정 계산 (없으면 Today_Emotion 기준) */
+/** 내 '오늘' 지배적 감정 (Records 오늘자 최빈 → 없으면 Today_Emotion) */
 async function getMyTodayDominantEmotion(userId) {
   const [[r1]] = await db.query(`
     SELECT emotion_type, COUNT(*) c
@@ -23,61 +16,14 @@ async function getMyTodayDominantEmotion(userId) {
   `, [userId]);
   if (r1?.emotion_type) return r1.emotion_type;
 
-  const [[r2]] = await db.query(`SELECT emotion_type FROM Today_Emotion WHERE userId=?`, [userId]);
+  const [[r2]] = await db.query(
+    `SELECT emotion_type FROM Today_Emotion WHERE userId=?`,
+    [userId]
+  );
   return r2?.emotion_type || null;
 }
 
-/** (A) BLE 동의/상태 조회 */
-router.get('/consent', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const [[row]] = await db.query(
-      `SELECT enabled, last_enabled_at FROM UserBleSettings WHERE user_id=?`,
-      [userId]
-    );
-    res.json(row || { enabled: 0, last_enabled_at: null });
-  } catch (e) {
-    res.status(500).json({ message: '상태 조회 실패', detail: e.message });
-  }
-});
-
-/** (B) BLE 동의/상태 저장 */
-router.post('/consent', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const enabled = !!req.body?.enabled;
-    await bt.settingsService.setConsent(userId, enabled);
-    res.json({ enabled });
-  } catch (e) {
-    res.status(500).json({ message: '저장 실패', detail: e.message });
-  }
-});
-
-/** (C) 디바이스 토큰 회전 (앱이 이 값을 BLE로 광고) */
-router.post('/device-token/rotate', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const token = await bt.tokenService.rotateDeviceToken(userId);
-    // 서버는 hash만 저장하고, 평문 token은 클라에게 전달 → 앱이 해시(sha256)로 광고하는 구조라면 앱에서 해싱
-    res.json({ token, ttlDays: 7 });
-  } catch (e) {
-    res.status(500).json({ message: '토큰 회전 실패', detail: e.message });
-  }
-});
-
-/** (D) 스캔 결과 업로드: observations: [{hash, rssi, seenAt}] */
-router.post('/scan-report', verifyToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const observations = Array.isArray(req.body?.observations) ? req.body.observations : [];
-    await bt.proximityService.ingestScanResults(userId, observations);
-    res.status(204).send();
-  } catch (e) {
-    res.status(500).json({ message: '스캔 업로드 실패', detail: e.message });
-  }
-});
-
-/** (E) 근처 사용자 목록 (500m 기본) */
+/** (E) 근처 사용자 목록: 위치 기반(반경 300m, 최근 5분, 최신순 10명) */
 router.get('/nearby', verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -86,35 +32,59 @@ router.get('/nearby', verifyToken, async (req, res) => {
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       return res.status(400).json({ message: 'lat/lng가 필요합니다' });
     }
-    const radiusKm  = Number(req.query.radiusKm ?? 0.5);
-    const windowMin = Number(req.query.windowMin ?? 5);
-    const limit     = Number(req.query.limit ?? 7);
-    const mask      = req.query.mask !== '0';
+
+    const radiusKm  = Number.isFinite(Number(req.query.radiusKm)) ? Number(req.query.radiusKm) : 0.3; // 300m
+    const windowMin = Number.isFinite(Number(req.query.windowMin)) ? Number(req.query.windowMin) : 5;
+    const limit     = Math.min(Number.isFinite(Number(req.query.limit)) ? Number(req.query.limit) : 10, 10);
+
+    // ----- 바운딩 박스(인덱스 타기 위함) -----
+    // 위도 1도 ≈ 110.574km, 경도 1도 ≈ 111.320*cos(lat) km
+    const latDelta = radiusKm / 110.574;
+    const lngDelta = radiusKm / (111.320 * Math.cos(lat * Math.PI / 180));
+
+    const latMin = lat - latDelta;
+    const latMax = lat + latDelta;
+    const lngMin = lng - lngDelta;
+    const lngMax = lng + lngDelta;
+
+    // ----- 먼저 시간 + 바운딩박스로 좁히고, 마지막에 구면거리로 정밀 필터링 -----
+    const [rows] = await db.query(`
+      SELECT
+        u.id AS userId, u.name, u.img,
+        t.emotion_type, t.expression_type, t.updated_at,
+        t.latitude, t.longitude
+      FROM Today_Emotion t
+      JOIN Users u ON u.id = t.userId
+      WHERE t.userId <> ?
+        AND t.updated_at >= NOW() - INTERVAL ? MINUTE
+        AND t.latitude  BETWEEN ? AND ?
+        AND t.longitude BETWEEN ? AND ?
+        AND ST_Distance_Sphere(POINT(t.longitude, t.latitude), POINT(?, ?)) <= ? * 1000
+      ORDER BY t.updated_at DESC
+      LIMIT ?
+    `, [userId, windowMin, latMin, latMax, lngMin, lngMax, lng, lat, radiusKm, limit]);
 
     const mine = await getMyTodayDominantEmotion(userId);
+    for (const r of rows) r.sameEmotionWithMe = mine ? (r.emotion_type === mine) : false;
 
-    const list = await bt.proximityService.getNearbyByBle(userId, {
-      windowMin, limit, mask, origin: { lat, lng }, radiusKm
-    });
-
-    // 동일 감정 플래그 (UI가 이 값으로 이모지 오버레이)
-    for (const row of list) {
-      row.sameEmotionWithMe = mine ? (row.emotion_type === mine) : false;
-    }
-    res.json({ myEmotion: mine, users: list });
+    res.json({ myEmotion: mine, users: rows });
   } catch (e) {
+    console.error('[GET /nearby]', e);
     res.status(500).json({ message: '조회 실패', detail: e.message });
   }
 });
 
-/** (F) 사람 클릭: 오늘 감정 + 최신 공개 캡슐(있으면) */
+
+/** (F) 사람 클릭: 오늘 감정 + 최신 공개 캡슐 + (비공개 여부 판별용) 메타 */
 router.get('/person/:userId/today', verifyToken, async (req, res) => {
   try {
     const targetId = parseInt(req.params.userId, 10);
     if (!Number.isFinite(targetId)) return res.status(400).json({ message: '잘못된 사용자' });
 
-    // 프로필(마스킹은 목록에서만, 상세는 본닉 표시) + 오늘 감정
-    const [[user]] = await db.query(`SELECT id AS userId, name, img FROM Users WHERE id=?`, [targetId]);
+    const [[user]] = await db.query(
+      `SELECT id AS userId, name, img FROM Users WHERE id=?`,
+      [targetId]
+    );
     if (!user) return res.status(404).json({ message: '사용자 없음' });
 
     const [[today]] = await db.query(`
@@ -123,22 +93,29 @@ router.get('/person/:userId/today', verifyToken, async (req, res) => {
        WHERE userId = ?
     `, [targetId]);
 
-    // "오늘" 작성된 공개 캡슐(Records) 중 최신 1개
-    const [[rec]] = await db.query(`
+    // ✅ 오늘 최신 "공개" 글 (있으면 full로 보여줄 대상)
+    const [[recPublic]] = await db.query(`
       SELECT id, title, emotion_type, expression_type, content, img, place, created_at
         FROM Records
-       WHERE userId=? 
-         AND visibility='public'
-         AND DATE(created_at)=CURDATE()
-       ORDER BY created_at DESC
+       WHERE userId=? AND visibility='public' AND DATE(created_at)=CURDATE()
+       ORDER BY created_at DESC, id DESC
+       LIMIT 1
+    `, [targetId]);
+
+    // ✅ 오늘 최신 글 (공개/비공개 무관) — 비공개 안내 여부 판별용 메타
+    const [[recAny]] = await db.query(`
+      SELECT id, visibility, created_at
+        FROM Records
+       WHERE userId=? AND DATE(created_at)=CURDATE()
+       ORDER BY created_at DESC, id DESC
        LIMIT 1
     `, [targetId]);
 
     let images = [];
-    if (rec) {
+    if (recPublic) {
       const [rows] = await db.query(
         `SELECT url FROM RecordImages WHERE recordId=? ORDER BY sort_order ASC, id ASC`,
-        [rec.id]
+        [recPublic.id]
       );
       images = rows.map(r => r.url);
     }
@@ -146,11 +123,84 @@ router.get('/person/:userId/today', verifyToken, async (req, res) => {
     res.json({
       profile: user,
       todayEmotion: today || null,
-      latestPublicRecord: rec ? { ...rec, images } : null
+      latestPublicRecord: recPublic ? { ...recPublic, images } : null,
+      // 🔽 공개/비공개 판별용 메타. content 같은 민감정보는 포함하지 않음
+      latestAnyRecord: recAny ? { recordId: recAny.id, visibility: recAny.visibility } : null
     });
   } catch (e) {
+    console.error('[GET /person/:userId/today]', e);
     res.status(500).json({ message: '상세 조회 실패', detail: e.message });
   }
 });
+
+// (G) 오늘 위치 + 최신 감정 → Today_Emotion upsert
+router.post('/today', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    let { latitude, longitude } = req.body;
+
+    latitude  = Number(latitude);
+    longitude = Number(longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return res.status(400).json({ message: '위치(lat,lng)가 필요합니다' });
+    }
+    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+      return res.status(400).json({ message: '위치 범위가 올바르지 않습니다' });
+    }
+    latitude  = Number(latitude.toFixed(7));
+    longitude = Number(longitude.toFixed(7));
+
+    const [[latest]] = await db.query(`
+      SELECT emotion_type, expression_type
+        FROM Records
+       WHERE userId = ?
+         AND DATE(created_at) = CURDATE()
+       ORDER BY created_at DESC
+       LIMIT 1
+    `, [userId]);
+
+    if (latest) {
+      // 오늘 기록이 있으면: 위치 + 감정값 업서트
+      await db.query(`
+        INSERT INTO Today_Emotion (userId, latitude, longitude, emotion_type, expression_type, updated_at)
+        VALUES (?, ?, ?, ?, ?, NOW())
+        ON DUPLICATE KEY UPDATE
+          latitude = VALUES(latitude),
+          longitude = VALUES(longitude),
+          emotion_type = VALUES(emotion_type),
+          expression_type = VALUES(expression_type),
+          updated_at = NOW()
+      `, [userId, latitude, longitude, latest.emotion_type, latest.expression_type]);
+
+      return res.json({
+        message: 'Today_Emotion 저장 완료',
+        emotion_type: latest.emotion_type,
+        expression_type: latest.expression_type,
+        latitude, longitude
+      });
+    }
+
+    // 오늘 기록이 없으면: 위치만 업서트 + 감정값은 명시적으로 NULL로 리셋
+    await db.query(`
+      INSERT INTO Today_Emotion (userId, latitude, longitude, emotion_type, expression_type, updated_at)
+      VALUES (?, ?, ?, NULL, NULL, NOW())
+      ON DUPLICATE KEY UPDATE
+        latitude = VALUES(latitude),
+        longitude = VALUES(longitude),
+        emotion_type = NULL,
+        expression_type = NULL,
+        updated_at = NOW()
+    `, [userId, latitude, longitude]);
+
+    return res.json({
+      message: '오늘 기록 없음 → 위치만 저장(감정값 NULL 초기화)',
+      latitude, longitude
+    });
+  } catch (e) {
+    console.error('[POST /today]', e);
+    res.status(500).json({ message: 'Today_Emotion 저장 실패', detail: e.message });
+  }
+});
+
 
 module.exports = router;

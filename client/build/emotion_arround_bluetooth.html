@@ -1,103 +1,340 @@
 <!DOCTYPE HTML>
 <html lang="ko">
 <head>
-	<title>Memory</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<meta name="generator" content="">
-	<meta name="robots" content="">
-	<meta property="og:type" content="">
-	<meta property="og:title" content="">
-	<meta property="og:url" content="">
-	<meta property="og:description" content="">
-	<!--모바일크롬 툴바 컬러-->
-	<meta name="theme-color" content="#162060" />
-	<!-- 공유 이미지 -->
-	<meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">  
-	<meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-	<!-- 파비콘 이미지 -->
-	<link href="" rel="icon" type="image/jpg">
-	<link href="" rel="shortcut icon" type="image/jpg">
-	<link href="" rel="apple-touch-icon" type="image/jpg">				
-	<link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/base.css"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=2"> 
-	<link rel="stylesheet" type="text/css" href="./asset/css/layout.css"> 
-	<script src="./asset/js/jquery-3.3.1.js"></script>
-	<script src="./asset/js/swiper.min.js"></script>	
-	<script src="./asset/js/common.js?a=1"></script>
+  <title>Memory</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="theme-color" content="#162060" />
+  <meta property="og:image" content="./asset/images/layout/img_thumbnail.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="./asset/css/swiper.min.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/base.css">
+  <link rel="stylesheet" type="text/css" href="./asset/css/grid.css?a=2">
+  <link rel="stylesheet" type="text/css" href="./asset/css/common.css?a=1">
+  <link rel="stylesheet" type="text/css" href="./asset/css/layout.css">
+
+  <!-- JS -->
+  <script src="./asset/js/jquery-3.3.1.js"></script>
+  <script src="./asset/js/swiper.min.js"></script>
+  <script src="./asset/js/common.js?a=2"></script>
+
+  <style>
+    .is-hidden{display:none!important}
+    header .header-right .header-user a[data-nav="logout"],
+    header .header-right .right-menu .inner ul .header-user-item.ye > a[data-nav="logout"]{
+      background:#ffcc00!important;color:#fff!important;padding:8px 14px;border-radius:6px;font-weight:bold;display:block;width:fit-content;margin-left:auto;text-align:center}
+    header a[data-nav="logout"]:hover, header a[data-nav="logout"]:focus{filter:brightness(.9)}
+    #profile-img{object-fit:cover;border-radius:50%}
+    .is-disabled{pointer-events:none;opacity:.6}
+  </style>
 </head>
 <body>
-	<header>
-		<div class="container">
-			<div class="header-logo">
-				<h1><a href=""><img src="./asset/images/logo.png"/></a></h1>
-			</div>
-			<div class="header-cate">
-				<ul>
-					<li><a href="">감정기록</a></li>
-					<li><a href="">감정캘린더</a></li>
-					<li class="active"><a href="">내 주변 감정</a></li>
-					<li><a href="">감정지도</a></li>
-					<li><a href="">감정회고</a></li>
-				</ul>
-			</div>
-			<div class="header-right">
-				<div class="right-button">
-					<ul>
-						<li class="border"><a href="">로그인</a></li>
-						<li><a href="">회원가입</a></li>
-					</ul>
-				</div>
-				<div class="right-menu">
-					<button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
-					<div class="inner">
-						<ul>
-							<li><a href="">감정기록</a></li>
-							<li><a href="">감정캘린더</a></li>
-							<li><a href="">내 주변 감정</a></li>
-							<li><a href="">감정지도</a></li>
-							<li><a href="">감정회고</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<section class="py-lg-0">
-		<div class="full-box">
-			<div class="full-inner full-height">
-				<div class="space-box">
-					<div class="space-inner">
-						<div class="title-box">
-							<h2>
-								근처에 있는 <br class="is-m"/>오늘의 감정들을 확인해볼까요? <br/>
-								위치(블루투스) 권한을 허용해주세요
-							</h2>
-						</div>
-						<div class="image-box">
-							<img src="./asset/images/img_pin.png" class="pin">
-						</div>
-						<div class="button-box">
-							<div  class="w500 flex-lg-1">
-								<a href="" class="btn btn-active">다음 단계</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="bg-box">
-		<img src="./asset/images/bg_body_around.png" class="is-pc"/>
-		<img src="./asset/images/bg_body_around_m.png" class="is-m"/>
-	</div>
-	<script src="./asset/js/swiper.js?a=1"></script>
-	<script src="/asset/js/app.js?ver=1"></script>
+<header>
+  <div class="container">
+    <div class="header-logo">
+      <h1><a href="/"><img src="./asset/images/logo.png" alt="Memory"/></a></h1>
+    </div>
+
+    <div class="header-cate">
+      <ul>
+        <li><a href="#" data-nav="record">감정기록</a></li>
+        <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+        <li class="active"><a href="#" data-nav="around">내 주변 감정</a></li>
+        <li><a href="#" data-nav="map">감정지도</a></li>
+        <li><a href="#" data-nav="memory">감정회고</a></li>
+      </ul>
+    </div>
+
+    <div class="header-right">
+      <div class="right-button header-guest">
+        <ul>
+          <li class="border"><a href="#" data-nav="login">로그인</a></li>
+          <li><a href="#" data-nav="register">회원가입</a></li>
+        </ul>
+      </div>
+      <div class="right-button header-user is-hidden">
+        <ul>
+          <li class="border"><a href="#" data-nav="mypage">마이페이지</a></li>
+          <li><a href="#" data-nav="logout">로그아웃</a></li>
+        </ul>
+      </div>
+
+      <div class="right-menu">
+        <button type="button" class="menu" onclick="activeParent(this, 'right-menu');">메뉴바</button>
+        <div class="inner">
+          <ul>
+            <li><a href="#" data-nav="record">감정기록</a></li>
+            <li><a href="#" data-nav="calendar">감정캘린더</a></li>
+            <li><a href="#" data-nav="around">내 주변 감정</a></li>
+            <li><a href="#" data-nav="map">감정지도</a></li>
+            <li><a href="#" data-nav="memory">감정회고</a></li>
+            <li class="header-user-item is-hidden"><a href="#" data-nav="mypage">마이페이지</a></li>
+            <li class="header-user-item is-hidden ye"><a href="#" data-nav="logout">로그아웃</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="login">로그인</a></li>
+            <li class="header-guest-item"><a href="#" data-nav="register">회원가입</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="py-lg-0">
+  <div class="full-box">
+    <div class="full-inner full-height">
+      <div class="space-box">
+        <div class="space-inner">
+          <div class="title-box">
+            <h2>근처에 있는 <br class="is-m"/>오늘의 감정들을 확인해볼까요?</h2>
+          </div>
+          <div class="image-box">
+            <img src="./asset/images/img_pin.png" class="pin" alt="">
+          </div>
+          <div class="button-box">
+            <div class="w500 flex-lg-1">
+              <a href="javascript:;" id="btnNext" class="btn btn-active">다음 단계</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-box">
+  <img src="./asset/images/bg_body_login.png" class="is-pc" alt="">
+  <img src="./asset/images/bg_body_login_m.png" class="is-m" alt="">
+</div>
+
+<!-- 공용 모달 -->
+<div class="modal-box modal-sm" id="modal-update" role="dialog" aria-modal="true" aria-hidden="true" inert>
+  <div class="box">
+    <div class="modal-head">
+      <h2 id="modalTitle">알림</h2>
+      <a href="javascript:;" class="close" onclick="hideModal()">닫기</a>
+    </div>
+    <div class="modal-body">
+      <p id="modalMsg">처리가 완료되었습니다.</p>
+    </div>
+    <div class="modal-foot">
+      <div class="button-box" id="modalButtons">
+        <a href="javascript:;" class="btn btn-active btn-lg flex-lg-1" id="modalOk">확인</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ app.js는 한 번만 로드하세요 (중복 금지) -->
+<script src="/asset/js/app.js?ver=25"></script>
+
+<script>
+/* ===================== 공통 상수/유틸 ===================== */
+const DEV = false;
+
+/* 하드 리다이렉트(중복 호출 방지) */
+let _redirecting = false;
+function hardRedirectToLogin(){
+  if (_redirecting) return;
+  _redirecting = true;
+  const back = encodeURIComponent(location.pathname + location.search);
+  location.replace(`/login_01.html?next=${back}`);
+}
+
+/* 로컬 헤더 렌더 */
+function renderHeaderByAuthLocal(loggedIn){
+  document.querySelectorAll('.header-guest, .header-guest-item').forEach(el=>el.classList.toggle('is-hidden', loggedIn));
+  document.querySelectorAll('.header-user, .header-user-item').forEach(el=>el.classList.toggle('is-hidden', !loggedIn));
+}
+
+/* ========== 토큰 정규화 & 만료 체크 ========== */
+function getRawToken(){
+  let t = localStorage.getItem('accessToken') || '';
+  t = String(t).trim();
+  if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) t = t.slice(1,-1).trim();
+  try { t = decodeURIComponent(t.replace(/\+/g,'%20')).trim(); } catch(_) {}
+  t = t.replace(/^bearer\s+/i,'').trim();
+  t = t.split(/\s+/)[0];
+  const m = t.match(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+/);
+  return m ? m[0] : '';
+}
+
+function jwtExp(){
+  try{
+    const raw = getRawToken();
+    if (!raw) return 0;
+    const payload = JSON.parse(atob(raw.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return Number(payload.exp || 0) || 0;
+  }catch{ return 0; }
+}
+
+/* exp 없거나 파싱 실패(=0)도 만료로 간주 */
+function isExpired(skewSec=60){
+  const exp = jwtExp();
+  if (!exp) return true;
+  const now = Math.floor(Date.now()/1000);
+  return (exp - now) <= skewSec;
+}
+
+/* 유효 세션 판단(토큰 존재 && 미만료) */
+function hasValidSession(){
+  const t = getRawToken();
+  return !!t && !isExpired();
+}
+
+/* ========== 공용 모달 ========== */
+function showModal(msg, title='알림', buttons){
+  const m = document.getElementById('modal-update');
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  const wrap = document.getElementById('modalButtons'); wrap.innerHTML = '';
+  (buttons || [{ text:'확인', onClick: hideModal }]).forEach(b=>{
+    const a=document.createElement('a');
+    a.href='javascript:;';
+    a.className='btn '+(b.className||'btn-active')+' btn-lg flex-lg-1';
+    a.textContent=b.text;
+    a.onclick=()=>{ if (b.onClick) b.onClick(); };
+    wrap.appendChild(a);
+  });
+  m.setAttribute('aria-hidden','false'); m.removeAttribute('inert');
+}
+function hideModal(){
+  const m=document.getElementById('modal-update');
+  m.setAttribute('aria-hidden','true'); m.setAttribute('inert','');
+}
+
+/* ========== 인증 변형 재시도 fetch ========== */
+async function fetchWithAuthVariants(url, optionsBase={}){
+  const token = getRawToken();
+  if (!token) {
+    const err = new Error('NO_TOKEN'); err.code = 'NO_TOKEN'; throw err;
+  }
+  const headersCommon = { 'Content-Type': 'application/json', ...(optionsBase.headers||{}) };
+  const trials = [
+    { 'Authorization': `Bearer ${token}` },
+    { 'Authorization': token },
+    { 'x-access-token': token },
+    { 'access-token': token },
+  ];
+  for (let i=0;i<trials.length;i++){
+    const headers = { ...headersCommon, ...trials[i] };
+    if (DEV) console.log('[auth trial]', i+1, headers);
+    const res = await fetch(url, { ...optionsBase, headers });
+    if (res.ok) return res;
+    if (res.status !== 401 || i === trials.length - 1) return res;
+  }
+}
+
+/* /api/auth/me 사전검증도 동일 변형으로 */
+async function precheckAuth(){
+  try{
+    const r = await fetchWithAuthVariants('/api/auth/me', { method:'GET' });
+    return r.ok;
+  }catch{ return false; }
+}
+
+/* ========== 네비게이션 ========== */
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-nav]'); if (!a) return;
+  e.preventDefault();
+  const key = a.getAttribute('data-nav');
+
+  if (key === 'login') return location.href='/login_01.html';
+  if (key === 'register') return location.href='/register_01.html';
+  if (key === 'logout'){ localStorage.removeItem('accessToken'); return location.href='/'; }
+
+  if (key === 'mypage') return hasValidSession() ? location.href='/mypage_main.html' : hardRedirectToLogin();
+
+  // 인증 필요한 메뉴는 유효 세션 없으면 즉시 로그인으로
+  const protectedKeys = new Set(['record','calendar','map','memory','around']);
+  if (protectedKeys.has(key) && !hasValidSession()) return hardRedirectToLogin();
+
+  switch (key){
+    case 'record': return location.href='/emotion_select_01.html';
+    case 'calendar': return location.href='/emotion_calendar.html';
+    case 'map': return location.href='/emotion_map.html';
+    case 'memory': return location.href='/emotion_memory.html';
+    case 'around': return location.href='/emotion_arround_bluetooth.html';
+  }
+});
+
+/* ========== 위치 Insert: 실패 시 즉시 리다이렉트 ========== */
+async function postBluetoothToday(lat, lng){
+  if (!hasValidSession()){
+    showModal('세션이 만료되었어요. 다시 로그인해 주세요.', '로그인이 필요합니다');
+    hardRedirectToLogin();
+    return { ok:false, auth:true };
+  }
+
+  const ok = await precheckAuth();
+  if (!ok){
+    showModal('인증이 유효하지 않아요. 다시 로그인해 주세요.', '로그인이 필요합니다');
+    hardRedirectToLogin();
+    return { ok:false, auth:true };
+  }
+
+  try{
+    const res = await fetchWithAuthVariants('/api/bluetooth/today', {
+      method:'POST',
+      body: JSON.stringify({ latitude: Number(lat), longitude: Number(lng) })
+    });
+    if (res.ok) return { ok:true };
+
+    if (res.status === 401){
+      showModal('세션이 만료되었어요. 다시 로그인해 주세요.', '로그인이 필요합니다');
+      hardRedirectToLogin();
+      return { ok:false, auth:true };
+    }
+
+    let msg = `저장 실패 (코드 ${res.status})`;
+    try{ const j = await res.json(); if (j?.message) msg = `${j.message} (코드 ${res.status})`; }catch{}
+    showModal(msg);
+    return { ok:false };
+  }catch(e){
+    if (e?.code === 'NO_TOKEN'){
+      showModal('로그인이 필요해요. 다시 로그인해 주세요.', '알림');
+      hardRedirectToLogin();
+      return { ok:false, auth:true };
+    }
+    showModal('저장 실패: ' + (e?.message || '네트워크 오류'));
+    return { ok:false };
+  }
+}
+
+/* ========== 버튼 핸들러 ========== */
+const btn = document.getElementById('btnNext');
+btn.addEventListener('click', () => {
+  if (!navigator.geolocation){ showModal('이 브라우저는 위치 정보를 지원하지 않아요.'); return; }
+  if (btn.classList.contains('is-disabled')) return;
+  btn.classList.add('is-disabled');
+
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const r = await postBluetoothToday(pos.coords.latitude, pos.coords.longitude);
+    btn.classList.remove('is-disabled');
+    if (r.ok) location.href = '/emotion_arround_check_02.html';
+    // r.auth === true 인 경우는 이미 hardRedirectToLogin 호출됨
+  }, err => {
+    btn.classList.remove('is-disabled');
+    let reason = '위치 권한을 허용해야 내 주변 감정을 볼 수 있어요.';
+    if (err?.code === 1) reason = '위치 권한이 거부되었어요. 설정에서 허용해 주세요.';
+    if (err?.code === 2) reason = '현재 위치를 확인할 수 없어요. 잠시 후 다시 시도해 보세요.';
+    if (err?.code === 3) reason = '위치 조회가 시간 초과됐어요. 다시 시도해 주세요.';
+    showModal(reason, '알림', [
+      { text:'취소', className:'btn-gray-outline', onClick: hideModal },
+      { text:'다시 시도', className:'btn-active', onClick: () => { hideModal(); btn.click(); } }
+    ]);
+  }, { enableHighAccuracy:true, timeout:8000 });
+});
+
+/* ========== 초기화 ========== */
+(function init(){
+  if (!hasValidSession()) { hardRedirectToLogin(); return; }
+  (window.renderHeaderByAuth || (( )=>{
+    renderHeaderByAuthLocal(true);
+  }))();
+})();
+</script>
 </body>
 </html>
